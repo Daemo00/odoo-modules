@@ -51,11 +51,3 @@ class EventTournamentTeam (models.Model):
             if teams_event \
                     and teams_event != team.tournament_id.event_id:
                 raise ValidationError(_("Teams not in selected event"))
-
-    @api.multi
-    def button_win(self):
-        """This is clicked inside the tree of a match"""
-        self.ensure_one()
-        params = self.env.context['params']
-        match = self.env[params['model']].browse(params['id'])
-        match.action_win(self)

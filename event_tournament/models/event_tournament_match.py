@@ -13,8 +13,9 @@ class EventTournamentMatch(models.Model):
     tournament_id = fields.Many2one(
         comodel_name='event.tournament',
         string="Tournament")
-    team_ids = fields.Many2many(
-        comodel_name='event.tournament.team',
+    line_ids = fields.One2many(
+        comodel_name='event.tournament.match.line',
+        inverse_name='match_id',
         string="Teams")
     winner_team_id = fields.Many2one(
         comodel_name='event.tournament.team',
@@ -31,22 +32,22 @@ class EventTournamentMatch(models.Model):
     time_done = fields.Datetime(
         string="Time done")
 
-    @api.constrains('team_ids')
+    @api.constrains('line_ids')
     def constrain_teams(self):
         for match in self:
-            teams = match.team_ids
-            if len(teams) <= 1:
+            match_lines = match.line_ids
+            if len(match_lines) <= 1:
                 raise ValidationError(_("A good match needs at least 2 teams"))
-            registration = first(teams).component_ids
-            for team in teams:
-                registration &= team.component_ids
-            if registration:
+            registrations = first(match_lines).team_id.component_ids
+            for team in match_lines.mapped('team_id'):
+                registrations &= team.component_ids
+            if registrations:
                 raise ValidationError(_("Teams have common components"))
 
-    @api.constrains('tournament_id', 'team_ids')
+    @api.constrains('tournament_id', 'line_ids')
     def constrain_tournament(self):
         for match in self:
-            teams_tournaments = match.team_ids.mapped('tournament_id')
+            teams_tournaments = match.line_ids.mapped('team_id.tournament_id')
             if len(teams_tournaments) > 1:
                 raise ValidationError(_("Teams from different tournaments"))
             teams_tournament = first(teams_tournaments)
@@ -54,11 +55,11 @@ class EventTournamentMatch(models.Model):
                     and teams_tournament != match.tournament_id:
                 raise ValidationError(_("Teams not in selected tournament"))
 
-    @api.constrains('team_ids', 'winner_team_id')
+    @api.constrains('winner_team_id', 'line_ids')
     def _constrain_winner(self):
         for match in self:
             if match.winner_team_id \
-                    and match.winner_team_id not in match.team_ids:
+                    and match.winner_team_id not in match.line_ids.mapped('team_id'):
                 raise ValidationError(
                     _("Winner team is not participating in this match"))
 
@@ -84,6 +85,32 @@ class EventTournamentMatch(models.Model):
     def name_get(self):
         res = list()
         for match in self:
-            match_name = match.team_ids.mapped('name')
-            res.append((match.id, " vs ".join(match_name)))
+            teams_names = match.line_ids.mapped('team_id.name')
+            res.append((match.id, " vs ".join(teams_names)))
         return res
+
+
+class EventTournamentMatchLine(models.Model):
+    _name = 'event.tournament.match.line'
+    _description = "Tournament match line"
+    _rec_name = 'team_id'
+
+    match_id = fields.Many2one(
+        comodel_name='event.tournament.match',
+        required=True,
+        ondelete='cascade')
+    team_id = fields.Many2one(
+        comodel_name='event.tournament.team',
+        required=True,
+        ondelete='cascade')
+    set_1 = fields.Integer()
+    set_2 = fields.Integer()
+    set_3 = fields.Integer()
+    set_4 = fields.Integer()
+    set_5 = fields.Integer()
+
+    @api.multi
+    def button_win(self):
+        """This is clicked inside the tree of a match"""
+        self.ensure_one()
+        self.match_id.action_win(self.team_id)
