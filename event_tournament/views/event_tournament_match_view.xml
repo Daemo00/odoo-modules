@@ -15,12 +15,18 @@
                     <group>
                         <field name="tournament_id"/>
                         <field name="time_scheduled"/>
-                        <field name="team_ids">
-                            <tree>
+                        <field name="line_ids">
+                            <tree editable="bottom" context="{'default_match_id': parent}">
                                 <button name="button_win" string="Wins" title="Wins"
                                         type="object" class="btn-sm btn-primary"
                                         attrs="{'invisible': [('parent.state', '=', 'done')]}"/>
-                                <field name="name"/>
+                                <field name="match_id" invisible="True"/>
+                                <field name="team_id" domain="[('tournament_id', '=', parent.tournament_id)]"/>
+                                <field name="set_1"/>
+                                <field name="set_2"/>
+                                <field name="set_3"/>
+                                <field name="set_4"/>
+                                <field name="set_5"/>
                             </tree>
                         </field>
                         <field name="winner_team_id"/>
@@ -37,7 +43,7 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="tournament_id"/>
-                <field name="team_ids" widget="many2many_tags"/>
+                <field name="line_ids" widget="many2many_tags"/>
                 <field name="winner_team_id"/>
                 <field name="state"/>
             </tree>
