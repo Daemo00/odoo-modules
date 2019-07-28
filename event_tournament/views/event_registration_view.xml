@@ -1,0 +1,15 @@
+<!-- Copyright 2019 Simone Rubino <daemo00@gmail.com> -->
+<!-- License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
+
+<odoo>
+    <record id="view_event_registration_form" model="ir.ui.view">
+        <field name="name">Tournament into event.registration form view</field>
+        <field name="model">event.registration</field>
+        <field name="inherit_id" ref="event.view_event_registration_form"/>
+        <field name="arch" type="xml">
+            <group name="attendee" position="inside">
+                <field name="tournament_team_ids"/>
+            </group>
+        </field>
+    </record>
+</odoo>

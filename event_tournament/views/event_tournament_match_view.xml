@@ -1,0 +1,11 @@
+<!-- Copyright 2019 Simone Rubino <daemo00@gmail.com> -->
+<!-- License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
+
+<odoo>
+    <act_window id="event_tournament_match_action"
+                name="Tournament matches"
+                res_model="event.tournament.match"/>
+    <menuitem id="event_tournament_match_menu"
+              parent="event_tournament_root_menu"
+              action="event_tournament_match_action"/>
+</odoo>
