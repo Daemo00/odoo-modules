@@ -2,6 +2,48 @@
 <!-- License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
 
 <odoo>
+    <record id="event_tournament_match_view_form" model="ir.ui.view">
+        <field name="name">event.tournament.match form view</field>
+        <field name="model">event.tournament.match</field>
+        <field name="arch" type="xml">
+            <form string="Match">
+                <header>
+                    <button name="action_draft" string="Reset to draft" type="object" states="done"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="tournament_id"/>
+                        <field name="time_scheduled"/>
+                        <field name="team_ids">
+                            <tree>
+                                <button name="button_win" string="Wins" title="Wins"
+                                        type="object" class="btn-sm btn-primary"
+                                        attrs="{'invisible': [('parent.state', '=', 'done')]}"/>
+                                <field name="name"/>
+                            </tree>
+                        </field>
+                        <field name="winner_team_id"/>
+                        <field name="time_done"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="event_tournament_match_view_tree" model="ir.ui.view">
+        <field name="name">event.tournament.match tree view</field>
+        <field name="model">event.tournament.match</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="tournament_id"/>
+                <field name="team_ids" widget="many2many_tags"/>
+                <field name="winner_team_id"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
     <act_window id="event_tournament_match_action"
                 name="Tournament matches"
                 res_model="event.tournament.match"/>
