@@ -2,7 +2,7 @@
 #  License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 from odoo import api, fields, models, _
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
 from odoo.fields import first
 
 
@@ -24,13 +24,21 @@ class EventTournamentMatch(models.Model):
     state = fields.Selection(
         selection=[
             ('draft', "Draft"),
-            ('done', "Done")])
+            ('done', "Done")],
+        default='draft')
+    time_scheduled = fields.Datetime(
+        string="Time scheduled")
+    time_done = fields.Datetime(
+        string="Time done")
 
     @api.constrains('team_ids')
     def constrain_teams(self):
         for match in self:
-            registration = first(match.team_ids).component_ids
-            for team in match.team_ids:
+            teams = match.team_ids
+            if len(teams) <= 1:
+                raise ValidationError(_("A good match needs at least 2 teams"))
+            registration = first(teams).component_ids
+            for team in teams:
                 registration &= team.component_ids
             if registration:
                 raise ValidationError(_("Teams have common components"))
@@ -55,8 +63,21 @@ class EventTournamentMatch(models.Model):
                     _("Winner team is not participating in this match"))
 
     @api.multi
-    def action_done(self):
+    def action_draft(self):
+        self.ensure_one()
         self.update({
+            'winner_team_id': False,
+            'time_done': False,
+            'state': 'draft'})
+
+    @api.multi
+    def action_win(self, team):
+        self.ensure_one()
+        if self.state == 'done':
+            raise UserError(_("Match already concluded"))
+        self.update({
+            'winner_team_id': team.id,
+            'time_done': fields.Datetime.now(),
             'state': 'done'})
 
     @api.multi
@@ -66,5 +87,3 @@ class EventTournamentMatch(models.Model):
             match_name = match.team_ids.mapped('name')
             res.append((match.id, " vs ".join(match_name)))
         return res
-
-
