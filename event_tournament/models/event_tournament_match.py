@@ -12,16 +12,15 @@ class EventTournamentMatch(models.Model):
 
     tournament_id = fields.Many2one(
         comodel_name='event.tournament',
-        string="Tournament")
+        string="Tournament",
+        required=True)
     line_ids = fields.One2many(
         comodel_name='event.tournament.match.line',
         inverse_name='match_id',
         string="Teams")
     winner_team_id = fields.Many2one(
         comodel_name='event.tournament.team',
-        string="Winner",
-        states={'done': [
-            ('required', True)]})
+        string="Winner")
     state = fields.Selection(
         selection=[
             ('draft', "Draft"),
@@ -38,8 +37,9 @@ class EventTournamentMatch(models.Model):
             match_lines = match.line_ids
             if len(match_lines) <= 1:
                 raise ValidationError(_("A good match needs at least 2 teams"))
-            registrations = first(match_lines).team_id.component_ids
-            for team in match_lines.mapped('team_id'):
+            teams = match_lines.mapped('team_id')
+            registrations = self.env['event.registration'].browse()
+            for team in teams:
                 registrations &= team.component_ids
             if registrations:
                 raise ValidationError(_("Teams have common components"))
@@ -58,8 +58,10 @@ class EventTournamentMatch(models.Model):
     @api.constrains('winner_team_id', 'line_ids')
     def _constrain_winner(self):
         for match in self:
-            if match.winner_team_id \
-                    and match.winner_team_id not in match.line_ids.mapped('team_id'):
+            if not match.winner_team_id:
+                continue
+            teams = match.line_ids.mapped('team_id')
+            if match.winner_team_id not in teams:
                 raise ValidationError(
                     _("Winner team is not participating in this match"))
 
@@ -75,7 +77,7 @@ class EventTournamentMatch(models.Model):
     def action_win(self, team):
         self.ensure_one()
         if self.state == 'done':
-            raise UserError(_("Match already concluded"))
+            raise UserError(_("Match already done"))
         self.update({
             'winner_team_id': team.id,
             'time_done': fields.Datetime.now(),
@@ -97,12 +99,10 @@ class EventTournamentMatchLine(models.Model):
 
     match_id = fields.Many2one(
         comodel_name='event.tournament.match',
-        required=True,
-        ondelete='cascade')
+        required=True)
     team_id = fields.Many2one(
         comodel_name='event.tournament.team',
-        required=True,
-        ondelete='cascade')
+        required=True)
     set_1 = fields.Integer()
     set_2 = fields.Integer()
     set_3 = fields.Integer()
@@ -110,7 +110,6 @@ class EventTournamentMatchLine(models.Model):
     set_5 = fields.Integer()
 
     @api.multi
-    def button_win(self):
-        """This is clicked inside the tree of a match"""
+    def action_win(self):
         self.ensure_one()
         self.match_id.action_win(self.team_id)
