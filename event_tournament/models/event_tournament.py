@@ -25,9 +25,15 @@ class EventTournamentMatch(models.Model):
     state = fields.Selection(
         selection=[
             ('draft', "Draft"),
-            ('done', "Done")])
+            ('done', "Done")],
+        default='draft')
 
     @api.multi
     def action_done(self):
         for tournament in self:
-            tournament.match_ids.action_done()
+            tournament.state = 'done'
+
+    @api.multi
+    def action_draft(self):
+        for tournament in self:
+            tournament.state = 'draft'
