@@ -6,6 +6,42 @@
               name="Tournaments"
               parent="event.event_main_menu"/>
 
+    <record id="event_tournament_view_form" model="ir.ui.view">
+        <field name="name">event.tournament form view</field>
+        <field name="model">event.tournament</field>
+        <field name="arch" type="xml">
+            <form string="Tournament">
+                <header>
+                    <button name="action_done" string="Done" type="object" states="draft"/>
+                    <button name="action_draft" string="Reset to draft" type="object" states="done"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="event_id"/>
+                        <field name="name"/>
+                        <field name="match_ids"/>
+                        <field name="team_ids"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="event_tournament_view_tree" model="ir.ui.view">
+        <field name="name">event.tournament tree view</field>
+        <field name="model">event.tournament</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="event_id"/>
+                <field name="name"/>
+                <field name="match_ids" widget="many2many_tags"/>
+                <field name="team_ids" widget="many2many_tags"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
     <act_window id="event_tournament_action"
                 name="Tournaments"
                 res_model="event.tournament"/>

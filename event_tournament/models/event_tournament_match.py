@@ -99,7 +99,8 @@ class EventTournamentMatchLine(models.Model):
 
     match_id = fields.Many2one(
         comodel_name='event.tournament.match',
-        required=True)
+        required=True,
+        ondelete='cascade')
     team_id = fields.Many2one(
         comodel_name='event.tournament.team',
         required=True)
