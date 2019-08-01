@@ -17,7 +17,7 @@
                         <field name="time_scheduled"/>
                         <field name="line_ids">
                             <tree editable="bottom" context="{'default_match_id': parent}">
-                                <button name="button_win" string="Wins" title="Wins"
+                                <button name="action_win" string="Wins" title="Wins"
                                         type="object" class="btn-sm btn-primary"
                                         attrs="{'invisible': [('parent.state', '=', 'done')]}"/>
                                 <field name="match_id" invisible="True"/>
