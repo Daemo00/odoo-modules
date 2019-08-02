@@ -7,11 +7,18 @@
         <field name="model">event.event</field>
         <field name="inherit_id" ref="event.view_event_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//sheet/group/group[last()]" position="after">
-                <group name="tournaments" string="Tournaments">
-                    <field name="tournament_ids"/>
-                </group>
-            </xpath>
+            <notebook position="inside">
+                <page name="tournaments" string="Tournaments">
+                    <group>
+                        <group>
+                            <field name="tournament_ids"/>
+                        </group>
+                        <group>
+                            <field name="court_ids"/>
+                        </group>
+                    </group>
+                </page>
+            </notebook>
         </field>
     </record>
 </odoo>
