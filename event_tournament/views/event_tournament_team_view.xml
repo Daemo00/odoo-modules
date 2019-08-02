@@ -11,6 +11,7 @@
                     <group>
                         <field name="event_id"/>
                         <field name="tournament_id"/>
+                        <field name="name"/>
                         <field name="component_ids"/>
                     </group>
                 </sheet>
@@ -25,6 +26,7 @@
             <tree>
                 <field name="event_id"/>
                 <field name="tournament_id"/>
+                <field name="name"/>
                 <field name="component_ids" widget="many2many_tags"/>
             </tree>
         </field>

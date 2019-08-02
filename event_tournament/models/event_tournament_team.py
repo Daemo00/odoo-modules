@@ -40,6 +40,8 @@ class EventTournamentTeam (models.Model):
     @api.constrains('tournament_id', 'match_ids')
     def constrain_matches(self):
         for team in self:
+            if not team.match_ids:
+                continue
             teams_tournaments = team.match_ids.mapped('tournament_id')
             if len(teams_tournaments) > 1:
                 raise ValidationError(_("Teams from different tournaments"))
@@ -50,6 +52,8 @@ class EventTournamentTeam (models.Model):
     @api.constrains('component_ids', 'match_ids', 'tournament_id')
     def constrain_components(self):
         for team in self:
+            if not team.component_ids:
+                continue
             components_events = team.component_ids.mapped('event_id')
             if len(components_events) > 1:
                 raise ValidationError(_("Components from different events"))
