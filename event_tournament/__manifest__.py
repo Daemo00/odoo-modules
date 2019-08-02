@@ -8,6 +8,8 @@
     'license': "AGPL-3",
     'depends': [
         'event',
+        'partner_contact_birthdate',
+        'partner_contact_gender',
     ],
     'data': [
         'security/ir.model.access.csv',
