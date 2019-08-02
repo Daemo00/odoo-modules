@@ -27,6 +27,18 @@ class EventTournamentMatch(models.Model):
             ('draft', "Draft"),
             ('done', "Done")],
         default='draft')
+    min_components = fields.Integer(
+        string="Minimum components",
+        help="Minimum number of components for a team")
+    max_components = fields.Integer(
+        string="Maximum components",
+        help="Maximum number of components for a team")
+    min_components_female = fields.Integer(
+        string="Minimum female components",
+        help="Minimum number of female components for a team")
+    min_components_male = fields.Integer(
+        string="Minimum male components",
+        help="Minimum number of male components for a team")
 
     @api.multi
     def action_done(self):
@@ -37,3 +49,10 @@ class EventTournamentMatch(models.Model):
     def action_draft(self):
         for tournament in self:
             tournament.state = 'draft'
+
+    @api.multi
+    def action_check_rules(self):
+        self.ensure_one()
+        for team in self.team_ids:
+            team.check_components_tournament(
+                team.component_ids, self)

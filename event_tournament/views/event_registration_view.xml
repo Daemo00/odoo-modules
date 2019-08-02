@@ -8,6 +8,8 @@
         <field name="inherit_id" ref="event.view_event_registration_form"/>
         <field name="arch" type="xml">
             <group name="attendee" position="inside">
+                <field name="gender"/>
+                <field name="birthdate_date"/>
                 <field name="tournament_team_ids"/>
             </group>
         </field>
