@@ -10,4 +10,8 @@ class EventEvent(models.Model):
     tournament_ids = fields.One2many(
         comodel_name='event.tournament',
         inverse_name='event_id',
-        string="Tournament")
+        string="Tournaments")
+    court_ids = fields.One2many(
+        comodel_name='event.court',
+        inverse_name='event_id',
+        string="Courts")

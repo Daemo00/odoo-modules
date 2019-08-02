@@ -40,10 +40,7 @@
         <field name="model">event.tournament</field>
         <field name="arch" type="xml">
             <tree>
-                <field name="event_id"/>
                 <field name="name"/>
-                <field name="team_ids" widget="many2many_tags"/>
-                <field name="match_ids" widget="many2many_tags"/>
                 <field name="state"/>
             </tree>
         </field>
