@@ -10,9 +10,16 @@ class EventTournamentMatch(models.Model):
     _name = 'event.tournament.match'
     _description = "Tournament match"
 
+    event_id = fields.Many2one(
+        related='tournament_id.event_id',
+        readonly=True)
     tournament_id = fields.Many2one(
         comodel_name='event.tournament',
         string="Tournament",
+        required=True)
+    court_id = fields.Many2one(
+        comodel_name='event.court',
+        string="Court",
         required=True)
     line_ids = fields.One2many(
         comodel_name='event.tournament.match.line',
@@ -31,6 +38,25 @@ class EventTournamentMatch(models.Model):
     time_done = fields.Datetime(
         string="Time done")
 
+    @api.onchange('tournament_id')
+    def onchange_tournament(self):
+        event_domain = [('event_id', '=', self.event_id.id)]
+        return {
+            'domain': {
+                'court_id': event_domain}}
+
+    @api.constrains('event_id', 'court_id')
+    def constrain_court(self):
+        for match in self:
+            if match.court_id not in match.event_id.court_ids:
+                raise ValidationError(
+                    _("Match {match_name} not valid:\n"
+                      "Court {court_name} is not in event {event_name}")
+                    .format(
+                        match_name=match.display_name,
+                        court_name=match.court_id.display_name,
+                        event_name=match.event_id.display_name))
+
     @api.constrains('line_ids')
     def constrain_teams(self):
         for match in self:
@@ -42,18 +68,31 @@ class EventTournamentMatch(models.Model):
             for team in teams:
                 registrations &= team.component_ids
             if registrations:
-                raise ValidationError(_("Teams have common components"))
+                raise ValidationError(
+                    _("Match {match_name} not valid:\n"
+                      "Teams have common components")
+                    .format(
+                        match_name=match.display_name))
 
     @api.constrains('tournament_id', 'line_ids')
     def constrain_tournament(self):
         for match in self:
             teams_tournaments = match.line_ids.mapped('team_id.tournament_id')
             if len(teams_tournaments) > 1:
-                raise ValidationError(_("Teams from different tournaments"))
+                raise ValidationError(
+                    _("Match {match_name} not valid:\n"
+                      "Teams from different tournaments")
+                    .format(
+                        match_name=match.display_name))
             teams_tournament = first(teams_tournaments)
             if teams_tournament \
                     and teams_tournament != match.tournament_id:
-                raise ValidationError(_("Teams not in selected tournament"))
+                raise ValidationError(
+                    _("Match {match_name} not valid:\n"
+                      "Teams not in tournament {tourn_name}.")
+                    .format(
+                        match_name=match.display_name,
+                        tourn_name=match.tournament_id.display_name))
 
     @api.constrains('winner_team_id', 'line_ids')
     def _constrain_winner(self):
@@ -63,7 +102,11 @@ class EventTournamentMatch(models.Model):
             teams = match.line_ids.mapped('team_id')
             if match.winner_team_id not in teams:
                 raise ValidationError(
-                    _("Winner team is not participating in this match"))
+                    _("Match {match_name} not valid:\n"
+                      "winner team {team_name} is not participating.")
+                    .format(
+                        match_name=match.display_name,
+                        team_name=match.winner_team_id.display_name))
 
     @api.multi
     def action_draft(self):
@@ -77,7 +120,8 @@ class EventTournamentMatch(models.Model):
     def action_win(self, team):
         self.ensure_one()
         if self.state == 'done':
-            raise UserError(_("Match already done"))
+            raise UserError(_("Match {match_name} already done")
+                            .format(match_name=self.display_name))
         self.update({
             'winner_team_id': team.id,
             'time_done': fields.Datetime.now(),
@@ -88,7 +132,8 @@ class EventTournamentMatch(models.Model):
         res = list()
         for match in self:
             teams_names = match.line_ids.mapped('team_id.name')
-            res.append((match.id, " vs ".join(teams_names)))
+            match_name = " vs ".join(teams_names)
+            res.append((match.id, match_name))
         return res
 
 

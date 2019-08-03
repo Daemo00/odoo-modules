@@ -11,6 +11,8 @@ class EventTournamentMatch(models.Model):
 
     name = fields.Char(
         required=True)
+    notes = fields.Text(
+        string="Notes")
     event_id = fields.Many2one(
         comodel_name='event.event',
         string="Event")
