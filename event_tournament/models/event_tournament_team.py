@@ -11,22 +11,22 @@ class EventTournamentTeam (models.Model):
     _description = "Tournament team"
     _rec_name = 'name'
 
-    name = fields.Char(
-        required=True)
+    event_id = fields.Many2one(
+        related='tournament_id.event_id',
+        readonly=True)
     tournament_id = fields.Many2one(
         comodel_name='event.tournament',
         string="Tournament",
         required=True,
         ondelete='cascade')
-    match_ids = fields.Many2many(
-        comodel_name='event.tournament.match',
-        string="Matches")
-    event_id = fields.Many2one(
-        related='tournament_id.event_id',
-        readonly=True)
+    name = fields.Char(
+        required=True)
     component_ids = fields.Many2many(
         comodel_name='event.registration',
         string="Components")
+    match_ids = fields.Many2many(
+        comodel_name='event.tournament.match',
+        string="Matches")
 
     @api.onchange('tournament_id')
     def onchange_tournament(self):

@@ -10,12 +10,8 @@
             <notebook position="inside">
                 <page name="tournaments" string="Tournaments">
                     <group>
-                        <group>
-                            <field name="tournament_ids"/>
-                        </group>
-                        <group>
-                            <field name="court_ids"/>
-                        </group>
+                        <field name="tournament_ids" context="{'default_event_id': id}"/>
+                        <field name="court_ids" context="{'default_event_id': id}"/>
                     </group>
                 </page>
             </notebook>
