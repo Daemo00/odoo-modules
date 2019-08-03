@@ -9,7 +9,7 @@ from odoo.fields import first
 class EventTournamentMatch(models.Model):
     _name = 'event.tournament.match'
     _description = "Tournament match"
-    _order = 'time_scheduled'
+    _order = 'time_scheduled_start'
 
     tournament_id = fields.Many2one(
         comodel_name='event.tournament',
@@ -31,8 +31,10 @@ class EventTournamentMatch(models.Model):
             ('draft', "Draft"),
             ('done', "Done")],
         default='draft')
-    time_scheduled = fields.Datetime(
-        string="Time scheduled")
+    time_scheduled_start = fields.Datetime(
+        string="Scheduled start")
+    time_scheduled_end = fields.Datetime(
+        string="Scheduled end")
     time_done = fields.Datetime(
         string="Time done")
 
@@ -42,6 +44,29 @@ class EventTournamentMatch(models.Model):
         return {
             'domain': {
                 'court_id': event_domain}}
+
+    @api.constrains('time_scheduled_start', 'time_scheduled_end')
+    def constrain_time(self):
+        for match in self:
+            contemporary_matches_domain = [
+                ('time_scheduled_start', '<=', match.time_scheduled_end),
+                ('time_scheduled_end', '>=', match.time_scheduled_start)]
+            contemporary_matches = self.search(contemporary_matches_domain)
+            contemporary_matches = contemporary_matches - match
+            match_components = match.line_ids.mapped('team_id.component_ids')
+            for cont_match in contemporary_matches:
+                cont_match_comps = cont_match.line_ids \
+                    .mapped('team_id.component_ids')
+                for cont_match_comp in cont_match_comps:
+                    if cont_match_comp in match_components:
+                        raise ValidationError(_(
+                            "Match {match_name} not valid:\n"
+                            "Component {comp_name} is already playing "
+                            "in match {cont_match_name}.")
+                            .format(
+                                match_name=match.display_name,
+                                comp_name=cont_match_comp.display_name,
+                                cont_match_name=cont_match.display_name))
 
     @api.constrains('tournament_id', 'court_id')
     def constrain_court(self):

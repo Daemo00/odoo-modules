@@ -68,6 +68,17 @@ class EventTournamentTeam (models.Model):
     @api.multi
     def check_components_tournament(self, components, tournament):
         self.ensure_one()
+        for other_team in tournament.team_ids - self:
+            for component in components:
+                if component in other_team.component_ids:
+                    raise ValidationError(_(
+                        "Team {team_name} not valid:\n"
+                        "component {comp_name} is already in "
+                        "team {other_team_name}.")
+                        .format(
+                            team_name=self.display_name,
+                            comp_name=component.display_name,
+                            other_team_name=other_team.display_name))
         if tournament.min_components \
                 and len(components) < tournament.min_components:
             raise ValidationError(_(

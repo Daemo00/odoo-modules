@@ -104,17 +104,22 @@ class EventTournament(models.Model):
         matches_teams = list(itertools.combinations(
             self.team_ids, self.match_teams_nbr))
         random.shuffle(matches_teams)
-        start_time = fields.Datetime.to_datetime(self.start_datetime)
         courts = self.court_ids
+        start_times = list(fields.Datetime.to_datetime(self.start_datetime)
+                           for c in courts)
         for i, match_teams in enumerate(matches_teams):
+            court_index = i % len(courts)
+            start_time = start_times[court_index]
+            end_time = start_time + timedelta(hours=self.match_duration)
             matches_vals.append({
                 'tournament_id': self.id,
-                'court_id': courts[i % len(courts)].id,
+                'court_id': courts[court_index].id,
                 'line_ids': [(0, 0, {'team_id': t.id})
                              for t in match_teams],
-                'time_scheduled': start_time,
+                'time_scheduled_start': start_time,
+                'time_scheduled_end': end_time,
             })
-            start_time += timedelta(hours=self.match_duration)
+            start_times[court_index] = end_time
         return match_model.create(matches_vals)
 
     @api.multi

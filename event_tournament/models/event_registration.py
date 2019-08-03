@@ -10,6 +10,10 @@ class EventRegistration(models.Model):
     tournament_team_ids = fields.Many2many(
         comodel_name='event.tournament.team',
         string="Teams")
+    tournament_ids = fields.Many2many(
+        comodel_name='event.tournament',
+        compute='compute_tournaments',
+        store=True)
     birthdate_date = fields.Date(
         string="Birthdate")
     gender = fields.Selection(
@@ -29,3 +33,9 @@ class EventRegistration(models.Model):
                 self.birthdate_date = \
                     contact.birthdate_date or self.birthdate_date
         return res
+
+    @api.depends('tournament_team_ids')
+    def compute_tournaments(self):
+        for registration in self:
+            registration.tournament_ids = \
+                registration.tournament_team_ids.mapped('tournament_id')
