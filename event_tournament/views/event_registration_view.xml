@@ -10,7 +10,7 @@
             <group name="attendee" position="inside">
                 <field name="gender"/>
                 <field name="birthdate_date"/>
-                <field name="tournament_team_ids"/>
+                <field name="tournament_team_ids" widget="many2many_tags"/>
             </group>
         </field>
     </record>
