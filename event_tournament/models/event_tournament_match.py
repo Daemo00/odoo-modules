@@ -9,10 +9,8 @@ from odoo.fields import first
 class EventTournamentMatch(models.Model):
     _name = 'event.tournament.match'
     _description = "Tournament match"
+    _order = 'time_scheduled'
 
-    event_id = fields.Many2one(
-        related='tournament_id.event_id',
-        readonly=True)
     tournament_id = fields.Many2one(
         comodel_name='event.tournament',
         string="Tournament",
@@ -40,22 +38,23 @@ class EventTournamentMatch(models.Model):
 
     @api.onchange('tournament_id')
     def onchange_tournament(self):
-        event_domain = [('event_id', '=', self.event_id.id)]
+        event_domain = [('event_id', '=', self.tournament_id.event_id.id)]
         return {
             'domain': {
                 'court_id': event_domain}}
 
-    @api.constrains('event_id', 'court_id')
+    @api.constrains('tournament_id', 'court_id')
     def constrain_court(self):
         for match in self:
-            if match.court_id not in match.event_id.court_ids:
+            if match.court_id not in match.tournament_id.court_ids:
                 raise ValidationError(
                     _("Match {match_name} not valid:\n"
-                      "Court {court_name} is not in event {event_name}")
+                      "Court {court_name} is not available for "
+                      "tournament {tourn_name}")
                     .format(
                         match_name=match.display_name,
                         court_name=match.court_id.display_name,
-                        event_name=match.event_id.display_name))
+                        tourn_name=match.tournament_id.display_name))
 
     @api.constrains('line_ids')
     def constrain_teams(self):
