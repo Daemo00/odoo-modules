@@ -23,6 +23,14 @@ class EventTournamentMatch(models.Model):
         comodel_name='event.tournament.match.line',
         inverse_name='match_id',
         string="Teams")
+    team_ids = fields.Many2many(
+        comodel_name='event.tournament.team',
+        compute='compute_components',
+        store=True)
+    component_ids = fields.Many2many(
+        comodel_name='event.registration',
+        compute='compute_components',
+        store=True)
     winner_team_id = fields.Many2one(
         comodel_name='event.tournament.team',
         string="Winner")
@@ -45,6 +53,12 @@ class EventTournamentMatch(models.Model):
             'domain': {
                 'court_id': event_domain}}
 
+    @api.depends('line_ids')
+    def compute_components(self):
+        for match in self:
+            match.team_ids = match.line_ids.mapped('team_id')
+            match.component_ids = match.team_ids.mapped('component_ids')
+
     @api.constrains('time_scheduled_start', 'time_scheduled_end')
     def constrain_time(self):
         for match in self:
@@ -53,12 +67,10 @@ class EventTournamentMatch(models.Model):
                 ('time_scheduled_end', '>=', match.time_scheduled_start)]
             contemporary_matches = self.search(contemporary_matches_domain)
             contemporary_matches = contemporary_matches - match
-            match_components = match.line_ids.mapped('team_id.component_ids')
             for cont_match in contemporary_matches:
-                cont_match_comps = cont_match.line_ids \
-                    .mapped('team_id.component_ids')
+                cont_match_comps = cont_match.component_ids
                 for cont_match_comp in cont_match_comps:
-                    if cont_match_comp in match_components:
+                    if cont_match_comp in match.component_ids:
                         raise ValidationError(_(
                             "Match {match_name} not valid:\n"
                             "Component {comp_name} is already playing "
@@ -81,13 +93,12 @@ class EventTournamentMatch(models.Model):
                         court_name=match.court_id.display_name,
                         tourn_name=match.tournament_id.display_name))
 
-    @api.constrains('line_ids')
+    @api.constrains('team_ids')
     def constrain_teams(self):
         for match in self:
-            match_lines = match.line_ids
-            if len(match_lines) <= 1:
+            teams = match.team_ids
+            if len(teams) <= 1:
                 raise ValidationError(_("A good match needs at least 2 teams"))
-            teams = match_lines.mapped('team_id')
             registrations = self.env['event.registration'].browse()
             for team in teams:
                 registrations &= team.component_ids
@@ -98,10 +109,10 @@ class EventTournamentMatch(models.Model):
                     .format(
                         match_name=match.display_name))
 
-    @api.constrains('tournament_id', 'line_ids')
+    @api.constrains('tournament_id', 'match_ids')
     def constrain_tournament(self):
         for match in self:
-            teams_tournaments = match.line_ids.mapped('team_id.tournament_id')
+            teams_tournaments = match.team_ids.mapped('tournament_id')
             if len(teams_tournaments) > 1:
                 raise ValidationError(
                     _("Match {match_name} not valid:\n"
@@ -118,13 +129,12 @@ class EventTournamentMatch(models.Model):
                         match_name=match.display_name,
                         tourn_name=match.tournament_id.display_name))
 
-    @api.constrains('winner_team_id', 'line_ids')
+    @api.constrains('winner_team_id', 'team_ids')
     def _constrain_winner(self):
         for match in self:
             if not match.winner_team_id:
                 continue
-            teams = match.line_ids.mapped('team_id')
-            if match.winner_team_id not in teams:
+            if match.winner_team_id not in match.team_ids:
                 raise ValidationError(
                     _("Match {match_name} not valid:\n"
                       "winner team {team_name} is not participating.")
@@ -155,7 +165,7 @@ class EventTournamentMatch(models.Model):
     def name_get(self):
         res = list()
         for match in self:
-            teams_names = match.line_ids.mapped('team_id.name')
+            teams_names = match.team_ids.mapped('name')
             match_name = " vs ".join(teams_names)
             res.append((match.id, match_name))
         return res
@@ -172,7 +182,8 @@ class EventTournamentMatchLine(models.Model):
         ondelete='cascade')
     team_id = fields.Many2one(
         comodel_name='event.tournament.team',
-        required=True)
+        required=True,
+        ondelete='cascade')
     set_1 = fields.Integer()
     set_2 = fields.Integer()
     set_3 = fields.Integer()
