@@ -54,6 +54,8 @@ class EventTournament(models.Model):
         string="Tournament start")
     match_duration = fields.Float(
         strin="Match duration")
+    match_warm_up_duration = fields.Float(
+        strin="Match warm-up duration")
     match_teams_nbr = fields.Integer(
         string="Teams per match",
         help="Number of teams per match",
@@ -119,6 +121,7 @@ class EventTournament(models.Model):
                 'time_scheduled_start': start_time,
                 'time_scheduled_end': end_time,
             })
+            end_time = end_time + timedelta(hours=self.match_warm_up_duration)
             start_times[court_index] = end_time
         return match_model.create(matches_vals)
 
