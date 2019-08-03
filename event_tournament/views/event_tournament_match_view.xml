@@ -15,7 +15,8 @@
                     <group>
                         <field name="tournament_id"/>
                         <field name="court_id"/>
-                        <field name="time_scheduled"/>
+                        <field name="time_scheduled_start"/>
+                        <field name="time_scheduled_end"/>
                         <field name="line_ids" context="{'default_match_id': id}">
                             <tree editable="bottom">
                                 <button name="action_win" string="Wins" title="Wins"
@@ -44,11 +45,26 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="tournament_id"/>
-                <field name="time_scheduled"/>
+                <field name="court_id"/>
+                <field name="time_scheduled_start"/>
                 <field name="line_ids" widget="many2many_tags"/>
                 <field name="winner_team_id"/>
                 <field name="state"/>
             </tree>
+        </field>
+    </record>
+
+    <record id="event_tournament_match_view_search" model="ir.ui.view">
+        <field name="name">event.tournament.match search view</field>
+        <field name="model">event.tournament.match</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="line_ids" widget="many2many_tags"/>
+                <filter string="Court" name="court"
+                        context="{'group_by':'court_id'}"/>
+                <filter string="Tournament" name="tournament"
+                        context="{'group_by':'tournament_id'}"/>
+            </search>
         </field>
     </record>
 
