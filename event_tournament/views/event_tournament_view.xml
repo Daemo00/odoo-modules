@@ -24,11 +24,16 @@
                         <field name="match_ids"/>
                     </group>
                     <group name="rules" string="Rules">
-                        <field name="min_components"/>
-                        <field name="max_components"/>
-                        <field name="min_components_female"/>
-                        <field name="min_components_male"/>
-                        <button name="action_check_rules" type="object" string="Check"/>
+                        <group>
+                            <field name="min_components"/>
+                            <field name="max_components"/>
+                            <field name="min_components_female"/>
+                            <field name="min_components_male"/>
+                            <button name="action_check_rules" type="object" string="Check"/>
+                        </group>
+                        <group>
+                            <field name="notes"/>
+                        </group>
                     </group>
                 </sheet>
             </form>
