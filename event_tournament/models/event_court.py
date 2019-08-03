@@ -7,7 +7,6 @@ from odoo import fields, models
 class EventCourt(models.Model):
     _name = 'event.court'
     _description = "Court for tournaments"
-    _rec_name = 'name'
 
     event_id = fields.Many2one(
         comodel_name='event.event')
