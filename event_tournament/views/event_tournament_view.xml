@@ -42,6 +42,7 @@
                         </page>
                         <page name="teams_matches" string="Teams &amp; Matches">
                             <group>
+                                <field name="match_warm_up_duration" widget="float_time"/>
                                 <field name="match_duration" widget="float_time"/>
                                 <field name="match_teams_nbr"/>
                                 <field name="court_ids" domain="[('event_id', '=', event_id)]"/>
