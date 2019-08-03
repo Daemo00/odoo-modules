@@ -12,29 +12,52 @@
         <field name="arch" type="xml">
             <form string="Tournament">
                 <header>
-                    <button name="action_done" string="Done" type="object" states="draft"/>
-                    <button name="action_draft" string="Reset to draft" type="object" states="done"/>
+                    <button name="action_draft" string="Reset to draft" type="object" states="start,done"/>
+                    <button name="action_start" string="Start" type="object" states="draft,done"/>
+                    <button name="action_done" string="Done" type="object" states="draft,done"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_matches" type="object"
+                                class="oe_stat_button" icon="fa-trophy">
+                            <field name="match_count" widget="statinfo" string="Matches"/>
+                        </button>
+                    </div>
                     <group>
                         <field name="event_id"/>
                         <field name="name"/>
-                        <field name="team_ids"/>
-                        <field name="match_ids"/>
+                        <field name="start_datetime"/>
+                        <field name="team_ids" context="{'default_tournament_id': id}"/>
                     </group>
-                    <group name="rules" string="Rules">
-                        <group>
-                            <field name="min_components"/>
-                            <field name="max_components"/>
-                            <field name="min_components_female"/>
-                            <field name="min_components_male"/>
-                            <button name="action_check_rules" type="object" string="Check"/>
-                        </group>
-                        <group>
-                            <field name="notes"/>
-                        </group>
-                    </group>
+                    <notebook>
+                        <page name="rules" string="Rules">
+                            <group>
+                                <field name="min_components"/>
+                                <field name="max_components"/>
+                                <field name="min_components_female"/>
+                                <field name="min_components_male"/>
+                                <button name="action_check_rules" type="object" string="Check"/>
+                            </group>
+                        </page>
+                        <page name="teams_matches" string="Teams &amp; Matches">
+                            <group>
+                                <field name="match_duration" widget="float_time"/>
+                                <field name="match_teams_nbr"/>
+                                <field name="court_ids" domain="[('event_id', '=', event_id)]"/>
+                                <button name="generate_matches" type="object" string="Generate matches"/>
+                            </group>
+                        </page>
+                        <page name="inheritance" string="Inheritance">
+                            <group>
+                                <field name="parent_id"/>
+                                <field name="child_ids"/>
+                            </group>
+                        </page>
+                        <page name="notes" string="Notes">
+                            <field name="notes" placeholder="Additional information..."/>
+                        </page>
+                    </notebook>
                 </sheet>
             </form>
         </field>

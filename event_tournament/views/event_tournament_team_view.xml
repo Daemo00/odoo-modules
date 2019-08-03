@@ -12,7 +12,7 @@
                         <field name="event_id"/>
                         <field name="tournament_id"/>
                         <field name="name"/>
-                        <field name="component_ids"/>
+                        <field name="component_ids" context="{'default_team_id': id}"/>
                     </group>
                 </sheet>
             </form>
