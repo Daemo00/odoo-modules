@@ -109,7 +109,7 @@ class EventTournamentMatch(models.Model):
                     .format(
                         match_name=match.display_name))
 
-    @api.constrains('tournament_id', 'match_ids')
+    @api.constrains('tournament_id', 'team_ids')
     def constrain_tournament(self):
         for match in self:
             teams_tournaments = match.team_ids.mapped('tournament_id')
