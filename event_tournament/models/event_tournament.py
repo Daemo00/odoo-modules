@@ -4,7 +4,8 @@ import random
 from datetime import timedelta
 import itertools
 
-from odoo import api, models, fields
+from odoo import api, models, fields, _
+from odoo.exceptions import ValidationError, UserError
 
 
 class EventTournament(models.Model):
@@ -102,28 +103,54 @@ class EventTournament(models.Model):
     def generate_matches(self):
         self.ensure_one()
         match_model = self.env['event.tournament.match']
-        matches_vals = list()
+        matches = match_model.browse()
         matches_teams = list(itertools.combinations(
             self.team_ids, self.match_teams_nbr))
-        random.shuffle(matches_teams)
+        # random.shuffle(matches_teams)
         courts = self.court_ids
-        start_times = list(fields.Datetime.to_datetime(self.start_datetime)
-                           for c in courts)
-        for i, match_teams in enumerate(matches_teams):
-            court_index = i % len(courts)
-            start_time = start_times[court_index]
-            end_time = start_time + timedelta(hours=self.match_duration)
-            matches_vals.append({
-                'tournament_id': self.id,
-                'court_id': courts[court_index].id,
-                'line_ids': [(0, 0, {'team_id': t.id})
-                             for t in match_teams],
-                'time_scheduled_start': start_time,
-                'time_scheduled_end': end_time,
-            })
-            end_time = end_time + timedelta(hours=self.match_warm_up_duration)
-            start_times[court_index] = end_time
-        return match_model.create(matches_vals)
+        court_start = [
+            (c, fields.Datetime.to_datetime(self.start_datetime))
+            for c in courts]
+        while matches_teams:
+            match_teams = matches_teams.pop()
+            # Sort the courts from the first free
+
+            court_start.sort(key=lambda cs: cs[1])
+            court_found, new_start = None, None
+            # This is only checking the first match in the court
+            for court, start_time in court_start:
+                end_time = start_time + timedelta(hours=self.match_duration)
+                # Check if one of the involved teams is playing somewhere else
+                try:
+                    matches |= match_model.create({
+                        'tournament_id': self.id,
+                        'court_id': court.id,
+                        'line_ids': [(0, 0, {'team_id': t.id})
+                                     for t in match_teams],
+                        'time_scheduled_start': start_time,
+                        'time_scheduled_end': end_time,
+                    })
+                    end_time = end_time + timedelta(
+                        hours=self.match_warm_up_duration)
+                    court_found = court
+                    new_start = end_time
+                    break
+                except ValidationError:
+                    # match.constrain_time has been triggered
+                    continue
+            else:
+                # The match cannot fit in any court, put it back in top
+                matches_teams.insert(0, match_teams)
+            if court_found:
+                new_court_start = list()
+                for court, start in court_start:
+                    if court == court_found:
+                        new_court_start.append((court, new_start))
+                    else:
+                        new_court_start.append((court, start))
+                court_start = new_court_start
+
+        return matches
 
     @api.multi
     def action_view_matches(self):
