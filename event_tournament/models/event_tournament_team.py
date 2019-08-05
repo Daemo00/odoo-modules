@@ -30,12 +30,14 @@ class EventTournamentTeam (models.Model):
 
     @api.onchange('tournament_id')
     def onchange_tournament(self):
-        event_domain = [('event_id', '=', self.event_id.id)]
-        tournament_domain = [('tournament_id', '=', self.tournament_id.id)]
+        components_domain = [
+            ('event_id', '=', self.event_id.id),
+            ('tournament_ids', 'not in', self.tournament_id.id)]
+        matches_domain = [('tournament_id', '=', self.tournament_id.id)]
         return {
             'domain': {
-                'component_ids': event_domain,
-                'match_ids': tournament_domain}}
+                'component_ids': components_domain,
+                'match_ids': matches_domain}}
 
     @api.constrains('component_ids', 'tournament_id')
     def constrain_components(self):
