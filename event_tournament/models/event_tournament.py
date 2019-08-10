@@ -40,7 +40,7 @@ class EventTournament(models.Model):
     state = fields.Selection(
         selection=[
             ('draft', "Draft"),
-            ('start', "Started"),
+            ('started', "Started"),
             ('done', "Done")],
         default='draft')
     min_components = fields.Integer(
