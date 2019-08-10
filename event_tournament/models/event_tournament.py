@@ -6,6 +6,7 @@ import itertools
 
 from odoo import api, models, fields, _
 from odoo.exceptions import ValidationError, UserError
+from odoo.tools import safe_eval
 
 
 class EventTournament(models.Model):
@@ -33,6 +34,9 @@ class EventTournament(models.Model):
         comodel_name='event.tournament.team',
         inverse_name='tournament_id',
         string="Teams")
+    team_count = fields.Integer(
+        string="Team count",
+        compute='compute_team_count')
     state = fields.Selection(
         selection=[
             ('draft', "Draft"),
@@ -66,7 +70,7 @@ class EventTournament(models.Model):
         help="Randomize matches generation")
     reset_matches_before_generation = fields.Boolean(
         string="Reset",
-        help="Reset matches before generation",
+        help="Delete not done matches before generation",
         default=True)
     parent_id = fields.Many2one(
         comodel_name='event.tournament',
@@ -83,6 +87,12 @@ class EventTournament(models.Model):
     def compute_match_count(self):
         for tournament in self:
             tournament.match_count = len(tournament.match_ids)
+
+    @api.multi
+    @api.depends('team_ids')
+    def compute_team_count(self):
+        for tournament in self:
+            tournament.team_count = len(tournament.team_ids)
 
     @api.multi
     def action_draft(self):
@@ -116,7 +126,18 @@ class EventTournament(models.Model):
         if self.randomize_matches_generation:
             random.shuffle(matches_teams)
         if self.reset_matches_before_generation:
-            self.match_ids.unlink()
+            clean_matches_teams = list()
+            done_matches = self.match_ids.filtered(lambda m: m.state == 'done')
+            for match_teams in matches_teams:
+                for done_match in done_matches:
+                    if done_match.team_ids.ids == [mt.id for mt in match_teams]:
+                        # Corresponding match_team found
+                        break
+                else:
+                    # Corresponding match_team not found
+                    clean_matches_teams.append(match_teams)
+            matches_teams = clean_matches_teams
+            (self.match_ids - done_matches).unlink()
 
         warm_up_start = self.start_datetime \
             - timedelta(hours=self.match_warm_up_duration)
@@ -174,9 +195,40 @@ class EventTournament(models.Model):
         return matches
 
     @api.multi
+    def generate_view_matches(self):
+        self.generate_matches()
+        return self.action_view_matches()
+
+    @api.multi
     def action_view_matches(self):
         self.ensure_one()
         action = self.env.ref(
             'event_tournament.event_tournament_match_action').read()[0]
-        action['domain'] = [('id', 'in', self.match_ids.ids)]
+
+        domain = action.get('domain', list())
+        domain = safe_eval(domain)
+        domain.append(('id', 'in', self.match_ids.ids))
+        action['domain'] = domain
+
+        context = action.get('context', dict())
+        context = safe_eval(context)
+        context.update({'default_tournament_id': self.id})
+        action['context'] = context
+        return action
+
+    @api.multi
+    def action_view_teams(self):
+        self.ensure_one()
+        action = self.env.ref(
+            'event_tournament.event_tournament_team_action').read()[0]
+
+        domain = action.get('domain', list())
+        domain = safe_eval(domain)
+        domain.append(('id', 'in', self.team_ids.ids))
+        action['domain'] = domain
+
+        context = action.get('context', dict())
+        context = safe_eval(context)
+        context.update({'default_tournament_id': self.id})
+        action['context'] = context
         return action
