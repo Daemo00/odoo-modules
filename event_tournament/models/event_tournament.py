@@ -61,6 +61,9 @@ class EventTournament(models.Model):
         string="Teams per match",
         help="Number of teams per match",
         default=2)
+    randomize_matches_generation = fields.Boolean(
+        string="Randomize",
+        help="Randomize matches generation")
     parent_id = fields.Many2one(
         comodel_name='event.tournament',
         string="Parent tournament")
@@ -106,7 +109,8 @@ class EventTournament(models.Model):
         matches = match_model.browse()
         matches_teams = list(itertools.combinations(
             self.team_ids, self.match_teams_nbr))
-        # random.shuffle(matches_teams)
+        if self.randomize_matches_generation:
+            random.shuffle(matches_teams)
 
         warm_up_start = self.start_datetime \
             - timedelta(hours=self.match_warm_up_duration)
