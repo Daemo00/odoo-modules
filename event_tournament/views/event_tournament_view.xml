@@ -12,9 +12,9 @@
         <field name="arch" type="xml">
             <form string="Tournament">
                 <header>
-                    <button name="action_draft" string="Reset to draft" type="object" states="start,done"/>
+                    <button name="action_draft" string="Reset to draft" type="object" states="started,done"/>
                     <button name="action_start" string="Start" type="object" states="draft,done"/>
-                    <button name="action_done" string="Done" type="object" states="draft,done"/>
+                    <button name="action_done" string="Done" type="object" states="draft,started"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
