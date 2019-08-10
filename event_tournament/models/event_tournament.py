@@ -64,6 +64,10 @@ class EventTournament(models.Model):
     randomize_matches_generation = fields.Boolean(
         string="Randomize",
         help="Randomize matches generation")
+    reset_matches_before_generation = fields.Boolean(
+        string="Reset",
+        help="Reset matches before generation",
+        default=True)
     parent_id = fields.Many2one(
         comodel_name='event.tournament',
         string="Parent tournament")
@@ -111,6 +115,8 @@ class EventTournament(models.Model):
             self.team_ids, self.match_teams_nbr))
         if self.randomize_matches_generation:
             random.shuffle(matches_teams)
+        if self.reset_matches_before_generation:
+            self.match_ids.unlink()
 
         warm_up_start = self.start_datetime \
             - timedelta(hours=self.match_warm_up_duration)
@@ -130,14 +136,13 @@ class EventTournament(models.Model):
                 for court in self.court_ids:
                     try:
                         # The first match of the court does not need warm-up
-                        end_time = curr_start + match_duration
                         match = match_model.create({
                             'tournament_id': self.id,
                             'court_id': court.id,
                             'line_ids': [(0, 0, {'team_id': t.id})
                                          for t in match_teams],
                             'time_scheduled_start': curr_start,
-                            'time_scheduled_end': end_time,
+                            'time_scheduled_end': curr_start + match_duration,
                         })
                     except ValidationError as ve:
                         # The match is not valid,
@@ -152,7 +157,8 @@ class EventTournament(models.Model):
                         matches |= match
                         break
                 else:
-                    # The match could not be scheduled in any court
+                    # The match could not be scheduled in any court,
+                    # try another time
                     pass
 
                 if match:
@@ -160,8 +166,9 @@ class EventTournament(models.Model):
                 else:
                     curr_start = curr_start + match_duration
             if not match:
-                raise UserError(_("Scheduling impossibru for match ")
-                                + str(match_teams))
+                raise UserError(_("Scheduling impossibru for a match between ")
+                                + ", ".join(team.display_name
+                                            for team in match_teams))
             max_start = max(max_start, match.time_scheduled_end)
 
         return matches
