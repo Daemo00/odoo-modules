@@ -19,6 +19,10 @@
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
+                        <button name="action_view_teams" type="object"
+                                class="oe_stat_button" icon="fa-users">
+                            <field name="team_count" widget="statinfo" string="Teams"/>
+                        </button>
                         <button name="action_view_matches" type="object"
                                 class="oe_stat_button" icon="fa-trophy">
                             <field name="match_count" widget="statinfo" string="Matches"/>
@@ -28,7 +32,6 @@
                         <field name="event_id"/>
                         <field name="name"/>
                         <field name="start_datetime"/>
-                        <field name="team_ids" context="{'default_tournament_id': id}"/>
                     </group>
                     <notebook>
                         <page name="rules" string="Rules">
@@ -48,7 +51,7 @@
                                 <field name="court_ids" domain="[('event_id', '=', event_id)]"/>
                                 <field name="randomize_matches_generation"/>
                                 <field name="reset_matches_before_generation"/>
-                                <button name="generate_matches" type="object" string="Generate matches"/>
+                                <button name="generate_view_matches" type="object" string="Generate matches"/>
                             </group>
                         </page>
                         <page name="inheritance" string="Inheritance">
