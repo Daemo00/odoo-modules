@@ -46,6 +46,7 @@
                                 <field name="match_duration" widget="float_time"/>
                                 <field name="match_teams_nbr"/>
                                 <field name="court_ids" domain="[('event_id', '=', event_id)]"/>
+                                <field name="randomize_matches_generation"/>
                                 <button name="generate_matches" type="object" string="Generate matches"/>
                             </group>
                         </page>
