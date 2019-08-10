@@ -12,6 +12,7 @@
                         <field name="event_id"/>
                         <field name="tournament_id"/>
                         <field name="name"/>
+                        <field name="points_ratio"/>
                         <field name="component_ids"
                                domain="[
                                ('event_id', '=', event_id),
@@ -30,6 +31,7 @@
                 <field name="event_id"/>
                 <field name="tournament_id"/>
                 <field name="name"/>
+                <field name="points_ratio"/>
                 <field name="component_ids" widget="many2many_tags"/>
             </tree>
         </field>
