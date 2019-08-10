@@ -62,9 +62,7 @@ class EventTournamentMatch(models.Model):
     @api.constrains('time_scheduled_start', 'time_scheduled_end')
     def constrain_time(self):
         for match in self:
-            contemporary_matches_domain = [
-                ('time_scheduled_start', '<=', match.time_scheduled_end),
-                ('time_scheduled_end', '>=', match.time_scheduled_start)]
+            contemporary_matches_domain = match.contemporary_match_domain()
             contemporary_matches = self.search(contemporary_matches_domain)
             contemporary_matches = contemporary_matches - match
             for cont_match in contemporary_matches:
@@ -80,6 +78,19 @@ class EventTournamentMatch(models.Model):
                                 comp_name=cont_match_comp.display_name,
                                 cont_match_name=cont_match.display_name))
 
+    @api.multi
+    def contemporary_match_domain(self):
+        self.ensure_one()
+        contemporary_matches_domain = [
+            '|',
+            '&',
+            ('time_scheduled_start', '<', self.time_scheduled_end),
+            ('time_scheduled_start', '>=', self.time_scheduled_start),
+            '&',
+            ('time_scheduled_end', '<=', self.time_scheduled_end),
+            ('time_scheduled_end', '>', self.time_scheduled_start)]
+        return contemporary_matches_domain
+
     @api.constrains('tournament_id', 'court_id')
     def constrain_court(self):
         for match in self:
@@ -92,6 +103,26 @@ class EventTournamentMatch(models.Model):
                         match_name=match.display_name,
                         court_name=match.court_id.display_name,
                         tourn_name=match.tournament_id.display_name))
+
+    @api.constrains('court_id', 'time_scheduled_start', 'time_scheduled_end')
+    def constrain_court_time(self):
+        for match in self:
+            court = match.court_id
+            overlapping_matches_domain = match.contemporary_match_domain()
+            court_domain = [('court_id', '=', court.id)]
+            overlapping_matches_domain.extend(court_domain)
+            overlapping_matches = self.search(overlapping_matches_domain)
+            overlapping_matches = overlapping_matches - match
+            if overlapping_matches:
+                overlapping_match = first(overlapping_matches)
+                raise ValidationError(_(
+                    "Court {court_name} not valid:\n"
+                    "match {match_name} is overlapping "
+                    "{overlapping_match_name}.")
+                    .format(
+                        court_name=court.display_name,
+                        match_name=match.display_name,
+                        overlapping_match_name=overlapping_match.display_name))
 
     @api.constrains('team_ids')
     def constrain_teams(self):
