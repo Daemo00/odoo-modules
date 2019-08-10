@@ -226,8 +226,18 @@ class EventTournamentMatchLine(models.Model):
     set_3 = fields.Integer()
     set_4 = fields.Integer()
     set_5 = fields.Integer()
+    points_done = fields.Integer(
+        compute='_compute_points_done',
+        store=True)
 
     @api.multi
     def action_win(self):
         self.ensure_one()
         self.match_id.action_win(self.team_id)
+
+    @api.multi
+    @api.depends(lambda m: ('set_' + str(n) for n in range(1, 6)))
+    def _compute_points_done(self):
+        for line in self:
+            line.points_done = sum(getattr(line, 'set_' + str(n))
+                                   for n in range(1, 6))

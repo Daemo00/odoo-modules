@@ -10,6 +10,7 @@ class EventTournamentTeam (models.Model):
     _name = 'event.tournament.team'
     _description = "Tournament team"
     _rec_name = 'name'
+    _order = 'points_ratio desc'
 
     event_id = fields.Many2one(
         related='tournament_id.event_id',
@@ -27,6 +28,9 @@ class EventTournamentTeam (models.Model):
     match_ids = fields.Many2many(
         comodel_name='event.tournament.match',
         string="Matches")
+    points_ratio = fields.Float(
+        compute='_compute_points_ratio',
+        store=True)
 
     @api.onchange('tournament_id')
     def onchange_tournament(self):
@@ -135,3 +139,17 @@ class EventTournamentTeam (models.Model):
                             team_name=self.display_name,
                             tourn_name=tournament.display_name,
                             min_male_comp=tournament.min_components_male))
+
+    @api.multi
+    @api.depends('match_ids.line_ids.points_done')
+    def _compute_points_ratio(self):
+        for team in self:
+            points_done = 0
+            points_taken = 0
+            for match in team.match_ids:
+                for line in match.line_ids:
+                    if line.team_id == team:
+                        points_done += line.points_done
+                    else:
+                        points_taken += line.points_done
+            team.points_ratio = points_done / (points_taken or 1)
