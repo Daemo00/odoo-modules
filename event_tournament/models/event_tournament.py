@@ -107,48 +107,58 @@ class EventTournament(models.Model):
         matches_teams = list(itertools.combinations(
             self.team_ids, self.match_teams_nbr))
         # random.shuffle(matches_teams)
-        courts = self.court_ids
-        court_start = [
-            (c, fields.Datetime.to_datetime(self.start_datetime))
-            for c in courts]
+
+        warm_up_start = self.start_datetime \
+            - timedelta(hours=self.match_warm_up_duration)
+        min_start = warm_up_start
+        max_start = warm_up_start
+
+        match_duration = \
+            timedelta(hours=self.match_warm_up_duration) \
+            + timedelta(hours=self.match_duration)
         while matches_teams:
             match_teams = matches_teams.pop()
-            # Sort the courts from the first free
-
-            court_start.sort(key=lambda cs: cs[1])
-            court_found, new_start = None, None
-            # This is only checking the first match in the court
-            for court, start_time in court_start:
-                end_time = start_time + timedelta(hours=self.match_duration)
-                # Check if one of the involved teams is playing somewhere else
-                try:
-                    matches |= match_model.create({
-                        'tournament_id': self.id,
-                        'court_id': court.id,
-                        'line_ids': [(0, 0, {'team_id': t.id})
-                                     for t in match_teams],
-                        'time_scheduled_start': start_time,
-                        'time_scheduled_end': end_time,
-                    })
-                    end_time = end_time + timedelta(
-                        hours=self.match_warm_up_duration)
-                    court_found = court
-                    new_start = end_time
-                    break
-                except ValidationError:
-                    # match.constrain_time has been triggered
-                    continue
-            else:
-                # The match cannot fit in any court, put it back in top
-                matches_teams.insert(0, match_teams)
-            if court_found:
-                new_court_start = list()
-                for court, start in court_start:
-                    if court == court_found:
-                        new_court_start.append((court, new_start))
+            match = match_model.browse()
+            curr_start = min_start
+            # Try to schedule the match as soon as possible
+            while curr_start <= max_start:
+                # Try to put this match in a court at curr_start
+                for court in self.court_ids:
+                    try:
+                        # The first match of the court does not need warm-up
+                        end_time = curr_start + match_duration
+                        match = match_model.create({
+                            'tournament_id': self.id,
+                            'court_id': court.id,
+                            'line_ids': [(0, 0, {'team_id': t.id})
+                                         for t in match_teams],
+                            'time_scheduled_start': curr_start,
+                            'time_scheduled_end': end_time,
+                        })
+                    except ValidationError as ve:
+                        # The match is not valid,
+                        # but it has been created anyway! So delete it.
+                        invalid_match = match_model.search(
+                            [], order='id DESC', limit=1)
+                        invalid_match.unlink()
+                        # Try the following court
+                        continue
                     else:
-                        new_court_start.append((court, start))
-                court_start = new_court_start
+                        # The match is valid
+                        matches |= match
+                        break
+                else:
+                    # The match could not be scheduled in any court
+                    pass
+
+                if match:
+                    break
+                else:
+                    curr_start = curr_start + match_duration
+            if not match:
+                raise UserError(_("Scheduling impossibru for match ")
+                                + str(match_teams))
+            max_start = max(max_start, match.time_scheduled_end)
 
         return matches
 
