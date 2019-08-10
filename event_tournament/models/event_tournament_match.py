@@ -4,6 +4,7 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError, UserError
 from odoo.fields import first
+from odoo.osv import expression
 
 
 class EventTournamentMatch(models.Model):
@@ -81,15 +82,20 @@ class EventTournamentMatch(models.Model):
     @api.multi
     def contemporary_match_domain(self):
         self.ensure_one()
-        contemporary_matches_domain = [
-            '|',
-            '&',
-            ('time_scheduled_start', '<', self.time_scheduled_end),
-            ('time_scheduled_start', '>=', self.time_scheduled_start),
-            '&',
-            ('time_scheduled_end', '<=', self.time_scheduled_end),
-            ('time_scheduled_end', '>', self.time_scheduled_start)]
-        return contemporary_matches_domain
+        domain = list()
+        if self.time_scheduled_start:
+            domain = expression.AND([domain, [
+                '|',
+                ('time_scheduled_start', '>=', self.time_scheduled_start),
+                ('time_scheduled_end', '>', self.time_scheduled_start),
+            ]])
+        if self.time_scheduled_end:
+            domain = expression.AND([domain, [
+                '|',
+                ('time_scheduled_start', '<', self.time_scheduled_end),
+                ('time_scheduled_end', '<=', self.time_scheduled_end),
+            ]])
+        return domain
 
     @api.constrains('tournament_id', 'court_id')
     def constrain_court(self):

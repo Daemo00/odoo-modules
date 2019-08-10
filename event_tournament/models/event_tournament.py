@@ -207,7 +207,7 @@ class EventTournament(models.Model):
 
         domain = action.get('domain', list())
         domain = safe_eval(domain)
-        domain.append(('id', 'in', self.match_ids.ids))
+        domain.append(('tournament_id', '=', self.id))
         action['domain'] = domain
 
         context = action.get('context', dict())
@@ -224,7 +224,7 @@ class EventTournament(models.Model):
 
         domain = action.get('domain', list())
         domain = safe_eval(domain)
-        domain.append(('id', 'in', self.team_ids.ids))
+        domain.append(('tournament_id', '=', self.id))
         action['domain'] = domain
 
         context = action.get('context', dict())
