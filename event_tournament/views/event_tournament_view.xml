@@ -74,9 +74,22 @@
         <field name="model">event.tournament</field>
         <field name="arch" type="xml">
             <tree>
+                <field name="event_id"/>
                 <field name="name"/>
                 <field name="state"/>
             </tree>
+        </field>
+    </record>
+
+    <record id="event_tournament_view_search" model="ir.ui.view">
+        <field name="name">event.tournament search view</field>
+        <field name="model">event.tournament</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <filter string="Event" name="event_id"
+                        context="{'group_by':'event_id'}"/>
+            </search>
         </field>
     </record>
 
