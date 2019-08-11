@@ -2,7 +2,7 @@
 #  License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 from odoo import api, fields, models, _
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
 from odoo.fields import first
 
 
@@ -10,7 +10,7 @@ class EventTournamentTeam (models.Model):
     _name = 'event.tournament.team'
     _description = "Tournament team"
     _rec_name = 'name'
-    _order = 'points_ratio desc'
+    _order = 'matches_points desc, sets_won desc, points_ratio desc'
 
     event_id = fields.Many2one(
         related='tournament_id.event_id',
@@ -29,7 +29,13 @@ class EventTournamentTeam (models.Model):
         comodel_name='event.tournament.match',
         string="Matches")
     points_ratio = fields.Float(
-        compute='_compute_points_ratio',
+        compute='_compute_matches_points',
+        store=True)
+    sets_won = fields.Integer(
+        compute='_compute_matches_points',
+        store=True)
+    matches_points = fields.Integer(
+        compute='_compute_matches_points',
         store=True)
 
     @api.onchange('tournament_id')
@@ -145,15 +151,60 @@ class EventTournamentTeam (models.Model):
                                 min_male_comp=tournament.min_components_male))
 
     @api.multi
-    @api.depends('match_ids.line_ids.points_done')
-    def _compute_points_ratio(self):
+    @api.depends(lambda m:
+                 ('match_ids.state',
+                  'tournament_id.points_per_win',
+                  'tournament_id.points_per_draw',
+                  'tournament_id.points_per_lose')
+                 + tuple('match_ids.line_ids.set_' + str(n)
+                         for n in range(1, 6)))
+    def _compute_matches_points(self):
+        set_fields = ('set_' + str(n) for n in range(1, 6))
         for team in self:
+            total_sets_won = 0
+            matches_won = 0
+            matches_draw = 0
+            matches_lost = 0
             points_done = 0
             points_taken = 0
-            for match in team.match_ids:
-                for line in match.line_ids:
-                    if line.team_id == team:
-                        points_done += line.points_done
-                    else:
-                        points_taken += line.points_done
+            for match in team.match_ids.filtered(lambda m: m.state == 'done'):
+                sets_won = 0
+                sets_lost = 0
+                for set_field in set_fields:
+                    team_points = 0
+                    other_team_points = 0
+                    for line in match.line_ids:
+                        points = getattr(line, set_field)
+                        if line.team_id == team:
+                            team_points += points
+                        else:
+                            other_team_points += points
+                    if team_points and other_team_points:
+                        if team_points > other_team_points:
+                            sets_won += 1
+                        elif team_points < other_team_points:
+                            sets_lost += 1
+                        else:
+                            raise UserError(_(
+                                "Match {match_name}:\n"
+                                "Draw not allowed").format(
+                                    match_name=match.display_name))
+                    points_done += team_points
+                    points_taken += other_team_points
+                total_sets_won += sets_won
+                if sets_won > sets_lost:
+                    matches_won += 1
+                elif sets_won < sets_lost:
+                    matches_lost += 1
+                else:
+                    matches_draw += 1
+            team.sets_won = total_sets_won
             team.points_ratio = points_done / (points_taken or 1)
+
+            tournament = team.tournament_id
+            if tournament.points_per_win:
+                team.matches_points += matches_won * tournament.points_per_win
+            if tournament.points_per_lose:
+                team.matches_points += matches_lost * tournament.points_per_lose
+            if tournament.points_per_draw:
+                team.matches_points += matches_draw * tournament.points_per_draw
