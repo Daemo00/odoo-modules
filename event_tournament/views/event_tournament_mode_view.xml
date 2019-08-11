@@ -1,0 +1,33 @@
+<!-- Copyright 2019 Simone Rubino <daemo00@gmail.com> -->
+<!-- License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
+
+<odoo>
+    <record id="event_tournament_match_mode_view_form" model="ir.ui.view">
+        <field name="name">event.tournament.match.mode form view</field>
+        <field name="model">event.tournament.match.mode</field>
+        <field name="arch" type="xml">
+            <form string="Match">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="result_ids">
+                            <tree editable="bottom">
+                                <field name="team_1_result"/>
+                                <field name="team_2_result"/>
+                                <field name="team_1_points"/>
+                                <field name="team_2_points"/>
+                            </tree>
+                        </field>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <act_window id="event_tournament_match_mode_action"
+                name="Tournament modes"
+                res_model="event.tournament.match.mode"/>
+    <menuitem id="event_tournament_match_mode_menu"
+              parent="event_tournament_root_menu"
+              action="event_tournament_match_mode_action"/>
+</odoo>
