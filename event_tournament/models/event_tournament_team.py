@@ -153,9 +153,7 @@ class EventTournamentTeam (models.Model):
     @api.multi
     @api.depends(lambda m:
                  ('match_ids.state',
-                  'tournament_id.points_per_win',
-                  'tournament_id.points_per_draw',
-                  'tournament_id.points_per_lose')
+                  'tournament_id')
                  + tuple('match_ids.line_ids.set_' + str(n)
                          for n in range(1, 6)))
     def _compute_matches_points(self):
