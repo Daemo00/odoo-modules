@@ -58,12 +58,8 @@ class EventTournament(models.Model):
     points_per_win = fields.Integer(
         string="Points per win",
         help="Points gained for each match won")
-    points_per_draw = fields.Integer(
-        string="Points per draw",
-        help="Points gained for each match drawn")
-    points_per_lose = fields.Integer(
-        string="Points per lose",
-        help="Points gained for each match lost")
+    match_mode_id = fields.Many2one(
+        comodel_name='event.tournament.match.mode')
     start_datetime = fields.Datetime(
         string="Tournament start")
     match_duration = fields.Float(

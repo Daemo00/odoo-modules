@@ -44,9 +44,7 @@
                             </group>
                             <group name="match_rules" string="Match rules">
                                 <p>Points are computed only on done matches.</p>
-                                <field name="points_per_win"/>
-                                <field name="points_per_draw"/>
-                                <field name="points_per_lose"/>
+                                <field name="match_mode_id"/>
                             </group>
                         </page>
                         <page name="teams_matches" string="Teams &amp; Matches">
