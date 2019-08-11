@@ -55,6 +55,15 @@ class EventTournament(models.Model):
     min_components_male = fields.Integer(
         string="Minimum male components",
         help="Minimum number of male components for a team")
+    points_per_win = fields.Integer(
+        string="Points per win",
+        help="Points gained for each match won")
+    points_per_draw = fields.Integer(
+        string="Points per draw",
+        help="Points gained for each match drawn")
+    points_per_lose = fields.Integer(
+        string="Points per lose",
+        help="Points gained for each match lost")
     start_datetime = fields.Datetime(
         string="Tournament start")
     match_duration = fields.Float(
