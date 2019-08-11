@@ -43,102 +43,106 @@ class EventTournamentTeam (models.Model):
                 'component_ids': components_domain,
                 'match_ids': matches_domain}}
 
-    @api.constrains('component_ids', 'tournament_id')
-    def constrain_components(self):
+    @api.multi
+    @api.constrains('component_ids', 'event_id')
+    def constrain_components_event(self):
         for team in self:
             components = team.component_ids
-            if not components:
+            event = team.event_id
+            if not components or not event:
                 continue
-            team.check_components_event(components, team.event_id)
-            team.check_components_tournament(components, team.tournament_id)
+            components_events = components.mapped('event_id')
+            if len(components_events) > 1:
+                raise ValidationError(_(
+                    "Team {team_name} not valid:\n"
+                    "Components from different events")
+                    .format(
+                        team_name=team.display_name))
+            components_event = first(components_events)
+            if components_event != event:
+                raise ValidationError(_(
+                    "Team {team_name} not valid:\n"
+                    "Components not in event {event_name}.")
+                    .format(
+                        team_name=team.display_name,
+                        event_name=event.display_name))
 
     @api.multi
-    def check_components_event(self, components, event):
-        self.ensure_one()
-        components_events = components.mapped('event_id')
-        if len(components_events) > 1:
-            raise ValidationError(_(
-                "Team {team_name} not valid:\n"
-                "Components from different events")
-                .format(
-                    team_name=self.display_name))
-        components_event = first(components_events)
-        if components_event != event:
-            raise ValidationError(_(
-                "Team {team_name} not valid:\n"
-                "Components not in event {event_name}.")
-                .format(
-                    team_name=self.display_name,
-                    event_name=event.display_name))
-
-    @api.multi
-    def check_components_tournament(self, components, tournament):
-        self.ensure_one()
-        for other_team in tournament.team_ids - self:
-            for component in components:
-                if component in other_team.component_ids:
-                    raise ValidationError(_(
-                        "Team {team_name} not valid:\n"
-                        "component {comp_name} is already in "
-                        "team {other_team_name}.")
-                        .format(
-                            team_name=self.display_name,
-                            comp_name=component.display_name,
-                            other_team_name=other_team.display_name))
-        if tournament.min_components \
-                and len(components) < tournament.min_components:
-            raise ValidationError(_(
-                "Team {team_name} not valid:\n"
-                "tournament {tourn_name} requires "
-                "at least {min_comp} components per team.")
-                .format(
-                    team_name=self.display_name,
-                    tourn_name=tournament.display_name,
-                    min_comp=tournament.min_components))
-        if tournament.max_components \
-                and len(components) > tournament.max_components:
-            raise ValidationError(_(
-                "Team {team_name} not valid:\n"
-                "tournament {tourn_name} requires "
-                "at least {max_comp} components per team.")
-                .format(
-                    team_name=self.display_name,
-                    tourn_name=tournament.display_name,
-                    max_comp=tournament.max_components))
-        if tournament.min_components_female or tournament.min_components_male:
-            if not all(c.gender for c in components):
+    @api.constrains('component_ids', 'tournament_id')
+    def constrain_components_tournament(self):
+        for team in self:
+            components = team.component_ids
+            tournament = team.tournament_id
+            if not components or not tournament:
+                continue
+            for other_team in tournament.team_ids - team:
+                for component in components:
+                    if component in other_team.component_ids:
+                        raise ValidationError(_(
+                            "Team {team_name} not valid:\n"
+                            "component {comp_name} is already in "
+                            "team {other_team_name}.")
+                            .format(
+                                team_name=team.display_name,
+                                comp_name=component.display_name,
+                                other_team_name=other_team.display_name))
+            if tournament.min_components \
+                    and len(components) < tournament.min_components:
                 raise ValidationError(_(
                     "Team {team_name} not valid:\n"
                     "tournament {tourn_name} requires "
-                    "a minimum of female (or male) components but "
-                    "not all components have gender.")
+                    "at least {min_comp} components per team.")
                     .format(
-                        team_name=self.display_name,
-                        tourn_name=tournament.display_name))
-            if tournament.min_components_female:
-                female_components = components.filtered(
-                    lambda c: c.gender == 'female')
-                if len(female_components) > tournament.min_components_female:
+                        team_name=team.display_name,
+                        tourn_name=tournament.display_name,
+                        min_comp=tournament.min_components))
+            if tournament.max_components \
+                    and len(components) > tournament.max_components:
+                raise ValidationError(_(
+                    "Team {team_name} not valid:\n"
+                    "tournament {tourn_name} requires "
+                    "at least {max_comp} components per team.")
+                    .format(
+                        team_name=team.display_name,
+                        tourn_name=tournament.display_name,
+                        max_comp=tournament.max_components))
+            if tournament.min_components_female \
+                    or tournament.min_components_male:
+                if not all(c.gender for c in components):
                     raise ValidationError(_(
                         "Team {team_name} not valid:\n"
-                        "tournament {tourn_name} requires at least "
-                        "{min_female_comp} female components per team.")
+                        "tournament {tourn_name} requires "
+                        "a minimum of female (or male) components but "
+                        "not all components have gender.")
                         .format(
-                            team_name=self.display_name,
-                            tourn_name=tournament.display_name,
-                            min_female_comp=tournament.min_components_female))
-            if tournament.min_components_male:
-                male_components = components.filtered(
-                    lambda c: c.gender == 'male')
-                if len(male_components) > tournament.min_components_male:
-                    raise ValidationError(_(
-                        "Team {team_name} not valid:\n"
-                        "tournament {tourn_name} requires at least "
-                        "{min_male_comp} male components per team.")
-                        .format(
-                            team_name=self.display_name,
-                            tourn_name=tournament.display_name,
-                            min_male_comp=tournament.min_components_male))
+                            team_name=team.display_name,
+                            tourn_name=tournament.display_name))
+                if tournament.min_components_female:
+                    female_components = components.filtered(
+                        lambda c: c.gender == 'female')
+                    if len(female_components) > \
+                            tournament.min_components_female:
+                        raise ValidationError(_(
+                            "Team {team_name} not valid:\n"
+                            "tournament {tourn_name} requires at least "
+                            "{min_female_comp} female components per team.")
+                            .format(
+                                team_name=team.display_name,
+                                tourn_name=tournament.display_name,
+                                min_female_comp=
+                                tournament.min_components_female))
+                if tournament.min_components_male:
+                    male_components = components.filtered(
+                        lambda c: c.gender == 'male')
+                    if len(male_components) > tournament.min_components_male:
+                        raise ValidationError(_(
+                            "Team {team_name} not valid:\n"
+                            "tournament {tourn_name} requires at least "
+                            "{min_male_comp} male components per team.")
+                            .format(
+                                team_name=team.display_name,
+                                tourn_name=tournament.display_name,
+                                min_male_comp=tournament.min_components_male))
 
     @api.multi
     @api.depends('match_ids.line_ids.points_done')

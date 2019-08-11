@@ -113,7 +113,7 @@ class EventTournament(models.Model):
     def action_check_rules(self):
         self.ensure_one()
         for team in self.team_ids:
-            team.check_components_tournament(
+            team.constrain_components_tournament(
                 team.component_ids, self)
 
     @api.multi
