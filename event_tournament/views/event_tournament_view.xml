@@ -35,12 +35,18 @@
                     </group>
                     <notebook>
                         <page name="rules" string="Rules">
-                            <group>
+                            <group name="team_rules" string="Team rules">
                                 <field name="min_components"/>
                                 <field name="max_components"/>
                                 <field name="min_components_female"/>
                                 <field name="min_components_male"/>
                                 <button name="action_check_rules" type="object" string="Check"/>
+                            </group>
+                            <group name="match_rules" string="Match rules">
+                                <p>Points are computed only on done matches.</p>
+                                <field name="points_per_win"/>
+                                <field name="points_per_draw"/>
+                                <field name="points_per_lose"/>
                             </group>
                         </page>
                         <page name="teams_matches" string="Teams &amp; Matches">
