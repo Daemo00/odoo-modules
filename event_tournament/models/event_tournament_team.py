@@ -153,19 +153,19 @@ class EventTournamentTeam (models.Model):
     @api.multi
     @api.depends(lambda m:
                  ('match_ids.state',
-                  'tournament_id')
+                  'tournament_id.match_mode_id')
                  + tuple('match_ids.line_ids.set_' + str(n)
                          for n in range(1, 6)))
     def _compute_matches_points(self):
-        set_fields = ('set_' + str(n) for n in range(1, 6))
+        set_fields = ['set_' + str(n) for n in range(1, 6)]
         for team in self:
+            matches_points = 0
             total_sets_won = 0
-            matches_won = 0
-            matches_draw = 0
-            matches_lost = 0
             points_done = 0
             points_taken = 0
-            for match in team.match_ids.filtered(lambda m: m.state == 'done'):
+            match_mode = team.tournament_id.match_mode_id
+            done_matches = team.match_ids.filtered(lambda m: m.state == 'done')
+            for match in done_matches:
                 sets_won = 0
                 sets_lost = 0
                 for set_field in set_fields:
@@ -177,7 +177,7 @@ class EventTournamentTeam (models.Model):
                             team_points += points
                         else:
                             other_team_points += points
-                    if team_points and other_team_points:
+                    if team_points or other_team_points:
                         if team_points > other_team_points:
                             sets_won += 1
                         elif team_points < other_team_points:
@@ -190,19 +190,9 @@ class EventTournamentTeam (models.Model):
                     points_done += team_points
                     points_taken += other_team_points
                 total_sets_won += sets_won
-                if sets_won > sets_lost:
-                    matches_won += 1
-                elif sets_won < sets_lost:
-                    matches_lost += 1
-                else:
-                    matches_draw += 1
+                if match_mode:
+                    matches_points += match_mode.get_points(sets_won, sets_lost)
+
             team.sets_won = total_sets_won
             team.points_ratio = points_done / (points_taken or 1)
-
-            tournament = team.tournament_id
-            if tournament.points_per_win:
-                team.matches_points += matches_won * tournament.points_per_win
-            if tournament.points_per_lose:
-                team.matches_points += matches_lost * tournament.points_per_lose
-            if tournament.points_per_draw:
-                team.matches_points += matches_draw * tournament.points_per_draw
+            team.matches_points = matches_points
