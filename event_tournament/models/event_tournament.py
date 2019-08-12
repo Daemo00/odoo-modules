@@ -205,20 +205,28 @@ class EventTournament(models.Model):
         return self.action_view_matches()
 
     @api.multi
-    def action_view_matches(self):
+    def set_tournament_domain(self, action):
         self.ensure_one()
-        action = self.env.ref(
-            'event_tournament.event_tournament_match_action').read()[0]
-
         domain = action.get('domain', list())
         domain = safe_eval(domain)
         domain.append(('tournament_id', '=', self.id))
         action['domain'] = domain
 
+    @api.multi
+    def set_tournament_context(self, action):
+        self.ensure_one()
         context = action.get('context', dict())
         context = safe_eval(context)
         context.update({'default_tournament_id': self.id})
         action['context'] = context
+
+    @api.multi
+    def action_view_matches(self):
+        self.ensure_one()
+        action = self.env.ref(
+            'event_tournament.event_tournament_match_action').read()[0]
+        self.set_tournament_domain(action)
+        self.set_tournament_context(action)
         return action
 
     @api.multi
@@ -226,14 +234,6 @@ class EventTournament(models.Model):
         self.ensure_one()
         action = self.env.ref(
             'event_tournament.event_tournament_team_action').read()[0]
-
-        domain = action.get('domain', list())
-        domain = safe_eval(domain)
-        domain.append(('tournament_id', '=', self.id))
-        action['domain'] = domain
-
-        context = action.get('context', dict())
-        context = safe_eval(context)
-        context.update({'default_tournament_id': self.id})
-        action['context'] = context
+        self.set_tournament_domain(action)
+        self.set_tournament_context(action)
         return action
