@@ -5,5 +5,5 @@ from . import event_event
 from . import event_registration
 from . import event_tournament
 from . import event_tournament_match
-from . import event_tournament_mode
+from . import event_tournament_match_mode
 from . import event_tournament_team
