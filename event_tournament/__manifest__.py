@@ -13,6 +13,7 @@
     ],
     'data': [
         'security/ir.model.access.csv',
+        'data/event_tournament_match_mode_data.xml',
         'views/event_event_view.xml',
         'views/event_registration_view.xml',
         'views/event_tournament_view.xml',
