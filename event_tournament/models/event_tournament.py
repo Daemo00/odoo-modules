@@ -147,7 +147,8 @@ class EventTournament(models.Model):
         warm_up_start = self.start_datetime \
             - timedelta(hours=self.match_warm_up_duration)
         min_start = warm_up_start
-        max_start = warm_up_start
+        max_start = max((warm_up_start,
+                         *self.match_ids.mapped('time_scheduled_end')))
 
         match_duration = \
             timedelta(hours=self.match_warm_up_duration) \
