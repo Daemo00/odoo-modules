@@ -20,7 +20,7 @@ class EventTournament(models.Model):
         comodel_name='event.event',
         string="Event")
     court_ids = fields.Many2many(
-        comodel_name='event.court',
+        comodel_name='event.tournament.court',
         string="Courts",
         help="Courts available for this tournament")
     match_ids = fields.One2many(

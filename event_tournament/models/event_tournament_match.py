@@ -17,7 +17,7 @@ class EventTournamentMatch(models.Model):
         string="Tournament",
         required=True)
     court_id = fields.Many2one(
-        comodel_name='event.court',
+        comodel_name='event.tournament.court',
         string="Court",
         required=True)
     line_ids = fields.One2many(
@@ -126,9 +126,33 @@ class EventTournamentMatch(models.Model):
                     "match {match_name} is overlapping "
                     "{overlapping_match_name}.")
                     .format(
-                        court_name=court.display_name,
+                    court_name=court.display_name,
+                    match_name=match.display_name,
+                    overlapping_match_name=overlapping_match.display_name))
+            if court.time_availability_start and match.time_scheduled_start \
+                    and court.time_availability_start > match.time_scheduled_start:
+                raise ValidationError(_(
+                    "Match {match_name} not valid:\n"
+                    "court {court_name} is available "
+                    "from {court_start} but "
+                    "match starts at {match_start}.")
+                    .format(
                         match_name=match.display_name,
-                        overlapping_match_name=overlapping_match.display_name))
+                        court_name=court.display_name,
+                        court_start=court.time_availability_start,
+                        match_start=match.time_scheduled_start))
+            if court.time_availability_end and match.time_scheduled_end \
+                    and court.time_availability_end < match.time_scheduled_end:
+                raise ValidationError(_(
+                    "Match {match_name} not valid:\n"
+                    "court {court_name} is available "
+                    "until {court_end} but "
+                    "match ends at {match_end}.")
+                    .format(
+                        match_name=match.display_name,
+                        court_name=court.display_name,
+                        court_end=court.time_availability_end,
+                        match_end=match.time_scheduled_end))
 
     @api.constrains('team_ids')
     def constrain_teams(self):
