@@ -2,53 +2,38 @@
 <!-- License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
 
 <odoo noupdate="1">
-    <record id="event_tournament_match_mode_beach_volley_2_0" model="event.tournament.match.mode.result">
-        <field name="sets_won">2</field>
-        <field name="sets_lost">0</field>
-        <field name="points_win">3</field>
-        <field name="points_lose">0</field>
-    </record>
-
-    <record id="event_tournament_match_mode_beach_volley_2_1" model="event.tournament.match.mode.result">
-        <field name="sets_won">2</field>
-        <field name="sets_lost">1</field>
-        <field name="points_win">2</field>
-        <field name="points_lose">1</field>
-    </record>
-
     <record id="event_tournament_match_mode_beach_volley" model="event.tournament.match.mode">
         <field name="name">Beach volley</field>
-        <field name="result_ids" eval="[(6, 0, [
-            ref('event_tournament_match_mode_beach_volley_2_1'),
-            ref('event_tournament_match_mode_beach_volley_2_0')])]"/>
-    </record>
-
-    <record id="event_tournament_match_mode_indoor_volley_3_0" model="event.tournament.match.mode.result">
-        <field name="sets_won">3</field>
-        <field name="sets_lost">0</field>
-        <field name="points_win">3</field>
-        <field name="points_lose">0</field>
-    </record>
-
-    <record id="event_tournament_match_mode_indoor_volley_3_1" model="event.tournament.match.mode.result">
-        <field name="sets_won">3</field>
-        <field name="sets_lost">1</field>
-        <field name="points_win">3</field>
-        <field name="points_lose">0</field>
-    </record>
-
-    <record id="event_tournament_match_mode_indoor_volley_3_2" model="event.tournament.match.mode.result">
-        <field name="sets_won">3</field>
-        <field name="sets_lost">2</field>
-        <field name="points_win">2</field>
-        <field name="points_lose">1</field>
+        <field name="result_ids" eval="[
+            (0, 0, {
+                'sets_won': 2,
+                'sets_lost': 0,
+                'points_win': 3,
+                'points_lose': 0}),
+            (0, 0, {
+                'sets_won': 2,
+                'sets_lost': 1,
+                'points_win': 2,
+                'points_lose': 1})]"/>
     </record>
 
     <record id="event_tournament_match_mode_indoor_volley" model="event.tournament.match.mode">
         <field name="name">Volley</field>
-        <field name="result_ids" eval="[(6, 0, [
-            ref('event_tournament_match_mode_indoor_volley_3_2'),
-            ref('event_tournament_match_mode_indoor_volley_3_1'),
-            ref('event_tournament_match_mode_indoor_volley_3_0')])]"/>
+        <field name="result_ids" eval="[
+            (0, 0, {
+                'sets_won': 3,
+                'sets_lost': 0,
+                'points_win': 3,
+                'points_lose': 0}),
+            (0, 0, {
+                'sets_won': 3,
+                'sets_lost': 1,
+                'points_win': 3,
+                'points_lose': 0}),
+            (0, 0, {
+                'sets_won': 3,
+                'sets_lost': 2,
+                'points_win': 2,
+                'points_lose': 1})]"/>
     </record>
 </odoo>
