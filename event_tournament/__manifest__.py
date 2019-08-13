@@ -17,6 +17,7 @@
         'views/event_event_view.xml',
         'views/event_registration_view.xml',
         'views/event_tournament_view.xml',
+        'views/event_tournament_court_view.xml',
         'views/event_tournament_match_view.xml',
         'views/event_tournament_mode_view.xml',
         'views/event_tournament_team_view.xml',

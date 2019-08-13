@@ -5,10 +5,14 @@ from odoo import fields, models
 
 
 class EventCourt(models.Model):
-    _name = 'event.court'
+    _name = 'event.tournament.court'
     _description = "Court for tournaments"
 
     event_id = fields.Many2one(
         comodel_name='event.event')
     name = fields.Char(
         string="Name")
+    time_availability_start = fields.Datetime(
+        string="Availability start")
+    time_availability_end = fields.Datetime(
+        string="Availability end")
