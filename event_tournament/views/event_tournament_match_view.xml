@@ -9,6 +9,7 @@
             <form string="Match">
                 <header>
                     <button name="action_draft" string="Reset to draft" type="object" states="done"/>
+                    <button name="action_done" string="Done" type="object" states="draft"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
@@ -19,9 +20,6 @@
                         <field name="time_scheduled_end"/>
                         <field name="line_ids" context="{'default_match_id': id}">
                             <tree editable="bottom">
-                                <button name="action_win" string="Wins" title="Wins"
-                                        type="object" class="btn-sm btn-primary"
-                                        attrs="{'invisible': [('parent.state', '=', 'done')]}"/>
                                 <field name="team_id" domain="[('tournament_id', '=', parent.tournament_id)]"/>
                                 <field name="set_1"/>
                                 <field name="set_2"/>
