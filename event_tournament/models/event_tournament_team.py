@@ -191,7 +191,7 @@ class EventTournamentTeam (models.Model):
                     points_taken += other_team_points
                 total_sets_won += sets_won
                 if match_mode:
-                    matches_points += match_mode.get_points(sets_won, sets_lost)
+                    matches_points += match_mode.get_points(match)[team]
 
             team.sets_won = total_sets_won
             team.points_ratio = points_done / (points_taken or 1)

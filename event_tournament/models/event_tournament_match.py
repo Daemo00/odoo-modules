@@ -1,5 +1,6 @@
 #  Copyright 2019 Simone Rubino <daemo00@gmail.com>
 #  License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+from collections import Counter
 
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError, UserError
@@ -16,6 +17,8 @@ class EventTournamentMatch(models.Model):
         comodel_name='event.tournament',
         string="Tournament",
         required=True)
+    match_mode_id = fields.Many2one(
+        related='tournament_id.match_mode_id')
     court_id = fields.Many2one(
         comodel_name='event.tournament.court',
         string="Court",
@@ -212,13 +215,18 @@ class EventTournamentMatch(models.Model):
             'state': 'draft'})
 
     @api.multi
-    def action_win(self, team):
+    def action_done(self):
         self.ensure_one()
         if self.state == 'done':
             raise UserError(_("Match {match_name} already done")
                             .format(match_name=self.display_name))
+        sets_played, team_sets_won = self.get_sets_info()
+        if not team_sets_won:
+            raise UserError(_("There is no winner for match {match_name}")
+                            .format(match_name=self.display_name))
+        winner = max(team_sets_won, key=team_sets_won.get)
         self.update({
-            'winner_team_id': team.id,
+            'winner_team_id': winner.id,
             'time_done': fields.Datetime.now(),
             'state': 'done'})
 
@@ -230,6 +238,26 @@ class EventTournamentMatch(models.Model):
             match_name = " vs ".join(teams_names)
             res.append((match.id, match_name))
         return res
+
+    @api.multi
+    def get_sets_info(self):
+        self.ensure_one()
+        set_fields = ['set_' + str(n) for n in range(1, 6)]
+        team_sets_won = Counter()
+        sets_played = 0
+        for set_field in set_fields:
+            set_points = dict()
+            for line in self.line_ids:
+                points = getattr(line, set_field)
+                if not points:
+                    continue
+                sets_played += 1
+                set_points[line.team_id] = points
+            if not set_points:
+                continue
+            set_winner = max(set_points, key=set_points.get)
+            team_sets_won[set_winner] += 1
+        return sets_played, team_sets_won
 
 
 class EventTournamentMatchLine(models.Model):
@@ -250,8 +278,3 @@ class EventTournamentMatchLine(models.Model):
     set_3 = fields.Integer()
     set_4 = fields.Integer()
     set_5 = fields.Integer()
-
-    @api.multi
-    def action_win(self):
-        self.ensure_one()
-        self.match_id.action_win(self.team_id)
