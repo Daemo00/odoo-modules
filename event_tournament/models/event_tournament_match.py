@@ -222,7 +222,7 @@ class EventTournamentMatch(models.Model):
                             .format(match_name=self.display_name))
         sets_played, team_sets_won = self.get_sets_info()
         if not team_sets_won:
-            raise UserError(_("There is no winner for match {match_name}")
+            raise UserError(_("No-one won a set in {match_name}")
                             .format(match_name=self.display_name))
         max_sets_won = max(team_sets_won.values())
         winner_teams = self.env['event.tournament.team'].browse()
@@ -256,6 +256,7 @@ class EventTournamentMatch(models.Model):
         set_fields = ['set_' + str(n) for n in range(1, 6)]
         team_sets_won = Counter()
         sets_played = 0
+        team_model = self.env['event.tournament.team']
         for set_field in set_fields:
             set_points = dict()
             for line in self.line_ids:
@@ -266,7 +267,20 @@ class EventTournamentMatch(models.Model):
                 set_points[line.team_id] = points
             if not set_points:
                 continue
-            set_winner = max(set_points, key=set_points.get)
+            max_set_points = max(set_points.values())
+            set_winners = team_model.browse()
+            for team, points in set_points.items():
+                if points == max_set_points:
+                    set_winners |= team
+            if len(set_winners) > 1:
+                raise UserError(
+                    _("Match {match_name}, {set_string}:\n"
+                      " Ties are not allowed.")
+                    .format(
+                        match_name=self.display_name,
+                        set_string=self.line_ids._fields[set_field]
+                            ._description_string(self.env)))
+            set_winner = first(set_winners).id
             team_sets_won[set_winner] += 1
         return sets_played, team_sets_won
 
