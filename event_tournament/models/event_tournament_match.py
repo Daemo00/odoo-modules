@@ -224,11 +224,22 @@ class EventTournamentMatch(models.Model):
         if not team_sets_won:
             raise UserError(_("There is no winner for match {match_name}")
                             .format(match_name=self.display_name))
-        winner = max(team_sets_won, key=team_sets_won.get)
-        self.update({
-            'winner_team_id': winner.id,
+        max_sets_won = max(team_sets_won.values())
+        winner_teams = self.env['event.tournament.team'].browse()
+        for team, sets_won in team_sets_won.items():
+            if sets_won == max_sets_won:
+                winner_teams |= team
+        win_vals = dict({
             'time_done': fields.Datetime.now(),
             'state': 'done'})
+        if len(winner_teams) > 1:
+            winner_id = False
+        else:
+            winner_id = winner_teams.id
+        win_vals.update({
+            'winner_team_id': winner_id})
+
+        self.update(win_vals)
 
     @api.multi
     def name_get(self):
