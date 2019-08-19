@@ -1,6 +1,5 @@
 #  Copyright 2019 Simone Rubino <daemo00@gmail.com>
 #  License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
-from collections import Counter
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
@@ -44,9 +43,12 @@ class EventTournamentMatchMode(models.Model):
             else:
                 raise UserError(
                     _("Match {match_name}:\n"
-                      "Result {sets_won} - {sets_lost} not expected")
+                      "Result {sets_won} - {sets_lost} not expected "
+                      "for match mode {match_mode}.")
                     .format(
                         match_name=match.display_name,
                         sets_won=sets_won,
-                        sets_lost=sets_lost))
+                        sets_lost=sets_lost,
+                        match_mode=self.display_name,
+                    ))
         return team_points
