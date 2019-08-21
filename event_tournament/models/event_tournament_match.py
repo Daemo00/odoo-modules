@@ -16,39 +16,49 @@ class EventTournamentMatch(models.Model):
     tournament_id = fields.Many2one(
         comodel_name='event.tournament',
         string="Tournament",
-        required=True)
+        required=True,
+        states={'done': [('readonly', True)]})
     match_mode_id = fields.Many2one(
-        related='tournament_id.match_mode_id')
+        related='tournament_id.match_mode_id',
+        states={'done': [('readonly', True)]})
     court_id = fields.Many2one(
         comodel_name='event.tournament.court',
         string="Court",
-        required=True)
+        required=True,
+        states={'done': [('readonly', True)]})
     line_ids = fields.One2many(
         comodel_name='event.tournament.match.line',
         inverse_name='match_id',
-        string="Teams")
+        string="Teams",
+        states={'done': [('readonly', True)]})
     team_ids = fields.Many2many(
         comodel_name='event.tournament.team',
         compute='compute_components',
-        store=True)
+        store=True,
+        states={'done': [('readonly', True)]})
     component_ids = fields.Many2many(
         comodel_name='event.registration',
         compute='compute_components',
-        store=True)
+        store=True,
+        states={'done': [('readonly', True)]})
     winner_team_id = fields.Many2one(
         comodel_name='event.tournament.team',
-        string="Winner")
+        string="Winner",
+        states={'done': [('readonly', True)]})
     state = fields.Selection(
         selection=[
             ('draft', "Draft"),
             ('done', "Done")],
         default='draft')
     time_scheduled_start = fields.Datetime(
-        string="Scheduled start")
+        string="Scheduled start",
+        states={'done': [('readonly', True)]})
     time_scheduled_end = fields.Datetime(
-        string="Scheduled end")
+        string="Scheduled end",
+        states={'done': [('readonly', True)]})
     time_done = fields.Datetime(
-        string="Time done")
+        string="Time done",
+        states={'done': [('readonly', True)]})
 
     @api.onchange('tournament_id')
     def onchange_tournament(self):
