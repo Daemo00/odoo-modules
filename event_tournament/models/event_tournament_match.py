@@ -280,7 +280,7 @@ class EventTournamentMatch(models.Model):
                         match_name=self.display_name,
                         set_string=self.line_ids._fields[set_field]
                             ._description_string(self.env)))
-            set_winner = first(set_winners).id
+            set_winner = first(set_winners)
             team_sets_won[set_winner] += 1
         return sets_played, team_sets_won
 
