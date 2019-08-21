@@ -45,6 +45,7 @@
                             <group name="match_rules" string="Match rules">
                                 <p>Points are computed only on done matches.</p>
                                 <field name="match_mode_id"/>
+                                <button name="recompute_matches_points" type="object" string="Recompute points"/>
                             </group>
                         </page>
                         <page name="teams_matches" string="Teams &amp; Matches">
