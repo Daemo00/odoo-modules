@@ -201,6 +201,10 @@ class EventTournament(models.Model):
         return matches
 
     @api.multi
+    def recompute_matches_points(self):
+        self.mapped('team_ids')._compute_matches_points()
+
+    @api.multi
     def generate_view_matches(self):
         self.generate_matches()
         return self.action_view_matches()
