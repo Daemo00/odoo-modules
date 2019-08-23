@@ -21,5 +21,6 @@
         'views/event_tournament_match_view.xml',
         'views/event_tournament_mode_view.xml',
         'views/event_tournament_team_view.xml',
+        'views/report_matches_schedule.xml',
     ],
 }
