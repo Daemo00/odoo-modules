@@ -10,7 +10,16 @@
             <notebook position="inside">
                 <page name="tournaments" string="Tournaments">
                     <group>
-                        <field name="tournament_ids" context="{'default_event_id': id}"/>
+                        <field name="tournament_ids" context="{'default_event_id': id}">
+                            <tree>
+                                <button name="open_form_current"
+                                        type="object"
+                                        string="Open full-screen"
+                                        icon="fa-external-link"/>
+                                <field name="name"/>
+                            </tree>
+
+                        </field>
                         <field name="court_ids" context="{'default_event_id': id}"/>
                     </group>
                 </page>
