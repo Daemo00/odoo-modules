@@ -261,3 +261,15 @@ class EventTournament(models.Model):
         self.set_tournament_domain(action)
         self.set_tournament_context(action)
         return action
+
+    @api.multi
+    def open_form_current(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': self._name,
+            'res_id': self.id,
+            'target': 'current'
+        }
