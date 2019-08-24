@@ -36,6 +36,36 @@
         </field>
     </record>
 
+    <record id="event_tournament_match_view_kanban" model="ir.ui.view">
+        <field name="name">event.tournament.match kanban view</field>
+        <field name="model">event.tournament.match</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile" default_group_by="court_id">
+                <progressbar field="state" colors='{"done": "success", "draft": "danger"}'/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_card oe_kanban_global_click">
+                            <div class="o_kanban_record_top">
+                                <div class="o_kanban_record_headings">
+                                    <strong>
+                                        <field name="state" widget="state_selection"/>
+                                        <field name="display_name"/>
+                                    </strong>
+                                </div>
+                            </div>
+                            <div class="o_kanban_record_bottom">
+                                <div class="oe_kanban_bottom_left">
+                                    <span class="fa fa-clock-o"/>
+                                    <field name="time_scheduled_start"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
     <record id="event_tournament_match_view_tree" model="ir.ui.view">
         <field name="name">event.tournament.match tree view</field>
         <field name="model">event.tournament.match</field>
@@ -68,7 +98,8 @@
 
     <act_window id="event_tournament_match_action"
                 name="Tournament matches"
-                res_model="event.tournament.match"/>
+                res_model="event.tournament.match"
+                view_mode="tree,form,kanban"/>
     <menuitem id="event_tournament_match_menu"
               parent="event_tournament_root_menu"
               action="event_tournament_match_action"/>
