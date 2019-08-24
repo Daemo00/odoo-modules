@@ -63,7 +63,8 @@ class EventTournament(models.Model):
     start_datetime = fields.Datetime(
         string="Tournament start")
     match_duration = fields.Float(
-        strin="Match duration")
+        string="Match duration",
+        default=1)
     match_warm_up_duration = fields.Float(
         strin="Match warm-up duration")
     match_teams_nbr = fields.Integer(
@@ -86,6 +87,11 @@ class EventTournament(models.Model):
         string="Sub tournaments")
     notes = fields.Text(
         string="Notes")
+
+    @api.onchange('event_id')
+    def onchange_event_id(self):
+        if self.event_id:
+            self.start_datetime = self.event_id.date_begin
 
     @api.multi
     @api.depends('match_ids')
@@ -117,15 +123,19 @@ class EventTournament(models.Model):
     @api.multi
     def action_check_rules(self):
         self.ensure_one()
-        for team in self.team_ids:
-            team.constrain_components_tournament(
-                team.component_ids, self)
+        self.team_ids.constrain_components_tournament()
 
     @api.multi
     def generate_matches(self):
         self.ensure_one()
         match_model = self.env['event.tournament.match']
         matches = match_model.browse()
+        if self.match_teams_nbr <= 0:
+            raise UserError(_("Tournament {tourn_name}:\n"
+                              "At least 1 team per match is required "
+                              "for matches generation.")
+                            .format(tourn_name=self.display_name))
+
         matches_teams = list(itertools.combinations(
             self.team_ids, self.match_teams_nbr))
         if self.randomize_matches_generation:
@@ -144,6 +154,10 @@ class EventTournament(models.Model):
             matches_teams = clean_matches_teams
             (self.match_ids - done_matches).unlink()
 
+        if not self.start_datetime:
+            raise UserError(_("Tournament {tourn_name}:\n"
+                              "Start time is required for matches generation.")
+                            .format(tourn_name=self.display_name))
         warm_up_start = self.start_datetime \
             - timedelta(hours=self.match_warm_up_duration)
         min_start = warm_up_start
@@ -153,6 +167,10 @@ class EventTournament(models.Model):
         match_duration = \
             timedelta(hours=self.match_warm_up_duration) \
             + timedelta(hours=self.match_duration)
+        if self.match_duration <= 0:
+            raise UserError(_("Tournament {tourn_name}:\n"
+                              "A match should have a duration.")
+                            .format(tourn_name=self.display_name))
         while matches_teams:
             match_teams = matches_teams.pop()
             match = match_model.browse()
