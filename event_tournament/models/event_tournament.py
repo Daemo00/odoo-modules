@@ -154,16 +154,6 @@ class EventTournament(models.Model):
             matches_teams = clean_matches_teams
             (self.match_ids - done_matches).unlink()
 
-        if not self.start_datetime:
-            raise UserError(_("Tournament {tourn_name}:\n"
-                              "Start time is required for matches generation.")
-                            .format(tourn_name=self.display_name))
-        warm_up_start = self.start_datetime \
-            - timedelta(hours=self.match_warm_up_duration)
-        min_start = warm_up_start
-        max_start = max((warm_up_start,
-                         *self.match_ids.mapped('time_scheduled_end')))
-
         match_duration = \
             timedelta(hours=self.match_warm_up_duration) \
             + timedelta(hours=self.match_duration)
@@ -171,6 +161,17 @@ class EventTournament(models.Model):
             raise UserError(_("Tournament {tourn_name}:\n"
                               "A match should have a duration.")
                             .format(tourn_name=self.display_name))
+
+        if not self.start_datetime:
+            raise UserError(_("Tournament {tourn_name}:\n"
+                              "Start time is required for matches generation.")
+                            .format(tourn_name=self.display_name))
+        warm_up_start = self.start_datetime \
+                        - timedelta(hours=self.match_warm_up_duration)
+        min_start = warm_up_start
+        max_start = max((warm_up_start,
+                         *self.mapped('event_id.tournament_ids.match_ids.time_scheduled_end')))
+        max_start = max_start + match_duration
         while matches_teams:
             match_teams = matches_teams.pop()
             match = match_model.browse()
