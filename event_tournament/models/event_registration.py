@@ -21,6 +21,10 @@ class EventRegistration(models.Model):
             ('male', 'Male'),
             ('female', 'Female'),
             ('other', 'Other')])
+    mobile = fields.Char(
+        string="Mobile")
+    is_fipav = fields.Boolean(
+        string="Is FIPAV")
 
     @api.onchange('partner_id')
     def _onchange_partner(self):
@@ -32,6 +36,7 @@ class EventRegistration(models.Model):
                 self.gender = contact.gender or self.gender
                 self.birthdate_date = \
                     contact.birthdate_date or self.birthdate_date
+                self.mobile = contact.mobile or self.mobile
         return res
 
     @api.depends('tournament_team_ids')
