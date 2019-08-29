@@ -5,7 +5,7 @@ import csv
 
 from odoo import api, fields, models
 
-COLUMNS_COMMON = [
+COLUMNS = [
     'Timestamp',
     'Torneo',
     'Nome squadra',
@@ -62,7 +62,7 @@ COLUMNS_COMMON = [
 
 def parse_team_line(values: list):
     res = dict()
-    common_fields = ['timestamp', 'tournament', 'team_name']
+    common_fields = ['date_open', 'tournament', 'team_name']
     common_values = values[:len(common_fields)]
     res.update(dict(zip(common_fields, common_values)))
     values = values[len(common_fields):]
@@ -73,9 +73,9 @@ def parse_team_line(values: list):
     values = values[:-len(common2_fields)]
 
     values = list(filter(None, values))
-    player_fields = ['player_name', 'date_birth']
+    player_fields = ['name', 'birthdate_birth']
     if res['tournament'].startswith('4x4'):
-        player_fields += ['fipav']
+        player_fields += ['is_fipav']
 
     players = list()
     captain_fields = player_fields + ['mobile']
@@ -107,8 +107,28 @@ class ImportCSVBV4W (models.TransientModel):
         team_lines = list()
         for line in csv_lines[1:]:
             team_lines.append(parse_team_line(line))
+
+        teams_values = list()
+        for team_line in team_lines:
+            teams_values.append(self.get_team_values(team_line))
         return True
 
-    @api.multi
-    def parse_team_line(self, columns):
-        self.ensure_one()
+    @api.model
+    def get_team_values(self, team_dict):
+        parsed_players = team_dict['players']
+        parsed_players[0]['email'] = team_dict['email']
+        players_values = list()
+        for parsed_player in parsed_players:
+            player_values = parsed_player
+            player_values['date_open'] = team_dict['date_open']
+            if 'is_fipav' in parsed_player:
+                not_fipav = parsed_player['is_fipav'].lower() == 'no'
+                player_values['is_fipav'] = not not_fipav
+            players_values.append((0, 0, player_values))
+        tournament = self.env['event.tournament'].search([
+            ('name', 'like', team_dict['tournament'])])
+        return {
+            'name': team_dict['team_name'],
+            'component_ids': players_values,
+            'tournament_ids': [(4, tournament.id)]
+        }
