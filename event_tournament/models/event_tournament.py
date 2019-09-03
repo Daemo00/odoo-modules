@@ -167,10 +167,11 @@ class EventTournament(models.Model):
                               "Start time is required for matches generation.")
                             .format(tourn_name=self.display_name))
         warm_up_start = self.start_datetime \
-                        - timedelta(hours=self.match_warm_up_duration)
+            - timedelta(hours=self.match_warm_up_duration)
         min_start = warm_up_start
         max_start = max((warm_up_start,
-                         *self.mapped('event_id.tournament_ids.match_ids.time_scheduled_end')))
+                         *self.mapped('event_id.tournament_ids.'
+                                      'match_ids.time_scheduled_end')))
         max_start = max_start + match_duration
         while matches_teams:
             match_teams = matches_teams.pop()
@@ -190,7 +191,7 @@ class EventTournament(models.Model):
                             'time_scheduled_start': curr_start,
                             'time_scheduled_end': curr_start + match_duration,
                         })
-                    except ValidationError as ve:
+                    except ValidationError:
                         # The match is not valid,
                         # but it has been created anyway! So delete it.
                         invalid_match = match_model.search(
@@ -221,7 +222,7 @@ class EventTournament(models.Model):
 
     @api.multi
     def recompute_matches_points(self):
-        self.mapped('team_ids')._compute_matches_points()
+        self.mapped('team_ids').compute_matches_points()
 
     @api.multi
     def generate_view_matches(self):

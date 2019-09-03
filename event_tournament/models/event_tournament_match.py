@@ -143,7 +143,8 @@ class EventTournamentMatch(models.Model):
                     match_name=match.display_name,
                     overlapping_match_name=overlapping_match.display_name))
             if court.time_availability_start and match.time_scheduled_start \
-                    and court.time_availability_start > match.time_scheduled_start:
+                    and court.time_availability_start \
+                    > match.time_scheduled_start:
                 raise ValidationError(_(
                     "Match {match_name} not valid:\n"
                     "court {court_name} is available "
