@@ -29,13 +29,13 @@ class EventTournamentTeam (models.Model):
         comodel_name='event.tournament.match',
         string="Matches")
     points_ratio = fields.Float(
-        compute='_compute_matches_points',
+        compute='compute_matches_points',
         store=True)
     sets_won = fields.Integer(
-        compute='_compute_matches_points',
+        compute='compute_matches_points',
         store=True)
     matches_points = fields.Integer(
-        compute='_compute_matches_points',
+        compute='compute_matches_points',
         store=True)
 
     @api.onchange('tournament_id')
@@ -135,8 +135,8 @@ class EventTournamentTeam (models.Model):
                             .format(
                                 team_name=team.display_name,
                                 tourn_name=tournament.display_name,
-                                min_female_comp=
-                                tournament.min_components_female))
+                                min_female_comp=tournament
+                                .min_components_female))
                 if tournament.min_components_male:
                     male_components = components.filtered(
                         lambda c: c.gender == 'male')
@@ -156,7 +156,7 @@ class EventTournamentTeam (models.Model):
                   'tournament_id.match_mode_id')
                  + tuple('match_ids.line_ids.set_' + str(n)
                          for n in range(1, 6)))
-    def _compute_matches_points(self):
+    def compute_matches_points(self):
         set_fields = ['set_' + str(n) for n in range(1, 6)]
         for team in self:
             matches_points = 0
