@@ -2,8 +2,10 @@
 #  License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 import base64
 import csv
+from datetime import datetime
 
-from odoo import api, fields, models
+from odoo import api, fields, models, _
+from odoo.exceptions import UserError
 
 COLUMNS = [
     'Timestamp',
@@ -73,7 +75,7 @@ def parse_team_line(values: list):
     values = values[:-len(common2_fields)]
 
     values = list(filter(None, values))
-    player_fields = ['name', 'birthdate_birth']
+    player_fields = ['name', 'birthdate_date']
     if res['tournament'].startswith('4x4'):
         player_fields += ['is_fipav']
 
@@ -111,24 +113,34 @@ class ImportCSVBV4W (models.TransientModel):
         teams_values = list()
         for team_line in team_lines:
             teams_values.append(self.get_team_values(team_line))
+        team_model = self.env['event.tournament.team']
+        team_model.create(teams_values)
         return True
 
     @api.model
     def get_team_values(self, team_dict):
         parsed_players = team_dict['players']
         parsed_players[0]['email'] = team_dict['email']
+        tournament = self.env['event.tournament'].search([
+            ('name', 'like', team_dict['tournament'])])
+        if not tournament:
+            raise UserError(
+                _("No tournament found with name like '{csv_tourn_name}'")
+                .format(csv_tourn_name=team_dict['tournament']))
+
         players_values = list()
+        date_open = datetime.strptime(team_dict['date_open'],
+                                      '%m/%d/%Y %H:%M:%S')
         for parsed_player in parsed_players:
             player_values = parsed_player
-            player_values['date_open'] = team_dict['date_open']
+            player_values['event_id'] = tournament.event_id.id
+            player_values['date_open'] = date_open
             if 'is_fipav' in parsed_player:
                 not_fipav = parsed_player['is_fipav'].lower() == 'no'
                 player_values['is_fipav'] = not not_fipav
             players_values.append((0, 0, player_values))
-        tournament = self.env['event.tournament'].search([
-            ('name', 'like', team_dict['tournament'])])
         return {
             'name': team_dict['team_name'],
             'component_ids': players_values,
-            'tournament_ids': [(4, tournament.id)]
+            'tournament_id': tournament.id
         }

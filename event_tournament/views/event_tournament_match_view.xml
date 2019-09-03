@@ -55,7 +55,7 @@
                             </div>
                             <div class="o_kanban_record_bottom">
                                 <div class="oe_kanban_bottom_left">
-                                    <span class="fa fa-clock-o"/>
+                                    <span class="fa fa-clock-o" title="Time start" aria-label="Time start"/>
                                     <field name="time_scheduled_start"/>
                                 </div>
                             </div>
