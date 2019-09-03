@@ -37,6 +37,8 @@ class EventTournamentTeam (models.Model):
     matches_points = fields.Integer(
         compute='compute_matches_points',
         store=True)
+    notes = fields.Text(
+        string="Notes")
 
     @api.onchange('tournament_id')
     def onchange_tournament(self):
@@ -61,7 +63,7 @@ class EventTournamentTeam (models.Model):
             if len(components_events) > 1:
                 raise ValidationError(_(
                     "Team {team_name} not valid:\n"
-                    "Components from different events")
+                    "Components from different events.")
                     .format(
                         team_name=team.display_name))
             components_event = first(components_events)
@@ -107,7 +109,7 @@ class EventTournamentTeam (models.Model):
                 raise ValidationError(_(
                     "Team {team_name} not valid:\n"
                     "tournament {tourn_name} requires "
-                    "at least {max_comp} components per team.")
+                    "at most {max_comp} components per team.")
                     .format(
                         team_name=team.display_name,
                         tourn_name=tournament.display_name,
@@ -183,10 +185,13 @@ class EventTournamentTeam (models.Model):
                         elif team_points < other_team_points:
                             sets_lost += 1
                         else:
-                            raise UserError(_(
-                                "Match {match_name}:\n"
-                                "Draw not allowed").format(
-                                    match_name=match.display_name))
+                            raise UserError(
+                                _("Match {match_name}, {set_string}:\n"
+                                  " Ties are not allowed.")
+                                .format(
+                                    match_name=self.display_name,
+                                    set_string=self.line_ids._fields[set_field]
+                                    ._description_string(self.env)))
                     points_done += team_points
                     points_taken += other_team_points
                 total_sets_won += sets_won

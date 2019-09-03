@@ -102,6 +102,7 @@ def parse_team_line(values: list):
 
 class ImportCSVBV4W (models.TransientModel):
     _name = 'event.tournament.import_csv_bv4w'
+    _description = "Importing teams from BV4W in CSV format"
 
     data = fields.Binary('File', required=True)
     filename = fields.Char('File Name', required=True)
@@ -165,5 +166,6 @@ class ImportCSVBV4W (models.TransientModel):
         return {
             'name': team_dict['team_name'],
             'component_ids': players_values,
-            'tournament_id': tournament.id
+            'tournament_id': tournament.id,
+            'notes': team_dict['notes']
         }
