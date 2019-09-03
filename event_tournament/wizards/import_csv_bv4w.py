@@ -142,7 +142,6 @@ class ImportCSVBV4W (models.TransientModel):
         date_open = datetime.strptime(
             team_dict['date_open'], '%m/%d/%Y %H:%M:%S')
         for parsed_player in parsed_players:
-            print("Parsing " + str(parsed_player))
             player_values = parsed_player
             player_values['name'] = player_values['name'].title()
             player_values['birthdate_date'] = datetime.strptime(
@@ -167,5 +166,5 @@ class ImportCSVBV4W (models.TransientModel):
             'name': team_dict['team_name'],
             'component_ids': players_values,
             'tournament_id': tournament.id,
-            'notes': team_dict['notes']
+            'notes': team_dict['notes'] or False
         }
