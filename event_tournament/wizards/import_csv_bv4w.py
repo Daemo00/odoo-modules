@@ -85,10 +85,16 @@ def parse_team_line(values: list):
     players.append(dict(zip(captain_fields, captain_values)))
     values = values[len(captain_fields):]
 
+    # Giocatore 3 in 4x4 has no 'fipav' field
+    player_index = 2  # Captain is parsed already
     while values:
-        player_values = values[:len(player_fields)]
-        players.append(dict(zip(player_fields, player_values)))
-        values = values[len(player_fields):]
+        curr_player_fields = player_fields.copy()
+        if 'is_fipav' in player_fields and player_index == 3:
+            curr_player_fields.remove('is_fipav')
+        player_values = values[:len(curr_player_fields)]
+        players.append(dict(zip(curr_player_fields, player_values)))
+        values = values[len(curr_player_fields):]
+        player_index += 1
 
     res.update(players=players)
     return res
@@ -110,11 +116,11 @@ class ImportCSVBV4W (models.TransientModel):
         for line in csv_lines[1:]:
             team_lines.append(parse_team_line(line))
 
-        teams_values = list()
-        for team_line in team_lines:
-            teams_values.append(self.get_team_values(team_line))
         team_model = self.env['event.tournament.team']
-        team_model.create(teams_values)
+        for team_line in team_lines:
+            # We have to create every time so that registrations are always
+            # updated and we can link existing ones if they join another team
+            team_model.create(self.get_team_values(team_line))
         return True
 
     @api.model
@@ -128,17 +134,34 @@ class ImportCSVBV4W (models.TransientModel):
                 _("No tournament found with name like '{csv_tourn_name}'")
                 .format(csv_tourn_name=team_dict['tournament']))
 
+        registrations_names = \
+            tournament.event_id.registration_ids.mapped('name')
+
         players_values = list()
-        date_open = datetime.strptime(team_dict['date_open'],
-                                      '%m/%d/%Y %H:%M:%S')
+        date_open = datetime.strptime(
+            team_dict['date_open'], '%m/%d/%Y %H:%M:%S')
         for parsed_player in parsed_players:
+            print("Parsing " + str(parsed_player))
             player_values = parsed_player
+            player_values['name'] = player_values['name'].title()
+            player_values['birthdate_date'] = datetime.strptime(
+                player_values['birthdate_date'], '%m/%d/%Y').date()
             player_values['event_id'] = tournament.event_id.id
             player_values['date_open'] = date_open
             if 'is_fipav' in parsed_player:
                 not_fipav = parsed_player['is_fipav'].lower() == 'no'
                 player_values['is_fipav'] = not not_fipav
-            players_values.append((0, 0, player_values))
+            if player_values['name'] in registrations_names:
+                registration = tournament.event_id.registration_ids.filtered(
+                    lambda r: r.name == player_values['name'])
+                if len(registration) != 1:
+                    raise UserError(_(
+                        "Found multiple registrations with name {name}")
+                                    .format(name=player_values['name']))
+                registration.update(player_values)
+                players_values.append((4, registration.id))
+            else:
+                players_values.append((0, 0, player_values))
         return {
             'name': team_dict['team_name'],
             'component_ids': players_values,
