@@ -59,6 +59,7 @@ class EventTournament(models.Model):
         string="Points per win",
         help="Points gained for each match won")
     match_mode_id = fields.Many2one(
+        string="Match mode",
         comodel_name='event.tournament.match.mode')
     start_datetime = fields.Datetime(
         string="Tournament start")

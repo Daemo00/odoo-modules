@@ -117,7 +117,7 @@ class EventTournamentMatch(models.Model):
                 raise ValidationError(
                     _("Match {match_name} not valid:\n"
                       "Court {court_name} is not available for "
-                      "tournament {tourn_name}")
+                      "tournament {tourn_name}.")
                     .format(
                         match_name=match.display_name,
                         court_name=match.court_id.display_name,
@@ -180,7 +180,7 @@ class EventTournamentMatch(models.Model):
             if registrations:
                 raise ValidationError(
                     _("Match {match_name} not valid:\n"
-                      "Teams have common components")
+                      "Teams have common components.")
                     .format(
                         match_name=match.display_name))
 
@@ -191,7 +191,7 @@ class EventTournamentMatch(models.Model):
             if len(teams_tournaments) > 1:
                 raise ValidationError(
                     _("Match {match_name} not valid:\n"
-                      "Teams from different tournaments")
+                      "Teams from different tournaments.")
                     .format(
                         match_name=match.display_name))
             teams_tournament = first(teams_tournaments)
@@ -229,11 +229,11 @@ class EventTournamentMatch(models.Model):
     def action_done(self):
         self.ensure_one()
         if self.state == 'done':
-            raise UserError(_("Match {match_name} already done")
+            raise UserError(_("Match {match_name} already done.")
                             .format(match_name=self.display_name))
         sets_played, team_sets_won = self.get_sets_info()
         if not team_sets_won:
-            raise UserError(_("No-one won a set in {match_name}")
+            raise UserError(_("No-one won a set in {match_name}.")
                             .format(match_name=self.display_name))
         max_sets_won = max(team_sets_won.values())
         winner_teams = self.env['event.tournament.team'].browse()
