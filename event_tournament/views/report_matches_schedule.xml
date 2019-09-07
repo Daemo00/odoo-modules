@@ -2,50 +2,75 @@
 <!-- License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
 
 <odoo>
-    <template id="matches_schedule">
+    <template id="matches_schedule_table">
+        <t t-set="courts" t-value="matches.mapped('court_id')"/>
+        <table class="table table-bordered table-striped">
+            <thead>
+                <th>Datetime</th>
+                <th t-foreach="courts" t-as="court">
+                    <span t-esc="court.name"/>
+                </th>
+            </thead>
+            <tbody>
+                <t t-set="times" t-value="list(set(matches.mapped('time_scheduled_start')))"/>
+                <t t-set="" t-value="times.sort()"/>
+                <tr t-foreach="times" t-as="time">
+                    <t t-set="time_matches"
+                       t-value="matches.filtered(lambda m: m.time_scheduled_start == time)"/>
+                    <td>
+                        <span t-esc="context_timestamp(time).strftime('%d/%m/%Y %H:%M:%S')"/>
+                    </td>
+                    <t t-foreach="courts" t-as="court">
+                        <t t-set="match" t-value="time_matches.filtered(lambda m: m.court_id == court)"/>
+                        <td>
+                            <span t-esc="match.display_name"/>
+                        </td>
+                    </t>
+                </tr>
+            </tbody>
+        </table>
+    </template>
+
+    <!-- Match report -->
+    <template id="matches_schedule_match">
         <t t-call="web.html_container">
-            <t t-foreach="docs" t-as="o">
-                <t t-call="event_tournament.matches_schedule_document"/>
+            <t t-call="web.internal_layout">
+                <t t-call="event_tournament.matches_schedule_table">
+                    <t t-set="matches" t-value="docs"/>
+                </t>
             </t>
         </t>
     </template>
 
-    <template id="matches_schedule_document">
+    <report
+        id="matches_schedule_match_action"
+        name="event_tournament.matches_schedule_match"
+        model="event.tournament.match"
+        string="Matches schedule"/>
+
+    <!-- Tournament report -->
+    <template id="matches_schedule_tournament">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="event_tournament.matches_schedule_tournament_document"/>
+            </t>
+        </t>
+    </template>
+
+    <template id="matches_schedule_tournament_document">
         <t t-call="web.internal_layout">
             <h1>
                 <span t-esc="o.name"/>
             </h1>
-            <table class="table">
-                <thead>
-                    <th>Datetime</th>
-                    <th t-foreach="o.court_ids" t-as="court">
-                        <span t-esc="court.name"/>
-                    </th>
-                </thead>
-                <tbody>
-                    <t t-set="times" t-value="list(set(o.match_ids.mapped('time_scheduled_start')))"/>
-                    <t t-set="" t-value="times.sort()"/>
-                    <tr t-foreach="times" t-as="time">
-                        <t t-set="time_matches"
-                           t-value="o.match_ids.filtered(lambda m: m.time_scheduled_start == time)"/>
-                        <td>
-                            <span t-esc="context_timestamp(time).strftime('%d/%m/%Y %H:%M:%S')"/>
-                        </td>
-                        <t t-foreach="o.court_ids" t-as="court">
-                            <t t-set="match" t-value="time_matches.filtered(lambda m: m.court_id == court)"/>
-                            <td>
-                                <span t-esc="match.display_name"/>
-                            </td>
-                        </t>
-                    </tr>
-                </tbody>
-            </table>
+            <t t-call="event_tournament.matches_schedule_table">
+                <t t-set="matches" t-value="o.match_ids"/>
+            </t>
         </t>
     </template>
     
     <report
-        id="matches_schedule_action"
-        name="event_tournament.matches_schedule"
+        id="matches_schedule_tournament_action"
+        name="event_tournament.matches_schedule_tournament"
         model="event.tournament"
         string="Matches schedule"/>
 </odoo>
