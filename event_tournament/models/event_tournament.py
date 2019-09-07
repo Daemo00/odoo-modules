@@ -218,6 +218,18 @@ class EventTournament(models.Model):
                                 + ", ".join(team.display_name
                                             for team in match_teams))
             max_start = max(max_start, match.time_scheduled_end)
+            # Try to not make components play two matches in a row:
+            # rearrange matches_teams so that components
+            # in the latest match are the first ones
+            # (popped as late as possible)
+
+            def common_components(m):
+                c = self.env['event.registration'].browse()
+                for t in m:
+                    c |= t.component_ids
+                return not (c & match.component_ids)
+
+            matches_teams.sort(key=common_components)
 
         return matches
 
