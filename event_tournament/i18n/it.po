@@ -681,7 +681,7 @@ msgstr "Iniziato"
 #: model:ir.model.fields,field_description:event_tournament.field_event_tournament__state
 #: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match__state
 msgid "State"
-msgstr "Provincia"
+msgstr "Stato"
 
 #. module: event_tournament
 #: model:ir.model.fields,field_description:event_tournament.field_event_tournament__child_ids
