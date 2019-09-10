@@ -274,10 +274,10 @@ class EventTournamentMatch(models.Model):
                 points = getattr(line, set_field)
                 if not points:
                     continue
-                sets_played += 1
                 set_points[line.team_id] = points
             if not set_points:
                 continue
+            sets_played += 1
             max_set_points = max(set_points.values())
             set_winners = team_model.browse()
             for team, points in set_points.items():

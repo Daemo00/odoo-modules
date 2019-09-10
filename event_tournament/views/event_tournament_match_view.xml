@@ -99,7 +99,7 @@
     <act_window id="event_tournament_match_action"
                 name="Tournament matches"
                 res_model="event.tournament.match"
-                view_mode="tree,form,kanban"/>
+                view_mode="kanban,tree,form"/>
     <menuitem id="event_tournament_match_menu"
               parent="event_tournament_root_menu"
               action="event_tournament_match_action"/>
