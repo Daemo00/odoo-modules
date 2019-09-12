@@ -143,7 +143,8 @@ class ImportCSVBV4W (models.TransientModel):
             team_dict['date_open'], '%m/%d/%Y %H:%M:%S')
         for parsed_player in parsed_players:
             player_values = parsed_player
-            player_values['name'] = player_values['name'].title()
+            player_values['name'] = player_values['name']\
+                .title().replace(" ", "")  # Clean user data
             player_values['birthdate_date'] = datetime.strptime(
                 player_values['birthdate_date'], '%m/%d/%Y').date()
             player_values['event_id'] = tournament.event_id.id
