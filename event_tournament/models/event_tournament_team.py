@@ -51,7 +51,6 @@ class EventTournamentTeam (models.Model):
                 'component_ids': components_domain,
                 'match_ids': matches_domain}}
 
-    @api.multi
     @api.constrains('component_ids', 'event_id')
     def constrain_components_event(self):
         for team in self:
@@ -75,7 +74,6 @@ class EventTournamentTeam (models.Model):
                         team_name=team.display_name,
                         event_name=event.display_name))
 
-    @api.multi
     @api.constrains('component_ids', 'tournament_id')
     def constrain_components_tournament(self):
         for team in self:
@@ -152,7 +150,6 @@ class EventTournamentTeam (models.Model):
                                 tourn_name=tournament.display_name,
                                 min_male_comp=tournament.min_components_male))
 
-    @api.multi
     @api.depends(lambda m:
                  ('match_ids.state',
                   'tournament_id.match_mode_id')
