@@ -107,7 +107,6 @@ class ImportCSVBV4W (models.TransientModel):
     data = fields.Binary('File', required=True)
     filename = fields.Char('File Name', required=True)
 
-    @api.multi
     def import_csv_bv4w(self):
         self.ensure_one()
         content = base64.decodebytes(self.data).decode()

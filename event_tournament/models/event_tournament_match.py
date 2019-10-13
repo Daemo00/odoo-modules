@@ -33,7 +33,8 @@ class EventTournamentMatch(models.Model):
         states={'done': [('readonly', True)]})
     team_ids = fields.Many2many(
         comodel_name='event.tournament.team',
-        compute='compute_components',
+        compute='compute_teams',
+        inverse='inverse_teams',
         store=True,
         states={'done': [('readonly', True)]})
     component_ids = fields.Many2many(
@@ -67,10 +68,23 @@ class EventTournamentMatch(models.Model):
             'domain': {
                 'court_id': event_domain}}
 
-    @api.depends('line_ids')
-    def compute_components(self):
+    @api.depends('line_ids.team_id')
+    def compute_teams(self):
         for match in self:
             match.team_ids = match.line_ids.mapped('team_id')
+
+    def inverse_teams(self):
+        for match in self:
+            team_lines = match.line_ids.mapped('team_id')
+            lines_vals = list()
+            for team in match.team_ids:
+                if team not in team_lines:
+                    lines_vals.append({'match_id': match.id, 'team_id': team.id})
+            match.line_ids.create(lines_vals)
+
+    @api.depends('team_ids.component_ids')
+    def compute_components(self):
+        for match in self:
             match.component_ids = match.team_ids.mapped('component_ids')
 
     @api.constrains('time_scheduled_start', 'time_scheduled_end')
@@ -92,7 +106,6 @@ class EventTournamentMatch(models.Model):
                                 comp_name=cont_match_comp.display_name,
                                 cont_match_name=cont_match.display_name))
 
-    @api.multi
     def contemporary_match_domain(self):
         self.ensure_one()
         domain = list()
@@ -217,7 +230,6 @@ class EventTournamentMatch(models.Model):
                         match_name=match.display_name,
                         team_name=match.winner_team_id.display_name))
 
-    @api.multi
     def action_draft(self):
         self.ensure_one()
         self.update({
@@ -225,7 +237,6 @@ class EventTournamentMatch(models.Model):
             'time_done': False,
             'state': 'draft'})
 
-    @api.multi
     def action_done(self):
         self.ensure_one()
         if self.state == 'done':
@@ -252,7 +263,6 @@ class EventTournamentMatch(models.Model):
 
         self.update(win_vals)
 
-    @api.multi
     def name_get(self):
         res = list()
         for match in self:
@@ -261,7 +271,6 @@ class EventTournamentMatch(models.Model):
             res.append((match.id, match_name))
         return res
 
-    @api.multi
     def get_sets_info(self):
         self.ensure_one()
         set_fields = ['set_' + str(n) for n in range(1, 6)]

@@ -6,7 +6,9 @@ import itertools
 
 from odoo import api, models, fields, _
 from odoo.exceptions import ValidationError, UserError
-from odoo.tools import safe_eval
+from odoo.tools import safe_eval, logging
+
+_logger = logging.getLogger(__name__)
 
 
 class EventTournament(models.Model):
@@ -94,39 +96,32 @@ class EventTournament(models.Model):
         if self.event_id:
             self.start_datetime = self.event_id.date_begin
 
-    @api.multi
     @api.depends('match_ids')
     def compute_match_count(self):
         for tournament in self:
             tournament.match_count = len(tournament.match_ids)
 
-    @api.multi
     @api.depends('team_ids')
     def compute_team_count(self):
         for tournament in self:
             tournament.team_count = len(tournament.team_ids)
 
-    @api.multi
     def action_draft(self):
         for tournament in self:
             tournament.state = 'draft'
 
-    @api.multi
     def action_start(self):
         for tournament in self:
             tournament.state = 'started'
 
-    @api.multi
     def action_done(self):
         for tournament in self:
             tournament.state = 'done'
 
-    @api.multi
     def action_check_rules(self):
         self.ensure_one()
         self.team_ids.constrain_components_tournament()
 
-    @api.multi
     def generate_matches(self):
         self.ensure_one()
         match_model = self.env['event.tournament.match']
@@ -183,22 +178,18 @@ class EventTournament(models.Model):
                 # Try to put this match in a court at curr_start
                 for court in self.court_ids:
                     try:
-                        # The first match of the court does not need warm-up
-                        match = match_model.create({
-                            'tournament_id': self.id,
-                            'court_id': court.id,
-                            'line_ids': [(0, 0, {'team_id': t.id})
-                                         for t in match_teams],
-                            'time_scheduled_start': curr_start,
-                            'time_scheduled_end': curr_start + match_duration,
-                        })
-                    except ValidationError:
-                        # The match is not valid,
-                        # but it has been created anyway! So delete it.
-                        invalid_match = match_model.search(
-                            [], order='id DESC', limit=1)
-                        invalid_match.unlink()
-                        # Try the following court
+                        with self._cr.savepoint():
+                            # The first match of the court does not need warm-up
+                            match = match_model.create({
+                                'tournament_id': self.id,
+                                'court_id': court.id,
+                                'team_ids': [t.id for t in match_teams],
+                                'time_scheduled_start': curr_start,
+                                'time_scheduled_end': curr_start + match_duration,
+                            })
+                    except ValidationError as ve:
+                        # The match is not valid, try the following court
+                        _logger.info(ve)
                         continue
                     else:
                         # The match is valid
@@ -233,16 +224,13 @@ class EventTournament(models.Model):
 
         return matches
 
-    @api.multi
     def recompute_matches_points(self):
         self.mapped('team_ids').compute_matches_points()
 
-    @api.multi
     def generate_view_matches(self):
         self.generate_matches()
         return self.action_view_matches()
 
-    @api.multi
     def set_tournament_domain(self, action):
         self.ensure_one()
         domain = action.get('domain', list())
@@ -250,7 +238,6 @@ class EventTournament(models.Model):
         domain.append(('tournament_id', '=', self.id))
         action['domain'] = domain
 
-    @api.multi
     def set_tournament_context(self, action):
         self.ensure_one()
         context = action.get('context', dict())
@@ -258,7 +245,6 @@ class EventTournament(models.Model):
         context.update({'default_tournament_id': self.id})
         action['context'] = context
 
-    @api.multi
     def action_view_matches(self):
         self.ensure_one()
         action = self.env.ref(
@@ -267,7 +253,6 @@ class EventTournament(models.Model):
         self.set_tournament_context(action)
         return action
 
-    @api.multi
     def action_view_teams(self):
         self.ensure_one()
         action = self.env.ref(
@@ -276,7 +261,6 @@ class EventTournament(models.Model):
         self.set_tournament_context(action)
         return action
 
-    @api.multi
     def open_form_current(self):
         self.ensure_one()
         return {

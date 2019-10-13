@@ -26,7 +26,6 @@ class EventTournamentMatchMode(models.Model):
         comodel_name='event.tournament.match.mode.result',
         inverse_name='mode_id')
 
-    @api.multi
     def get_points(self, match):
         self.ensure_one()
         sets_played, team_sets_won = match.get_sets_info()
