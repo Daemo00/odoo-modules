@@ -4,11 +4,11 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 12.0\n"
+"Project-Id-Version: Odoo Server 13.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-07 16:22+0000\n"
-"PO-Revision-Date: 2019-09-07 18:26+0200\n"
-"Last-Translator: <>\n"
+"POT-Creation-Date: 2019-10-20 10:34+0000\n"
+"PO-Revision-Date: 2019-10-20 12:35+0200\n"
+"Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -23,7 +23,8 @@ msgid "<span class=\"fa fa-clock-o\" title=\"Time start\" aria-label=\"Time star
 msgstr "<span class=\"fa fa-clock-o\" title=\"Orario di inizio\" aria-label=\"Orario di inizio\"/>"
 
 #. module: event_tournament
-#: code:addons/event_tournament/models/event_tournament_match.py:176
+#: code:addons/event_tournament/models/event_tournament_match.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_match.py:0
 #, python-format
 msgid "A good match needs at least 2 teams"
 msgstr "Per fare una bella partita ci vogliono almeno 2 squadre"
@@ -81,7 +82,8 @@ msgid "Court for tournaments"
 msgstr "Campo per tornei"
 
 #. module: event_tournament
-#: code:addons/event_tournament/models/event_tournament_match.py:137
+#: code:addons/event_tournament/models/event_tournament_match.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_match.py:0
 #, python-format
 msgid ""
 "Court {court_name} not valid:\n"
@@ -148,16 +150,23 @@ msgid "Display Name"
 msgstr "Nome visualizzato"
 
 #. module: event_tournament
-#: selection:event.tournament,state:0 selection:event.tournament.match,state:0
+#: model:ir.model.fields.selection,name:event_tournament.selection__event_tournament__state__done
+#: model:ir.model.fields.selection,name:event_tournament.selection__event_tournament_match__state__done
 #: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_match_view_form
 #: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_view_form
 msgid "Done"
-msgstr "Fatto"
+msgstr "Completato"
 
 #. module: event_tournament
-#: selection:event.tournament,state:0 selection:event.tournament.match,state:0
+#: model:ir.model.fields.selection,name:event_tournament.selection__event_tournament__state__draft
+#: model:ir.model.fields.selection,name:event_tournament.selection__event_tournament_match__state__draft
 msgid "Draft"
 msgstr "Bozza"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament__match_count_estimated
+msgid "Estimated match count"
+msgstr "Totale partite stimato"
 
 #. module: event_tournament
 #: model:ir.model,name:event_tournament.model_event_event
@@ -174,7 +183,7 @@ msgid "Event Registration"
 msgstr "Registrazione evento"
 
 #. module: event_tournament
-#: selection:event.registration,gender:0
+#: model:ir.model.fields.selection,name:event_tournament.selection__event_registration__gender__female
 msgid "Female"
 msgstr "Femmina"
 
@@ -189,7 +198,8 @@ msgid "File Name"
 msgstr "Nome file"
 
 #. module: event_tournament
-#: code:addons/event_tournament/wizards/import_csv_bv4w.py:158
+#: code:addons/event_tournament/wizards/import_csv_bv4w.py:0
+#: code:addons/odoo-modules/event_tournament/wizards/import_csv_bv4w.py:0
 #, python-format
 msgid "Found multiple registrations with name {name}"
 msgstr "Trovate diverse iscrizioni con il nome {name}"
@@ -284,7 +294,7 @@ msgid "Last Updated on"
 msgstr "Ultimo aggiornamento il"
 
 #. module: event_tournament
-#: selection:event.registration,gender:0
+#: model:ir.model.fields.selection,name:event_tournament.selection__event_registration__gender__male
 msgid "Male"
 msgstr "Maschio"
 
@@ -328,13 +338,15 @@ msgid "Match rules"
 msgstr "Regole partita"
 
 #. module: event_tournament
-#: code:addons/event_tournament/models/event_tournament_match.py:232
+#: code:addons/event_tournament/models/event_tournament_match.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_match.py:0
 #, python-format
 msgid "Match {match_name} already done."
 msgstr "La partita {match_name} è già completata."
 
 #. module: event_tournament
-#: code:addons/event_tournament/models/event_tournament_match.py:86
+#: code:addons/event_tournament/models/event_tournament_match.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_match.py:0
 #, python-format
 msgid ""
 "Match {match_name} not valid:\n"
@@ -344,7 +356,8 @@ msgstr ""
 "il componente {comp_name} sta già giocando nella partita {cont_match_name}."
 
 #. module: event_tournament
-#: code:addons/event_tournament/models/event_tournament_match.py:118
+#: code:addons/event_tournament/models/event_tournament_match.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_match.py:0
 #, python-format
 msgid ""
 "Match {match_name} not valid:\n"
@@ -354,7 +367,8 @@ msgstr ""
 "Il campo {court_name} non è disponibile per il torneo {tourn_name}."
 
 #. module: event_tournament
-#: code:addons/event_tournament/models/event_tournament_match_mode.py:45
+#: code:addons/event_tournament/models/event_tournament_match_mode.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_match_mode.py:0
 #, python-format
 msgid ""
 "Match {match_name} not valid:\n"
@@ -364,7 +378,8 @@ msgstr ""
 "il risultato {sets_won} - {sets_lost} non è atteso per i match in modalità {match_mode}."
 
 #. module: event_tournament
-#: code:addons/event_tournament/models/event_tournament_match.py:193
+#: code:addons/event_tournament/models/event_tournament_match.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_match.py:0
 #, python-format
 msgid ""
 "Match {match_name} not valid:\n"
@@ -374,7 +389,8 @@ msgstr ""
 "Le squadre sono in diversi tornei."
 
 #. module: event_tournament
-#: code:addons/event_tournament/models/event_tournament_match.py:182
+#: code:addons/event_tournament/models/event_tournament_match.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_match.py:0
 #, python-format
 msgid ""
 "Match {match_name} not valid:\n"
@@ -384,7 +400,8 @@ msgstr ""
 "le squadre hanno componenti in comune."
 
 #. module: event_tournament
-#: code:addons/event_tournament/models/event_tournament_match.py:201
+#: code:addons/event_tournament/models/event_tournament_match.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_match.py:0
 #, python-format
 msgid ""
 "Match {match_name} not valid:\n"
@@ -394,7 +411,8 @@ msgstr ""
 "squadre non presenti nel torneo {tourn_name}"
 
 #. module: event_tournament
-#: code:addons/event_tournament/models/event_tournament_match.py:148
+#: code:addons/event_tournament/models/event_tournament_match.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_match.py:0
 #, python-format
 msgid ""
 "Match {match_name} not valid:\n"
@@ -404,7 +422,8 @@ msgstr ""
 "il campo {court_name} è disponibile dalle {court_start} ma la partita inizia alle {match_start}."
 
 #. module: event_tournament
-#: code:addons/event_tournament/models/event_tournament_match.py:160
+#: code:addons/event_tournament/models/event_tournament_match.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_match.py:0
 #, python-format
 msgid ""
 "Match {match_name} not valid:\n"
@@ -414,7 +433,8 @@ msgstr ""
 "il campo {court_name} è disponibile fino alle {court_end} ma la partita finisce alle {match_end}."
 
 #. module: event_tournament
-#: code:addons/event_tournament/models/event_tournament_match.py:214
+#: code:addons/event_tournament/models/event_tournament_match.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_match.py:0
 #, python-format
 msgid ""
 "Match {match_name} not valid:\n"
@@ -424,8 +444,10 @@ msgstr ""
 "la squadra vincitrice {team_name} non ha partecipato."
 
 #. module: event_tournament
-#: code:addons/event_tournament/models/event_tournament_match.py:288
-#: code:addons/event_tournament/models/event_tournament_team.py:189
+#: code:addons/event_tournament/models/event_tournament_match.py:0
+#: code:addons/event_tournament/models/event_tournament_team.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_match.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_team.py:0
 #, python-format
 msgid ""
 "Match {match_name}, {set_string}:\n"
@@ -495,7 +517,7 @@ msgstr "Minimo numero di componenti uomo per una squadra"
 #. module: event_tournament
 #: model:ir.model.fields,field_description:event_tournament.field_event_registration__mobile
 msgid "Mobile"
-msgstr "Cellulare"
+msgstr "Dispositivo mobile"
 
 #. module: event_tournament
 #: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match_mode_result__mode_id
@@ -511,13 +533,15 @@ msgid "Name"
 msgstr "Nome"
 
 #. module: event_tournament
-#: code:addons/event_tournament/wizards/import_csv_bv4w.py:135
+#: code:addons/event_tournament/wizards/import_csv_bv4w.py:0
+#: code:addons/odoo-modules/event_tournament/wizards/import_csv_bv4w.py:0
 #, python-format
 msgid "No tournament found with name like '{csv_tourn_name}'"
 msgstr "Nessun torneo trovato con nome '{csv_tourn_name}'"
 
 #. module: event_tournament
-#: code:addons/event_tournament/models/event_tournament_match.py:236
+#: code:addons/event_tournament/models/event_tournament_match.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_match.py:0
 #, python-format
 msgid "No-one won a set in {match_name}."
 msgstr "Nessuno ha vinto un set nella partita {match_name}."
@@ -540,7 +564,7 @@ msgid "Open full-screen"
 msgstr "Apri a tutto schermo"
 
 #. module: event_tournament
-#: selection:event.registration,gender:0
+#: model:ir.model.fields.selection,name:event_tournament.selection__event_registration__gender__other
 msgid "Other"
 msgstr "Altro"
 
@@ -626,7 +650,8 @@ msgid "Scheduled start"
 msgstr "Inizio previsto"
 
 #. module: event_tournament
-#: code:addons/event_tournament/models/event_tournament.py:217
+#: code:addons/event_tournament/models/event_tournament.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament.py:0
 #, python-format
 msgid "Scheduling impossibru for a match between "
 msgstr "Schedulazione impossibbile per una partita tra "
@@ -673,7 +698,7 @@ msgid "Start"
 msgstr "Inizio"
 
 #. module: event_tournament
-#: selection:event.tournament,state:0
+#: model:ir.model.fields.selection,name:event_tournament.selection__event_tournament__state__started
 msgid "Started"
 msgstr "Iniziato"
 
@@ -681,7 +706,7 @@ msgstr "Iniziato"
 #: model:ir.model.fields,field_description:event_tournament.field_event_tournament__state
 #: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match__state
 msgid "State"
-msgstr "Stato"
+msgstr "Provincia"
 
 #. module: event_tournament
 #: model:ir.model.fields,field_description:event_tournament.field_event_tournament__child_ids
@@ -706,7 +731,8 @@ msgid "Team rules"
 msgstr "Regole per squadre"
 
 #. module: event_tournament
-#: code:addons/event_tournament/models/event_tournament_team.py:64
+#: code:addons/event_tournament/models/event_tournament_team.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_team.py:0
 #, python-format
 msgid ""
 "Team {team_name} not valid:\n"
@@ -716,7 +742,8 @@ msgstr ""
 "i componenti derivano da diversi eventi."
 
 #. module: event_tournament
-#: code:addons/event_tournament/models/event_tournament_team.py:71
+#: code:addons/event_tournament/models/event_tournament_team.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_team.py:0
 #, python-format
 msgid ""
 "Team {team_name} not valid:\n"
@@ -726,7 +753,8 @@ msgstr ""
 "i componenti non sono nell'evento {event_name}."
 
 #. module: event_tournament
-#: code:addons/event_tournament/models/event_tournament_team.py:89
+#: code:addons/event_tournament/models/event_tournament_team.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_team.py:0
 #, python-format
 msgid ""
 "Team {team_name} not valid:\n"
@@ -736,7 +764,8 @@ msgstr ""
 "il componente {comp_name} è già nella squadra {other_team_name}."
 
 #. module: event_tournament
-#: code:addons/event_tournament/models/event_tournament_team.py:120
+#: code:addons/event_tournament/models/event_tournament_team.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_team.py:0
 #, python-format
 msgid ""
 "Team {team_name} not valid:\n"
@@ -746,7 +775,8 @@ msgstr ""
 "il torneo {tourn_name} richiede un minimo di componenti donne (o uomini) ma non tutti i componenti hanno genere."
 
 #. module: event_tournament
-#: code:addons/event_tournament/models/event_tournament_team.py:99
+#: code:addons/event_tournament/models/event_tournament_team.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_team.py:0
 #, python-format
 msgid ""
 "Team {team_name} not valid:\n"
@@ -756,7 +786,8 @@ msgstr ""
 "il torneo {tourn_name} richiede almeno {min_comp} componenti per squadra."
 
 #. module: event_tournament
-#: code:addons/event_tournament/models/event_tournament_team.py:133
+#: code:addons/event_tournament/models/event_tournament_team.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_team.py:0
 #, python-format
 msgid ""
 "Team {team_name} not valid:\n"
@@ -766,7 +797,8 @@ msgstr ""
 "il torneo {tourn_name} richiede almeno {min_comp} componenti donna per squadra."
 
 #. module: event_tournament
-#: code:addons/event_tournament/models/event_tournament_team.py:146
+#: code:addons/event_tournament/models/event_tournament_team.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_team.py:0
 #, python-format
 msgid ""
 "Team {team_name} not valid:\n"
@@ -776,7 +808,8 @@ msgstr ""
 "il torneo {tourn_name} richiede almeno {min_comp} componenti uomo per squadra."
 
 #. module: event_tournament
-#: code:addons/event_tournament/models/event_tournament_team.py:109
+#: code:addons/event_tournament/models/event_tournament_team.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_team.py:0
 #, python-format
 msgid ""
 "Team {team_name} not valid:\n"
@@ -858,7 +891,8 @@ msgid "Tournament teams"
 msgstr "Squadre torneo"
 
 #. module: event_tournament
-#: code:addons/event_tournament/models/event_tournament.py:162
+#: code:addons/event_tournament/models/event_tournament.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament.py:0
 #, python-format
 msgid ""
 "Tournament {tourn_name}:\n"
@@ -868,7 +902,8 @@ msgstr ""
 "Una partita dovrebbe avere una durata."
 
 #. module: event_tournament
-#: code:addons/event_tournament/models/event_tournament.py:135
+#: code:addons/event_tournament/models/event_tournament.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament.py:0
 #, python-format
 msgid ""
 "Tournament {tourn_name}:\n"
@@ -878,7 +913,19 @@ msgstr ""
 "per la generazione delle partite è richiesta almeno una squadra per partita ."
 
 #. module: event_tournament
-#: code:addons/event_tournament/models/event_tournament.py:167
+#: code:addons/event_tournament/models/event_tournament.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament.py:0
+#, python-format
+msgid ""
+"Tournament {tourn_name}:\n"
+"At least one court is required for matches generation."
+msgstr ""
+"Torneo {tourn_name}:\n"
+"per la generazione delle partite è richiesto almeno un campo."
+
+#. module: event_tournament
+#: code:addons/event_tournament/models/event_tournament.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament.py:0
 #, python-format
 msgid ""
 "Tournament {tourn_name}:\n"
