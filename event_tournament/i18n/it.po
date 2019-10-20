@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 13.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-10-20 10:34+0000\n"
-"PO-Revision-Date: 2019-10-20 12:35+0200\n"
+"POT-Creation-Date: 2019-10-20 21:16+0000\n"
+"PO-Revision-Date: 2019-10-20 23:27+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -65,6 +65,7 @@ msgid "Component"
 msgstr "Componente"
 
 #. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament__component_ids
 #: model:ir.model.fields,field_description:event_tournament.field_event_tournament_team__component_ids
 msgid "Components"
 msgstr "Componenti"
@@ -536,8 +537,8 @@ msgstr "Nome"
 #: code:addons/event_tournament/wizards/import_csv_bv4w.py:0
 #: code:addons/odoo-modules/event_tournament/wizards/import_csv_bv4w.py:0
 #, python-format
-msgid "No tournament found with name like '{csv_tourn_name}'"
-msgstr "Nessun torneo trovato con nome '{csv_tourn_name}'"
+msgid "No tournament found with name equal to '{csv_tourn_name}'"
+msgstr "Nessun torneo trovato con nome uguale a '{csv_tourn_name}'"
 
 #. module: event_tournament
 #: code:addons/event_tournament/models/event_tournament_match.py:0
@@ -753,72 +754,6 @@ msgstr ""
 "i componenti non sono nell'evento {event_name}."
 
 #. module: event_tournament
-#: code:addons/event_tournament/models/event_tournament_team.py:0
-#: code:addons/odoo-modules/event_tournament/models/event_tournament_team.py:0
-#, python-format
-msgid ""
-"Team {team_name} not valid:\n"
-"component {comp_name} is already in team {other_team_name}."
-msgstr ""
-"Squadra {team_name} non valida:\n"
-"il componente {comp_name} è già nella squadra {other_team_name}."
-
-#. module: event_tournament
-#: code:addons/event_tournament/models/event_tournament_team.py:0
-#: code:addons/odoo-modules/event_tournament/models/event_tournament_team.py:0
-#, python-format
-msgid ""
-"Team {team_name} not valid:\n"
-"tournament {tourn_name} requires a minimum of female (or male) components but not all components have gender."
-msgstr ""
-"Squadra {team_name} non valida:\n"
-"il torneo {tourn_name} richiede un minimo di componenti donne (o uomini) ma non tutti i componenti hanno genere."
-
-#. module: event_tournament
-#: code:addons/event_tournament/models/event_tournament_team.py:0
-#: code:addons/odoo-modules/event_tournament/models/event_tournament_team.py:0
-#, python-format
-msgid ""
-"Team {team_name} not valid:\n"
-"tournament {tourn_name} requires at least {min_comp} components per team."
-msgstr ""
-"Squadra {team_name} non valida:\n"
-"il torneo {tourn_name} richiede almeno {min_comp} componenti per squadra."
-
-#. module: event_tournament
-#: code:addons/event_tournament/models/event_tournament_team.py:0
-#: code:addons/odoo-modules/event_tournament/models/event_tournament_team.py:0
-#, python-format
-msgid ""
-"Team {team_name} not valid:\n"
-"tournament {tourn_name} requires at least {min_female_comp} female components per team."
-msgstr ""
-"Squadra {team_name} non valida:\n"
-"il torneo {tourn_name} richiede almeno {min_comp} componenti donna per squadra."
-
-#. module: event_tournament
-#: code:addons/event_tournament/models/event_tournament_team.py:0
-#: code:addons/odoo-modules/event_tournament/models/event_tournament_team.py:0
-#, python-format
-msgid ""
-"Team {team_name} not valid:\n"
-"tournament {tourn_name} requires at least {min_male_comp} male components per team."
-msgstr ""
-"Squadra {team_name} non valida:\n"
-"il torneo {tourn_name} richiede almeno {min_comp} componenti uomo per squadra."
-
-#. module: event_tournament
-#: code:addons/event_tournament/models/event_tournament_team.py:0
-#: code:addons/odoo-modules/event_tournament/models/event_tournament_team.py:0
-#, python-format
-msgid ""
-"Team {team_name} not valid:\n"
-"tournament {tourn_name} requires at most {max_comp} components per team."
-msgstr ""
-"Squadra {team_name} non valida:\n"
-"il torneo {tourn_name} richiede al massimo {max_comp} componenti per squadra."
-
-#. module: event_tournament
 #: model:ir.model.fields,field_description:event_tournament.field_event_registration__tournament_team_ids
 #: model:ir.model.fields,field_description:event_tournament.field_event_tournament__team_ids
 #: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match__line_ids
@@ -891,6 +826,73 @@ msgid "Tournament teams"
 msgstr "Squadre torneo"
 
 #. module: event_tournament
+#: code:addons/event_tournament/models/event_tournament_team.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_team.py:0
+#, python-format
+msgid ""
+"Tournament {tourn_name}, team {team_name} not valid:\n"
+"component {comp_name} is already in team {other_team_name}."
+msgstr ""
+"Torneo {tourn_name}, squadra {team_name} non valida:\n"
+"il componente {comp_name} è già nella squadra {other_team_name}."
+
+#. module: event_tournament
+#: code:addons/event_tournament/models/event_tournament_team.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_team.py:0
+#, python-format
+msgid ""
+"Tournament {tourn_name}, team {team_name} not valid:\n"
+"tournament {tourn_name} requires a minimum of female (or male) components but not all components have gender."
+msgstr ""
+"Torneo {tourn_name}, squadra {team_name} non valida:\n"
+"il torneo {tourn_name} richiede un minimo di donne (o uomini) in squadra ma non tutti i componenti della "
+"squadra hanno genere."
+
+#. module: event_tournament
+#: code:addons/event_tournament/models/event_tournament_team.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_team.py:0
+#, python-format
+msgid ""
+"Tournament {tourn_name}, team {team_name} not valid:\n"
+"tournament {tourn_name} requires at least {min_comp} components per team."
+msgstr ""
+"Torneo {tourn_name}, squadra {team_name} non valida:\n"
+"il torneo {tourn_name} richiede almeno {min_comp} componenti per squadra."
+
+#. module: event_tournament
+#: code:addons/event_tournament/models/event_tournament_team.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_team.py:0
+#, python-format
+msgid ""
+"Tournament {tourn_name}, team {team_name} not valid:\n"
+"tournament {tourn_name} requires at least {min_female_comp} female components per team."
+msgstr ""
+"Torneo {tourn_name}, squadra {team_name} non valida:\n"
+"il torneo {tourn_name} richiede almeno {min_comp} componenti donna per squadra."
+
+#. module: event_tournament
+#: code:addons/event_tournament/models/event_tournament_team.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_team.py:0
+#, python-format
+msgid ""
+"Tournament {tourn_name}, team {team_name} not valid:\n"
+"tournament {tourn_name} requires at least {min_male_comp} male components per team."
+msgstr ""
+"Torneo {tourn_name}, squadra {team_name} non valida:\n"
+"il torneo {tourn_name} richiede almeno {min_comp} componenti uomo per squadra."
+
+#. module: event_tournament
+#: code:addons/event_tournament/models/event_tournament_team.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_team.py:0
+#, python-format
+msgid ""
+"Tournament {tourn_name}, team {team_name} not valid:\n"
+"tournament {tourn_name} requires at most {max_comp} components per team."
+msgstr ""
+"Torneo {tourn_name}, squadra {team_name} non valida:\n"
+"il torneo {tourn_name} richiede al massimo {max_comp} componenti per squadra."
+
+#. module: event_tournament
 #: code:addons/event_tournament/models/event_tournament.py:0
 #: code:addons/odoo-modules/event_tournament/models/event_tournament.py:0
 #, python-format
@@ -899,7 +901,7 @@ msgid ""
 "A match should have a duration."
 msgstr ""
 "Torneo {tourn_name}:\n"
-"Una partita dovrebbe avere una durata."
+"una partita dovrebbe avere una durata."
 
 #. module: event_tournament
 #: code:addons/event_tournament/models/event_tournament.py:0

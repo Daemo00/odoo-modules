@@ -85,17 +85,20 @@ class EventTournamentTeam (models.Model):
                 for component in components:
                     if component in other_team.component_ids:
                         raise ValidationError(_(
-                            "Team {team_name} not valid:\n"
+                            "Tournament {tourn_name}, "
+                            "team {team_name} not valid:\n"
                             "component {comp_name} is already in "
                             "team {other_team_name}.")
                             .format(
+                                tourn_name=tournament.display_name,
                                 team_name=team.display_name,
                                 comp_name=component.display_name,
                                 other_team_name=other_team.display_name))
             if tournament.min_components \
                     and len(components) < tournament.min_components:
                 raise ValidationError(_(
-                    "Team {team_name} not valid:\n"
+                    "Tournament {tourn_name}, "
+                    "team {team_name} not valid:\n"
                     "tournament {tourn_name} requires "
                     "at least {min_comp} components per team.")
                     .format(
@@ -105,7 +108,8 @@ class EventTournamentTeam (models.Model):
             if tournament.max_components \
                     and len(components) > tournament.max_components:
                 raise ValidationError(_(
-                    "Team {team_name} not valid:\n"
+                    "Tournament {tourn_name}, "
+                    "team {team_name} not valid:\n"
                     "tournament {tourn_name} requires "
                     "at most {max_comp} components per team.")
                     .format(
@@ -116,7 +120,8 @@ class EventTournamentTeam (models.Model):
                     or tournament.min_components_male:
                 if not all(c.gender for c in components):
                     raise ValidationError(_(
-                        "Team {team_name} not valid:\n"
+                        "Tournament {tourn_name}, "
+                        "team {team_name} not valid:\n"
                         "tournament {tourn_name} requires "
                         "a minimum of female (or male) components but "
                         "not all components have gender.")
@@ -129,7 +134,8 @@ class EventTournamentTeam (models.Model):
                     if len(female_components) > \
                             tournament.min_components_female:
                         raise ValidationError(_(
-                            "Team {team_name} not valid:\n"
+                            "Tournament {tourn_name}, "
+                            "team {team_name} not valid:\n"
                             "tournament {tourn_name} requires at least "
                             "{min_female_comp} female components per team.")
                             .format(
@@ -142,7 +148,8 @@ class EventTournamentTeam (models.Model):
                         lambda c: c.gender == 'male')
                     if len(male_components) > tournament.min_components_male:
                         raise ValidationError(_(
-                            "Team {team_name} not valid:\n"
+                            "Tournament {tourn_name}, "
+                            "team {team_name} not valid:\n"
                             "tournament {tourn_name} requires at least "
                             "{min_male_comp} male components per team.")
                             .format(

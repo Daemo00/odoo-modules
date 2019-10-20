@@ -39,6 +39,10 @@ class EventTournament(models.Model):
         comodel_name='event.tournament.team',
         inverse_name='tournament_id',
         string="Teams")
+    component_ids = fields.Many2many(
+        comodel_name='event.registration',
+        compute='compute_components',
+        string="Components")
     team_count = fields.Integer(
         string="Team count",
         compute='compute_team_count')
@@ -116,6 +120,12 @@ class EventTournament(models.Model):
     def compute_team_count(self):
         for tournament in self:
             tournament.team_count = len(tournament.team_ids)
+
+    @api.depends('team_ids.component_ids')
+    def compute_components(self):
+        for tournament in self:
+            tournament.component_ids = \
+                tournament.team_ids.mapped('component_ids')
 
     def action_draft(self):
         for tournament in self:
