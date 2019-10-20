@@ -29,6 +29,9 @@ class EventTournament(models.Model):
         comodel_name='event.tournament.match',
         inverse_name='tournament_id',
         string="Matches")
+    match_count_estimated = fields.Integer(
+        string="Estimated match count",
+        compute='compute_match_count_estimated')
     match_count = fields.Integer(
         string="Match count",
         compute='compute_match_count')
@@ -100,6 +103,14 @@ class EventTournament(models.Model):
     def compute_match_count(self):
         for tournament in self:
             tournament.match_count = len(tournament.match_ids)
+
+    @api.depends('team_ids', 'match_teams_nbr')
+    def compute_match_count_estimated(self):
+        for tournament in self:
+            tournament.match_count_estimated = len(list(
+                itertools.combinations(
+                    tournament.team_ids,
+                    tournament.match_teams_nbr)))
 
     @api.depends('team_ids')
     def compute_team_count(self):
