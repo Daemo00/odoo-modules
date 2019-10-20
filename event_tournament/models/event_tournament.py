@@ -173,6 +173,12 @@ class EventTournament(models.Model):
             raise UserError(_("Tournament {tourn_name}:\n"
                               "Start time is required for matches generation.")
                             .format(tourn_name=self.display_name))
+
+        if not self.court_ids:
+            raise UserError(_("Tournament {tourn_name}:\n"
+                              "At least one court is required "
+                              "for matches generation.")
+                            .format(tourn_name=self.display_name))
         warm_up_start = self.start_datetime \
             - timedelta(hours=self.match_warm_up_duration)
         min_start = warm_up_start
