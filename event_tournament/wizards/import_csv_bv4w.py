@@ -2,6 +2,7 @@
 #  License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 import base64
 import csv
+import operator
 from datetime import datetime
 
 from odoo import api, fields, models, _
@@ -128,21 +129,25 @@ class ImportCSVBV4W (models.TransientModel):
         parsed_players = team_dict['players']
         parsed_players[0]['email'] = team_dict['email']
         tournament = self.env['event.tournament'].search([
-            ('name', 'like', team_dict['tournament'])])
+            ('name', '=', team_dict['tournament'])])
         if not tournament:
             raise UserError(
-                _("No tournament found with name like '{csv_tourn_name}'")
+                _("No tournament found with name equal to '{csv_tourn_name}'")
                 .format(csv_tourn_name=team_dict['tournament']))
 
-        registrations_names = \
-            tournament.event_id.registration_ids.mapped('name')
+        registrations = tournament.event_id.registration_ids
 
         players_values = list()
         date_open = datetime.strptime(
             team_dict['date_open'], '%m/%d/%Y %H:%M:%S')
+
+        def same_player(registration, new_player_values):
+            return registration.name == new_player_values['name'] \
+                   and registration.birthdate_date \
+                   == new_player_values['birthdate_date']
         for parsed_player in parsed_players:
             player_values = parsed_player
-            player_values['name'] = player_values['name']\
+            player_values['name'] = player_values['name'] \
                 .title().replace(" ", "")  # Clean user data
             player_values['birthdate_date'] = datetime.strptime(
                 player_values['birthdate_date'], '%m/%d/%Y').date()
@@ -151,15 +156,15 @@ class ImportCSVBV4W (models.TransientModel):
             if 'is_fipav' in parsed_player:
                 not_fipav = parsed_player['is_fipav'].lower() == 'no'
                 player_values['is_fipav'] = not not_fipav
-            if player_values['name'] in registrations_names:
-                registration = tournament.event_id.registration_ids.filtered(
-                    lambda r: r.name == player_values['name'])
-                if len(registration) != 1:
+            existing_registration = registrations.filtered(
+                lambda r: same_player(r, player_values))
+            if existing_registration:
+                if len(existing_registration) > 1:
                     raise UserError(_(
                         "Found multiple registrations with name {name}")
                                     .format(name=player_values['name']))
-                registration.update(player_values)
-                players_values.append((4, registration.id))
+                existing_registration.update(player_values)
+                players_values.append((4, existing_registration.id))
             else:
                 players_values.append((0, 0, player_values))
         return {
