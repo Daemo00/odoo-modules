@@ -6,32 +6,15 @@ import os
 
 from odoo.exceptions import UserError, ValidationError
 from odoo.modules import get_resource_path
-from odoo.tests import TransactionCase, date
+
+from .test_common import TestCommon
 
 
-class TestImportCsvBV4W (TransactionCase):
+class TestImportCsvBV4W (TestCommon):
 
     def setUp(self):
         super().setUp()
-        self.event_model = self.env['event.event']
-        self.component_model = self.env['event.registration']
-        self.team_model = self.env['event.tournament.team']
-        self.tournament_model = self.env['event.tournament']
         self.wizard_model = self.env['event.tournament.import_csv_bv4w']
-
-        self.event = self.event_model.create({
-            'name': 'test event',
-            'date_begin': date(2000, 1, 1),
-            'date_end': date(2000, 1, 2),
-        })
-        self.tournament_1 = self.tournament_model.create({
-            'name': 'test tournament 1',
-            'event_id': self.event.id,
-        })
-        self.tournament_2 = self.tournament_model.create({
-            'name': 'test tournament 2',
-            'event_id': self.event.id,
-        })
 
     def get_wizard_for_file(self, file_name):
         resp_path = get_resource_path(
@@ -43,7 +26,7 @@ class TestImportCsvBV4W (TransactionCase):
             })
         return wizard
 
-    def import_csv_bv4w_no_tournament(self):
+    def test_import_csv_bv4w_no_tournament(self):
         """
         Import the file when no tournament exists,
         an exception should be raised.
@@ -55,7 +38,7 @@ class TestImportCsvBV4W (TransactionCase):
             wizard.import_csv_bv4w()
         self.assertIn(tournament_name, ue.exception.name)
 
-    def import_csv_bv4w_teams(self):
+    def test_import_csv_bv4w_teams(self):
         """
         Import the file, check that the teams are created.
         """
@@ -64,7 +47,7 @@ class TestImportCsvBV4W (TransactionCase):
         wizard.import_csv_bv4w()
         self.assertEqual(len(self.tournament_1.team_ids), 2)
 
-    def import_csv_bv4w_components(self):
+    def test_import_csv_bv4w_components(self):
         """
         Import the file, check that the components are created.
         """
@@ -73,7 +56,7 @@ class TestImportCsvBV4W (TransactionCase):
         wizard.import_csv_bv4w()
         self.assertEqual(len(self.tournament_1.event_id.registration_ids), 4)
 
-    def import_csv_bv4w_components_overlap_error(self):
+    def test_import_csv_bv4w_components_overlap_error(self):
         """
         Import the file, check that the components are created
         and overlapping components from same tournaments raise exception.
@@ -86,7 +69,7 @@ class TestImportCsvBV4W (TransactionCase):
         self.assertIn('test team 2', ue.exception.name)
         self.assertIn('TestTeamComponent2', ue.exception.name)
 
-    def import_csv_bv4w_components_overlap(self):
+    def test_import_csv_bv4w_components_overlap(self):
         """
         Import the file, check that the components are created
         and overlapping components from different tournaments are merged.
@@ -99,7 +82,7 @@ class TestImportCsvBV4W (TransactionCase):
         self.assertEqual(len(self.tournament_2.component_ids), 2)
         self.assertEqual(len(self.event.registration_ids), 3)
 
-    def import_csv_bv4w_components_homonym(self):
+    def test_import_csv_bv4w_components_homonym(self):
         """
         Import the file, check that the components are created
         and homonyms (born in different dates) are not merged.
