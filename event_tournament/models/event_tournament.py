@@ -102,6 +102,7 @@ class EventTournament(models.Model):
     def onchange_event_id(self):
         if self.event_id:
             self.start_datetime = self.event_id.date_begin
+            self.court_ids = self.event_id.court_ids
 
     @api.depends('match_ids')
     def compute_match_count(self):
