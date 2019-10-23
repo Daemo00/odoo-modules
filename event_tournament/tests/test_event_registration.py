@@ -1,6 +1,6 @@
 #  Copyright 2019 Simone Rubino <daemo00@gmail.com>
 #  License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
-
+from odoo.fields import first
 from .test_common import TestCommon
 
 
@@ -34,9 +34,10 @@ class TestEventRegistration(TestCommon):
         check that the component is in the team's tournament.
         """
         self.assertFalse(self.component.tournament_team_ids)
+        tournament = first(self.tournaments)
         team = self.team_model.create({
             'event_id': self.event.id,
-            'tournament_id': self.tournament_1.id,
+            'tournament_id': tournament.id,
             'name': 'test team',
             'component_ids': [(4, self.component.id)]
         })
