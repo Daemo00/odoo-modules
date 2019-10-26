@@ -44,7 +44,12 @@ class TestEventTournament (TestCommon):
         self.assertEqual(tournament.match_count, 1)
 
     def test_compute_match_count_estimated(self):
+        """
+        Create a tournament with teams,
+        check that match_count_estimated is correctly computed.
+        """
         tournament = first(self.tournaments)
+        self.teams.update({'tournament_id': tournament.id})
         self.assertEqual(len(tournament.team_ids), 2)
         self.assertEqual(tournament.match_teams_nbr, 2)
         self.assertEqual(tournament.match_count_estimated, 1)
