@@ -51,7 +51,7 @@ class EventTournamentTeam (models.Model):
                 'component_ids': components_domain,
                 'match_ids': matches_domain}}
 
-    @api.constrains('component_ids', 'event_id')
+    @api.constrains('component_ids', 'tournament_id')
     def constrain_components_event(self):
         for team in self:
             components = team.component_ids
