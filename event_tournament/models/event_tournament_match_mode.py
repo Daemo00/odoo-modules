@@ -1,5 +1,6 @@
 #  Copyright 2019 Simone Rubino <daemo00@gmail.com>
 #  License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+from collections import Counter
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
@@ -27,10 +28,17 @@ class EventTournamentMatchMode(models.Model):
         inverse_name='mode_id')
 
     def get_points(self, match):
+        """
+        Get a dictionary storing the points of each team involved in `match`.
+
+        :return: A dictionary mapping teams to how many points they obtained
+        """
         self.ensure_one()
-        sets_played, team_sets_won = match.get_sets_info()
-        team_points = dict.fromkeys(match.team_ids, 0)
-        for team, sets_won in team_sets_won.items():
+        team_sets_info = match.get_sets_info()
+        team_points = Counter(match.team_ids)
+        sets_played = sum(tsi[0] for tsi in team_sets_info.values())
+        for team, sets_info in team_sets_info.items():
+            sets_won, points_done, points_taken = sets_info
             sets_lost = sets_played - sets_won
             for res in self.result_ids:
                 if res.sets_won == sets_won and res.sets_lost == sets_lost:

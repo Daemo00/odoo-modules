@@ -79,7 +79,10 @@ class EventTournamentMatch(models.Model):
             lines_vals = list()
             for team in match.team_ids:
                 if team not in team_lines:
-                    lines_vals.append({'match_id': match.id, 'team_id': team.id})
+                    lines_vals.append({
+                        'match_id': match.id,
+                        'team_id': team.id,
+                    })
             match.line_ids.create(lines_vals)
 
     @api.depends('team_ids.component_ids')
@@ -87,23 +90,25 @@ class EventTournamentMatch(models.Model):
         for match in self:
             match.component_ids = match.team_ids.mapped('component_ids')
 
-    @api.constrains('time_scheduled_start', 'time_scheduled_end')
+    @api.constrains(
+        'time_scheduled_start', 'time_scheduled_end', 'component_ids')
     def constrain_time(self):
         for match in self:
             contemporary_matches_domain = match.contemporary_match_domain()
             contemporary_matches = self.search(contemporary_matches_domain)
             contemporary_matches = contemporary_matches - match
+            match_components = match.component_ids
             for cont_match in contemporary_matches:
-                cont_match_comps = cont_match.component_ids
-                for cont_match_comp in cont_match_comps:
-                    if cont_match_comp in match.component_ids:
+                cont_match_components = cont_match.component_ids
+                for cont_match_component in cont_match_components:
+                    if cont_match_component in match_components:
                         raise ValidationError(_(
                             "Match {match_name} not valid:\n"
                             "Component {comp_name} is already playing "
                             "in match {cont_match_name}.")
                             .format(
                                 match_name=match.display_name,
-                                comp_name=cont_match_comp.display_name,
+                                comp_name=cont_match_component.display_name,
                                 cont_match_name=cont_match.display_name))
 
     def contemporary_match_domain(self):
@@ -187,15 +192,26 @@ class EventTournamentMatch(models.Model):
             teams = match.team_ids
             if len(teams) <= 1:
                 raise ValidationError(_("A good match needs at least 2 teams"))
-            registrations = self.env['event.registration'].browse()
-            for team in teams:
-                registrations &= team.component_ids
-            if registrations:
-                raise ValidationError(
-                    _("Match {match_name} not valid:\n"
-                      "Teams have common components.")
-                    .format(
-                        match_name=match.display_name))
+            teams = list(teams)
+            while teams:
+                team = teams.pop()
+                for other_team in teams:
+                    other_team_components = other_team.mapped('component_ids')
+                    common_components = \
+                        team.component_ids & other_team_components
+                    if common_components:
+                        common_components_names = \
+                            common_components.mapped('display_name')
+                        raise ValidationError(
+                            _("Match {match_name} not valid:\n"
+                              "Teams {team_name} and {other_team_name} have "
+                              "common components ({common_components_names}).")
+                            .format(
+                                common_components_names=", ".join(
+                                    common_components_names),
+                                other_team_name=other_team.display_name,
+                                team_name=team.display_name,
+                                match_name=match.display_name))
 
     @api.constrains('tournament_id', 'team_ids')
     def constrain_tournament(self):
@@ -242,7 +258,7 @@ class EventTournamentMatch(models.Model):
         if self.state == 'done':
             raise UserError(_("Match {match_name} already done.")
                             .format(match_name=self.display_name))
-        sets_played, team_sets_won = self.get_sets_info()
+        team_sets_won = self.get_sets_info()
         if not team_sets_won:
             raise UserError(_("No-one won a set in {match_name}.")
                             .format(match_name=self.display_name))
@@ -272,37 +288,47 @@ class EventTournamentMatch(models.Model):
         return res
 
     def get_sets_info(self):
+        """
+        Get the sets won by each team and their points done/taken.
+
+        :return: A dictionary mapping teams to a tuple
+            (sets won, points done, points taken)
+        """
         self.ensure_one()
         set_fields = ['set_' + str(n) for n in range(1, 6)]
         team_sets_won = Counter()
-        sets_played = 0
-        team_model = self.env['event.tournament.team']
+        team_points_done = Counter()
+        team_points_taken = Counter()
         for set_field in set_fields:
             set_points = dict()
             for line in self.line_ids:
-                points = getattr(line, set_field)
-                if not points:
-                    continue
-                set_points[line.team_id] = points
-            if not set_points:
+                set_points[line.team_id] = getattr(line, set_field)
+            if not sum(set_points.values()):
                 continue
-            sets_played += 1
             max_set_points = max(set_points.values())
-            set_winners = team_model.browse()
-            for team, points in set_points.items():
-                if points == max_set_points:
-                    set_winners |= team
+            all_set_points = sum(set_points.values())
+            for team, points_done in set_points.items():
+                team_points_done[team] += points_done
+                team_points_taken[team] += all_set_points - points_done
+
+            set_winners = filter(lambda tp: tp[1] == max_set_points,
+                                 set_points.items())
+            set_winners = list(dict(set_winners).keys())
             if len(set_winners) > 1:
                 raise UserError(
                     _("Match {match_name}, {set_string}:\n"
-                      " Ties are not allowed.")
+                      "Ties are not allowed.")
                     .format(
                         match_name=self.display_name,
                         set_string=self.line_ids._fields[set_field]
                             ._description_string(self.env)))
-            set_winner = first(set_winners)
+            set_winner = set_winners[0]
             team_sets_won[set_winner] += 1
-        return sets_played, team_sets_won
+        return dict((team,
+                     (team_sets_won[team],
+                      team_points_done[team],
+                      team_points_taken[team]))
+                    for team in self.team_ids)
 
 
 class EventTournamentMatchLine(models.Model):
