@@ -12,7 +12,7 @@ class TestEventTournamentMatch (TestCommon):
         check that sets info are correctly computed.
         """
         teams = self.teams[:2]
-        match = self.get_match(teams)
+        match = self.get_match_2_1(teams)
         self.assertDictEqual(
             {
                 teams[0]: (1, 39, 54),
