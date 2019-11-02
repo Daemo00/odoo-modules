@@ -3,6 +3,10 @@
 from odoo.fields import first
 from odoo.tests import TransactionCase, date
 
+COURT_NBR = 2
+TEAM_NBR = 3
+TOURNAMENT_NBR = 2
+
 
 class TestCommon (TransactionCase):
 
@@ -16,34 +20,39 @@ class TestCommon (TransactionCase):
         self.team_model = self.env['event.tournament.team']
         self.tournament_model = self.env['event.tournament']
 
-        self.court = self.court_model.create({
-            'name': 'test court',
-        })
         self.event = self.event_model.create({
             'name': 'test event',
             'date_begin': date(2000, 1, 1),
             'date_end': date(2000, 1, 2),
-            'court_ids': self.court.ids
         })
+
         self.tournaments = self.tournament_model.create([{
             'event_id': self.event.id,
-            'name': 'test tournament {tourn_index}'.format(
-                tourn_index=tourn_index),
-        } for tourn_index in range(2)])
+            'name': 'test tournament {tournament_index}'.format(
+                tournament_index=tournament_index),
+        } for tournament_index in range(TOURNAMENT_NBR)])
+
         self.teams = self.team_model.create([{
             # Try this with tournaments[0] to reproduce
             # https://github.com/odoo/odoo/pull/39295
             'tournament_id': self.tournaments[1].id,
-            'name': 'test team {team_index}'.format(team_index=team_index),
-        } for team_index in range(3)])
+            'name': 'test team {team_index}'
+                .format(team_index=team_index),
+        } for team_index in range(TEAM_NBR)])
+
+        self.courts = self.court_model.create([{
+            'name': 'test court {court_index}'
+                .format(court_index=court_index),
+        } for court_index in range(COURT_NBR)])
 
     def get_match_2_1(self, teams):
         tournament = first(self.tournaments)
-        tournament.update({'court_ids': self.court.ids})
+        court = first(self.courts)
+        tournament.update({'court_ids': court.ids})
         teams.update({'tournament_id': tournament.id})
         match = self.match_model.create({
             'tournament_id': tournament.id,
-            'court_id': self.court.id,
+            'court_id': court.id,
             'team_ids': teams.ids,
             'line_ids': [
                 (0, 0, {
@@ -64,11 +73,12 @@ class TestCommon (TransactionCase):
 
     def get_match_1_1(self, teams):
         tournament = first(self.tournaments)
-        tournament.update({'court_ids': self.court.ids})
+        court = first(self.courts)
+        tournament.update({'court_ids': court.ids})
         teams.update({'tournament_id': tournament.id})
         match = self.match_model.create({
             'tournament_id': tournament.id,
-            'court_id': self.court.id,
+            'court_id': court.id,
             'team_ids': teams.ids,
             'line_ids': [
                 (0, 0, {

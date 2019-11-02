@@ -3,7 +3,7 @@
 from odoo import fields
 from odoo.exceptions import UserError
 from odoo.fields import first
-from .test_common import TestCommon
+from .test_common import TestCommon, TEAM_NBR
 
 
 class TestEventTournament (TestCommon):
@@ -30,17 +30,15 @@ class TestEventTournament (TestCommon):
         check that match_count correctly counts the matches.
         """
         tournament = first(self.tournaments)
+        teams = self.teams
+        court = first(self.courts)
+        tournament.court_ids = court
+        teams.update({'tournament_id': tournament.id})
+
         self.assertFalse(tournament.match_count)
-        teams = self.team_model.create([
-            {
-                'tournament_id': tournament.id,
-                'name': 'test team {team_index}'.format(team_index=team_index),
-            }
-            for team_index in range(2)])
-        tournament.onchange_event_id()
         self.match_model.create({
             'tournament_id': tournament.id,
-            'court_id': first(tournament.court_ids).id,
+            'court_id': court.id,
             'team_ids': teams.ids,
         })
         self.assertEqual(tournament.match_count, 1)
@@ -52,7 +50,7 @@ class TestEventTournament (TestCommon):
         """
         tournament = first(self.tournaments)
         self.teams.update({'tournament_id': tournament.id})
-        self.assertEqual(len(tournament.team_ids), 3)
+        self.assertEqual(len(tournament.team_ids), TEAM_NBR)
         self.assertEqual(tournament.match_teams_nbr, 2)
         self.assertEqual(tournament.match_count_estimated, 3)
         self.team_model.create({
@@ -89,7 +87,7 @@ class TestEventTournament (TestCommon):
         """
         tournament = self.tournaments[1]
         tournament.start_datetime = fields.Datetime.now()
-        tournament.court_ids = self.court
+        tournament.court_ids = self.courts
         self.assertEqual(
             len(tournament.generate_matches()),
             tournament.match_count_estimated)
