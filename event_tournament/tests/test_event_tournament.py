@@ -1,5 +1,6 @@
 #  Copyright 2019 Simone Rubino <daemo00@gmail.com>
 #  License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+from odoo.exceptions import UserError
 from odoo.fields import first
 from .test_common import TestCommon
 
@@ -58,3 +59,13 @@ class TestEventTournament (TestCommon):
             'name': 'test',
         })
         self.assertEqual(tournament.match_count_estimated, 3)
+
+    def test_generate_matches_start_time(self):
+        """
+        Create a tournament,
+        check that start time is required for matches generation.
+        """
+        tournament = first(self.tournaments)
+        with self.assertRaises(UserError) as ue:
+            self.assertTrue(tournament.generate_matches())
+        self.assertIn(tournament.name, ue.exception.name)

@@ -1,14 +1,18 @@
 #  Copyright 2019 Simone Rubino <daemo00@gmail.com>
 #  License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
-
+from odoo.exceptions import UserError
 from .test_common import TestCommon
 
 
 class TestEventTournamentMatchMode (TestCommon):
 
     def test_get_points(self):
+        """
+        Create a match,
+        check that points are computed correctly with beach volley mode.
+        """
         teams = self.teams[:2]
-        match = self.get_match(teams)
+        match = self.get_match_2_1(teams)
         bv_mode = self.env.ref('event_tournament.'
                                'event_tournament_match_mode_beach_volley')
         self.assertDictEqual(
@@ -18,3 +22,19 @@ class TestEventTournamentMatchMode (TestCommon):
             }
             , bv_mode.get_points(match)
         )
+
+    def test_get_points_error(self):
+        """
+        Create a match,
+        check that an exception is raised if the result is not present
+        in match's mode.
+        """
+        teams = self.teams[:2]
+        match = self.get_match_1_1(teams)
+        bv_mode = self.env.ref('event_tournament.'
+                               'event_tournament_match_mode_beach_volley')
+        with self.assertRaises(UserError) as ue:
+            bv_mode.get_points(match)
+        for team in teams:
+            self.assertIn(team.name, ue.exception.name)
+        self.assertIn(bv_mode.name, ue.exception.name)

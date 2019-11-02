@@ -31,11 +31,13 @@ class TestCommon (TransactionCase):
                 tourn_index=tourn_index),
         } for tourn_index in range(2)])
         self.teams = self.team_model.create([{
+            # Try this with tournaments[0] to reproduce
+            # https://github.com/odoo/odoo/pull/39295
             'tournament_id': self.tournaments[1].id,
             'name': 'test team {team_index}'.format(team_index=team_index),
         } for team_index in range(2)])
 
-    def get_match(self, teams):
+    def get_match_2_1(self, teams):
         tournament = first(self.tournaments)
         tournament.update({'court_ids': self.court.ids})
         teams.update({'tournament_id': tournament.id})
@@ -55,6 +57,29 @@ class TestCommon (TransactionCase):
                     'set_1': 21,
                     'set_3': 18,
                     'set_4': 15,
+                }),
+            ]
+        })
+        return match
+
+    def get_match_1_1(self, teams):
+        tournament = first(self.tournaments)
+        tournament.update({'court_ids': self.court.ids})
+        teams.update({'tournament_id': tournament.id})
+        match = self.match_model.create({
+            'tournament_id': tournament.id,
+            'court_id': self.court.id,
+            'team_ids': teams.ids,
+            'line_ids': [
+                (0, 0, {
+                    'team_id': teams[0].id,
+                    'set_1': 10,
+                    'set_3': 21,
+                }),
+                (0, 0, {
+                    'team_id': teams[1].id,
+                    'set_1': 21,
+                    'set_3': 18,
                 }),
             ]
         })
