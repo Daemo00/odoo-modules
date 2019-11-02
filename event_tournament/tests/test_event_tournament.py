@@ -1,5 +1,6 @@
 #  Copyright 2019 Simone Rubino <daemo00@gmail.com>
 #  License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+from odoo import fields
 from odoo.exceptions import UserError
 from odoo.fields import first
 from .test_common import TestCommon
@@ -51,14 +52,14 @@ class TestEventTournament (TestCommon):
         """
         tournament = first(self.tournaments)
         self.teams.update({'tournament_id': tournament.id})
-        self.assertEqual(len(tournament.team_ids), 2)
+        self.assertEqual(len(tournament.team_ids), 3)
         self.assertEqual(tournament.match_teams_nbr, 2)
-        self.assertEqual(tournament.match_count_estimated, 1)
+        self.assertEqual(tournament.match_count_estimated, 3)
         self.team_model.create({
             'tournament_id': tournament.id,
             'name': 'test',
         })
-        self.assertEqual(tournament.match_count_estimated, 3)
+        self.assertEqual(tournament.match_count_estimated, 6)
 
     def test_generate_matches_start_time(self):
         """
@@ -69,3 +70,26 @@ class TestEventTournament (TestCommon):
         with self.assertRaises(UserError) as ue:
             self.assertTrue(tournament.generate_matches())
         self.assertIn(tournament.name, ue.exception.name)
+
+    def test_generate_matches_court(self):
+        """
+        Create a tournament,
+        check that a court is required for matches generation.
+        """
+        tournament = first(self.tournaments)
+        tournament.start_datetime = fields.Datetime.now()
+        with self.assertRaises(UserError) as ue:
+            self.assertTrue(tournament.generate_matches())
+        self.assertIn(tournament.name, ue.exception.name)
+
+    def test_generate_matches(self):
+        """
+        Create a tournament,
+        check that a court is required for matches generation.
+        """
+        tournament = self.tournaments[1]
+        tournament.start_datetime = fields.Datetime.now()
+        tournament.court_ids = self.court
+        self.assertEqual(
+            len(tournament.generate_matches()),
+            tournament.match_count_estimated)

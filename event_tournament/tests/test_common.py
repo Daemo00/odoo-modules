@@ -35,7 +35,7 @@ class TestCommon (TransactionCase):
             # https://github.com/odoo/odoo/pull/39295
             'tournament_id': self.tournaments[1].id,
             'name': 'test team {team_index}'.format(team_index=team_index),
-        } for team_index in range(2)])
+        } for team_index in range(3)])
 
     def get_match_2_1(self, teams):
         tournament = first(self.tournaments)
