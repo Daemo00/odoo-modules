@@ -1,6 +1,6 @@
 #  Copyright 2019 Simone Rubino <daemo00@gmail.com>
 #  License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
-
+from odoo.exceptions import UserError
 from .test_common import TestCommon
 
 
@@ -15,7 +15,30 @@ class TestEventTournamentMatch (TestCommon):
         match = self.get_match_2_1(teams)
         self.assertDictEqual(
             {
-                teams[0]: (1, 39, 54),
-                teams[1]: (2, 54, 39),
+                teams[0]: (2, 1, 39, 54),
+                teams[1]: (1, 2, 54, 39),
             }
             , match.get_sets_info())
+
+    def test_action_done(self):
+        """
+        Create a match,
+        check that the winner is correctly computed.
+        """
+        teams = self.teams[:2]
+        match = self.get_match_2_1(teams)
+        match.action_done()
+        self.assertTrue(match.winner_team_id == teams[1])
+        with self.assertRaises(UserError) as ue:
+            match.action_done()
+        self.assertIn(match.display_name, ue.exception.name)
+
+    def test_action_done_(self):
+        """
+        Create a match,
+        check that ties produce no winner.
+        """
+        teams = self.teams[:2]
+        match = self.get_match_1_1(teams)
+        match.action_done()
+        self.assertFalse(match.winner_team_id)
