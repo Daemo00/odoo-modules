@@ -2,7 +2,7 @@
 #  License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 from odoo import api, fields, models, _
-from odoo.exceptions import ValidationError, UserError
+from odoo.exceptions import ValidationError
 from odoo.fields import first
 
 
@@ -158,50 +158,31 @@ class EventTournamentTeam (models.Model):
                                 min_male_comp=tournament.min_components_male))
 
     @api.depends(lambda m:
-                 ('match_ids.state',
-                  'tournament_id.match_mode_id')
+                 ('match_ids',
+                  'match_ids.state',
+                  'match_ids.match_mode_id',
+                  'match_ids.match_mode_id.result_ids')
                  + tuple('match_ids.line_ids.set_' + str(n)
                          for n in range(1, 6)))
     def compute_matches_points(self):
-        set_fields = ['set_' + str(n) for n in range(1, 6)]
         for team in self:
-            matches_points = 0
-            total_sets_won = 0
+            sets_lost = 0
+            sets_won = 0
             points_done = 0
             points_taken = 0
-            match_mode = team.tournament_id.match_mode_id
+            tournament_points = 0
             done_matches = team.match_ids.filtered(lambda m: m.state == 'done')
             for match in done_matches:
-                sets_won = 0
-                sets_lost = 0
-                for set_field in set_fields:
-                    team_points = 0
-                    other_team_points = 0
-                    for line in match.line_ids:
-                        points = getattr(line, set_field)
-                        if line.team_id == team:
-                            team_points += points
-                        else:
-                            other_team_points += points
-                    if team_points or other_team_points:
-                        if team_points > other_team_points:
-                            sets_won += 1
-                        elif team_points < other_team_points:
-                            sets_lost += 1
-                        else:
-                            raise UserError(
-                                _("Match {match_name}, {set_string}:\n"
-                                  " Ties are not allowed.")
-                                .format(
-                                    match_name=self.display_name,
-                                    set_string=self.line_ids._fields[set_field]
-                                    ._description_string(self.env)))
-                    points_done += team_points
-                    points_taken += other_team_points
-                total_sets_won += sets_won
-                if match_mode:
-                    matches_points += match_mode.get_points(match)[team]
+                for match_team, sets_info in match.get_sets_info().items():
+                    if team != match_team:
+                        continue
+                    sets_lost += sets_info[0]
+                    sets_won += sets_info[1]
+                    points_done += sets_info[2]
+                    points_taken += sets_info[3]
+                if match.match_mode_id:
+                    tournament_points = match.match_mode_id.get_points(match)
 
-            team.sets_won = total_sets_won
+            team.sets_won = sets_won
             team.points_ratio = points_done / (points_taken or 1)
-            team.matches_points = matches_points
+            team.matches_points = tournament_points

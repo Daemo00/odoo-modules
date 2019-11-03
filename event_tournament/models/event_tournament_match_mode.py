@@ -34,18 +34,15 @@ class EventTournamentMatchMode(models.Model):
         :return: A dictionary mapping teams to how many points they obtained
         """
         self.ensure_one()
-        team_sets_info = match.get_sets_info()
-        team_points = Counter(match.team_ids)
-        sets_played = sum(tsi[0] for tsi in team_sets_info.values())
-        for team, sets_info in team_sets_info.items():
-            sets_won, points_done, points_taken = sets_info
-            sets_lost = sets_played - sets_won
+        tournament_points = Counter(match.team_ids)
+        for team, sets_info in match.get_sets_info().items():
+            sets_lost, sets_won, points_done, points_taken = sets_info
             for res in self.result_ids:
                 if res.sets_won == sets_won and res.sets_lost == sets_lost:
-                    team_points[team] = res.points_win
+                    tournament_points[team] = res.points_win
                     break
                 if res.sets_won == sets_lost and res.sets_lost == sets_won:
-                    team_points[team] = res.points_lose
+                    tournament_points[team] = res.points_lose
                     break
             else:
                 raise UserError(
@@ -58,4 +55,4 @@ class EventTournamentMatchMode(models.Model):
                         sets_lost=sets_lost,
                         match_mode=self.display_name,
                     ))
-        return team_points
+        return tournament_points

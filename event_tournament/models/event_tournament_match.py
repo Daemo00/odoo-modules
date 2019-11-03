@@ -258,26 +258,28 @@ class EventTournamentMatch(models.Model):
         if self.state == 'done':
             raise UserError(_("Match {match_name} already done.")
                             .format(match_name=self.display_name))
-        team_sets_won = self.get_sets_info()
-        if not team_sets_won:
+        sets_info = self.get_sets_info()
+        sets_won_dict = dict((team, sets_info[team][1])
+                             for team in sets_info.keys())
+        max_sets_won = max(sets_won_dict.values())
+        if not max_sets_won:
             raise UserError(_("No-one won a set in {match_name}.")
                             .format(match_name=self.display_name))
-        max_sets_won = max(team_sets_won.values())
-        winner_teams = self.env['event.tournament.team'].browse()
-        for team, sets_won in team_sets_won.items():
+        winner_teams = self.winner_team_id.browse()
+        for team, sets_won in sets_won_dict.items():
             if sets_won == max_sets_won:
                 winner_teams |= team
         win_vals = dict({
             'time_done': fields.Datetime.now(),
             'state': 'done'})
-        if len(winner_teams) > 1:
-            winner_id = False
-        else:
+
+        winner_id = False
+        if len(winner_teams) == 1:
             winner_id = winner_teams.id
         win_vals.update({
             'winner_team_id': winner_id})
 
-        self.update(win_vals)
+        return self.update(win_vals)
 
     def name_get(self):
         res = list()
@@ -292,24 +294,26 @@ class EventTournamentMatch(models.Model):
         Get the sets won by each team and their points done/taken.
 
         :return: A dictionary mapping teams to a tuple
-            (sets won, points done, points taken)
+            (sets lost, sets won, points done, points taken)
         """
         self.ensure_one()
         set_fields = ['set_' + str(n) for n in range(1, 6)]
-        team_sets_won = Counter()
-        team_points_done = Counter()
-        team_points_taken = Counter()
+        sets_lost = Counter()
+        sets_won = Counter()
+        points_done = Counter()
+        points_taken = Counter()
         for set_field in set_fields:
             set_points = dict()
             for line in self.line_ids:
                 set_points[line.team_id] = getattr(line, set_field)
             if not sum(set_points.values()):
+                # Set hasn't been played
                 continue
             max_set_points = max(set_points.values())
             all_set_points = sum(set_points.values())
-            for team, points_done in set_points.items():
-                team_points_done[team] += points_done
-                team_points_taken[team] += all_set_points - points_done
+            for team, set_points_done in set_points.items():
+                points_done[team] += set_points_done
+                points_taken[team] += all_set_points - set_points_done
 
             set_winners = filter(lambda tp: tp[1] == max_set_points,
                                  set_points.items())
@@ -323,11 +327,16 @@ class EventTournamentMatch(models.Model):
                         set_string=self.line_ids._fields[set_field]
                             ._description_string(self.env)))
             set_winner = set_winners[0]
-            team_sets_won[set_winner] += 1
+            for team in self.team_ids:
+                if team == set_winner:
+                    sets_won[team] += 1
+                else:
+                    sets_lost[team] += 1
         return dict((team,
-                     (team_sets_won[team],
-                      team_points_done[team],
-                      team_points_taken[team]))
+                     (sets_lost[team],
+                      sets_won[team],
+                      points_done[team],
+                      points_taken[team]))
                     for team in self.team_ids)
 
 
