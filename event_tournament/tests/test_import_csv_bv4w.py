@@ -7,8 +7,7 @@ import os
 from odoo.exceptions import UserError, ValidationError
 from odoo.fields import first
 from odoo.modules import get_resource_path
-
-from .test_common import TestCommon
+from .test_common import TestCommon, COMPONENT_NBR, TEAM_NBR
 
 
 class TestImportCsvBV4W (TestCommon):
@@ -46,9 +45,9 @@ class TestImportCsvBV4W (TestCommon):
         """
         wizard = self.get_wizard_for_file('bv4w_test_1.csv')
         tournament = first(self.tournaments)
-        self.assertFalse(tournament.team_ids)
+        self.assertEqual(len(tournament.team_ids), TEAM_NBR)
         wizard.import_csv_bv4w()
-        self.assertEqual(len(tournament.team_ids), 2)
+        self.assertEqual(len(tournament.team_ids), 2 + TEAM_NBR)
 
     def test_import_csv_bv4w_components(self):
         """
@@ -58,7 +57,7 @@ class TestImportCsvBV4W (TestCommon):
         tournament = first(self.tournaments)
         self.assertFalse(tournament.component_ids)
         wizard.import_csv_bv4w()
-        self.assertEqual(len(tournament.event_id.registration_ids), 4)
+        self.assertEqual(len(tournament.component_ids), 4)
 
     def test_import_csv_bv4w_components_overlap_error(self):
         """
@@ -81,12 +80,14 @@ class TestImportCsvBV4W (TestCommon):
         """
         wizard = self.get_wizard_for_file('bv4w_test_3.csv')
         tournament_1, tournament_2 = self.tournaments[:2]
+        event = first(self.events)
         self.assertFalse(tournament_1.component_ids)
         self.assertFalse(tournament_2.component_ids)
+        self.assertEqual(len(event.registration_ids), COMPONENT_NBR)
         wizard.import_csv_bv4w()
         self.assertEqual(len(tournament_1.component_ids), 2)
         self.assertEqual(len(tournament_2.component_ids), 2)
-        self.assertEqual(len(self.event.registration_ids), 3)
+        self.assertEqual(len(event.registration_ids), COMPONENT_NBR + 3)
 
     def test_import_csv_bv4w_components_homonym(self):
         """

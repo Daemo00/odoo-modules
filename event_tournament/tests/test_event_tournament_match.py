@@ -33,7 +33,7 @@ class TestEventTournamentMatch (TestCommon):
             match.action_done()
         self.assertIn(match.display_name, ue.exception.name)
 
-    def test_action_done_(self):
+    def test_action_done_tie(self):
         """
         Create a match,
         check that ties produce no winner.

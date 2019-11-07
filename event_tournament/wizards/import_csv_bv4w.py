@@ -2,7 +2,6 @@
 #  License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 import base64
 import csv
-import operator
 from datetime import datetime
 
 from odoo import api, fields, models, _
@@ -64,6 +63,8 @@ COLUMNS = [
 
 
 def parse_team_line(values: list):
+    # Strip all the values!
+    values = list(map(str.strip, values))
     res = dict()
     common_fields = ['date_open', 'tournament', 'team_name']
     common_values = values[:len(common_fields)]
