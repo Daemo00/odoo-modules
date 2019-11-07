@@ -9,7 +9,7 @@ class TestEventRegistration(TestCommon):
     def setUp(self):
         super().setUp()
         self.component = self.component_model.create({
-            'event_id': self.event.id,
+            'event_id': first(self.events).id,
         })
 
     def test_onchange_partner(self):
@@ -36,7 +36,7 @@ class TestEventRegistration(TestCommon):
         self.assertFalse(self.component.tournament_team_ids)
         tournament = first(self.tournaments)
         team = self.team_model.create({
-            'event_id': self.event.id,
+            'event_id': first(self.events).id,
             'tournament_id': tournament.id,
             'name': 'test team',
             'component_ids': [(4, self.component.id)]
