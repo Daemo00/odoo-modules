@@ -65,6 +65,14 @@ class TestEventTournament (TestCommon):
                              tournament.team_ids,
                              tournament.match_teams_nbr))))
 
+    def test_compute_team_count(self):
+        """
+        Create a tournament with teams,
+        check that team_count is correctly computed.
+        """
+        tournament = first(self.tournaments)
+        self.assertEqual(len(tournament.team_ids), tournament.team_count)
+
     def test_generate_matches_start_time(self):
         """
         Create a tournament,
@@ -89,11 +97,42 @@ class TestEventTournament (TestCommon):
     def test_generate_matches(self):
         """
         Create a tournament,
-        check that a court is required for matches generation.
+        check that all the estimated matches are created.
         """
-        tournament = self.tournaments[1]
+        tournament = first(self.tournaments)
+        tournament.randomize_matches_generation = True
         tournament.start_datetime = fields.Datetime.now()
         tournament.court_ids = self.courts
         self.assertEqual(
             len(tournament.generate_matches()),
             tournament.match_count_estimated)
+
+    def test_action_draft(self):
+        """
+        Create a tournament,
+        check that action_draft changes the state of the tournament.
+        """
+        tournament = first(self.tournaments)
+        tournament.state = ''
+        tournament.action_draft()
+        self.assertEqual(tournament.state, 'draft')
+
+    def test_action_start(self):
+        """
+        Create a tournament,
+        check that action_start changes the state of the tournament.
+        """
+        tournament = first(self.tournaments)
+        tournament.state = ''
+        tournament.action_start()
+        self.assertEqual(tournament.state, 'started')
+
+    def test_action_done(self):
+        """
+        Create a tournament,
+        check that action_done changes the state of the tournament.
+        """
+        tournament = first(self.tournaments)
+        tournament.state = ''
+        tournament.action_done()
+        self.assertEqual(tournament.state, 'done')
