@@ -3,9 +3,9 @@
 import itertools
 
 from odoo import fields
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 from odoo.fields import first
-from .test_common import TestCommon, TEAM_NBR, TOURNAMENT_NBR, EVENT_NBR
+from .test_common import TestCommon, TEAM_NBR, COMPONENT_NBR
 
 
 class TestEventTournament (TestCommon):
@@ -17,7 +17,7 @@ class TestEventTournament (TestCommon):
         """
         tournament = first(self.tournaments)
         self.assertFalse(tournament.start_datetime)
-        self.assertFalse(tournament.court_ids)
+        tournament.court_ids = self.court_model.browse()
         tournament.onchange_event_id()
         event = first(self.events)
         self.assertEqual(tournament.start_datetime, event.date_begin)
@@ -29,16 +29,14 @@ class TestEventTournament (TestCommon):
         check that match_count correctly counts the matches.
         """
         tournament = first(self.tournaments)
-        teams = self.teams
         court = first(self.courts)
         tournament.court_ids = court
-        teams.update({'tournament_id': tournament.id})
 
         self.assertFalse(tournament.match_count)
         self.match_model.create({
             'tournament_id': tournament.id,
             'court_id': court.id,
-            'team_ids': teams.ids,
+            'team_ids': tournament.team_ids.ids,
         })
         self.assertEqual(tournament.match_count, 1)
 
@@ -48,9 +46,7 @@ class TestEventTournament (TestCommon):
         check that match_count_estimated is correctly computed.
         """
         tournament = first(self.tournaments)
-        self.teams.update({'tournament_id': tournament.id})
-        self.assertEqual(len(tournament.team_ids),
-                         EVENT_NBR * TOURNAMENT_NBR * TEAM_NBR)
+        self.assertEqual(len(tournament.team_ids), TEAM_NBR)
         self.assertEqual(tournament.match_teams_nbr, 2)
         self.assertEqual(tournament.match_count_estimated,
                          len(list(itertools.combinations(
@@ -90,6 +86,7 @@ class TestEventTournament (TestCommon):
         """
         tournament = first(self.tournaments)
         tournament.start_datetime = fields.Datetime.now()
+        tournament.court_ids = self.court_model.browse()
         with self.assertRaises(UserError) as ue:
             self.assertTrue(tournament.generate_matches())
         self.assertIn(tournament.name, ue.exception.name)
@@ -136,3 +133,16 @@ class TestEventTournament (TestCommon):
         tournament.state = ''
         tournament.action_done()
         self.assertEqual(tournament.state, 'done')
+
+    def test_action_check_rules(self):
+        """
+        Create a tournament,
+        check the rules for teams.
+        """
+        tournament = first(self.tournaments)
+        tournament.min_components = COMPONENT_NBR + 1
+        with self.assertRaises(ValidationError) as ve:
+            tournament.action_check_rules()
+        self.assertIn(tournament.name, str(ve.exception))
+        tournament.min_components = 0
+        tournament.action_check_rules()

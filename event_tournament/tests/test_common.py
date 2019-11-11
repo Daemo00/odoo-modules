@@ -4,13 +4,14 @@ from odoo.fields import first
 from odoo.tests import TransactionCase, date
 
 EVENT_NBR = 2
-TOURNAMENT_NBR = 2
-TEAM_NBR = 3
-COMPONENT_NBR = 2
+REGISTRATION_NBR = 2
+TOURNAMENT_NBR = 3
+TEAM_NBR = 4
+COMPONENT_NBR = 5
 COURT_NBR = 2
 
 
-class TestCommon (TransactionCase):
+class TestCommon(TransactionCase):
 
     def setUp(self):
         super().setUp()
@@ -25,7 +26,9 @@ class TestCommon (TransactionCase):
         self.events = self.event_model.browse()
         self.tournaments = self.tournament_model.browse()
         self.teams = self.team_model.browse()
+        self.registrations = self.component_model.browse()
         self.components = self.component_model.browse()
+        self.courts = self.court_model.browse()
 
         for event_index in range(EVENT_NBR):
             event = self.event_model.create({
@@ -36,17 +39,32 @@ class TestCommon (TransactionCase):
             })
             self.events |= event
 
-            for component_index in range(COMPONENT_NBR):
-                self.components |= self.component_model.create({
+            registrations = self.component_model.browse()
+            for registration_index in range(REGISTRATION_NBR):
+                registrations |= self.component_model.create({
                     'event_id': event.id,
                     'name': 'event {event_index}, '
-                            'component {component_index}'.format(
+                            'component {registration_index}'.format(
                         event_index=event_index,
-                        component_index=component_index),
+                        registration_index=registration_index),
                 })
+            self.registrations |= registrations
+
+            courts = self.court_model.browse()
+            for court_index in range(COURT_NBR):
+                courts |= self.court_model.create({
+                    'event_id': event.id,
+                    'name': 'event {event_index}, '
+                            'court {court_index}'.format(
+                        event_index=event_index,
+                        court_index=court_index),
+                })
+            self.courts |= courts
+
             for tournament_index in range(TOURNAMENT_NBR):
                 tournament = self.tournament_model.create({
                     'event_id': event.id,
+                    'court_ids': courts.ids,
                     'name': 'event {event_index}, '
                             'tournament {tournament_index}'.format(
                         event_index=event_index,
@@ -57,18 +75,27 @@ class TestCommon (TransactionCase):
                     team = self.team_model.create({
                         'tournament_id': tournament.id,
                         'name': 'event {event_index}, '
-                                'tournament {tournament_index},'
+                                'tournament {tournament_index}, '
                                 'team {team_index}'.format(
                             event_index=event_index,
                             tournament_index=tournament_index,
                             team_index=team_index)
                     })
                     self.teams |= team
-
-        self.courts = self.court_model.create([{
-            'name': 'test court {court_index}'
-                .format(court_index=court_index),
-        } for court_index in range(COURT_NBR)])
+                    for component_index in range(COMPONENT_NBR):
+                        component = self.component_model.create({
+                            'event_id': event.id,
+                            'tournament_team_ids': [(4, team.id)],
+                            'name': 'event {event_index}, '
+                                    'tournament {tournament_index}, '
+                                    'team {team_index}, '
+                                    'component {component_index}'.format(
+                                event_index=event_index,
+                                tournament_index=tournament_index,
+                                team_index=team_index,
+                                component_index=component_index)
+                        })
+                        self.components |= component
 
     def get_match_2_1(self, teams):
         tournament = first(self.tournaments)
