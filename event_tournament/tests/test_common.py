@@ -31,71 +31,101 @@ class TestCommon(TransactionCase):
         self.courts = self.court_model.browse()
 
         for event_index in range(EVENT_NBR):
-            event = self.event_model.create({
-                'name': 'event {event_index}'.format(
-                    event_index=event_index),
-                'date_begin': date(2000, 1, 1),
-                'date_end': date(2000, 1, 2),
-            })
-            self.events |= event
+            event = self.create_event(event_index)
 
-            registrations = self.component_model.browse()
-            for registration_index in range(REGISTRATION_NBR):
-                registrations |= self.component_model.create({
-                    'event_id': event.id,
-                    'name': 'event {event_index}, '
-                            'component {registration_index}'.format(
-                        event_index=event_index,
-                        registration_index=registration_index),
-                })
+            registrations = self.create_registrations(event, event_index)
             self.registrations |= registrations
 
-            courts = self.court_model.browse()
-            for court_index in range(COURT_NBR):
-                courts |= self.court_model.create({
-                    'event_id': event.id,
-                    'name': 'event {event_index}, '
-                            'court {court_index}'.format(
-                        event_index=event_index,
-                        court_index=court_index),
-                })
+            courts = self.create_courts(event, event_index)
             self.courts |= courts
 
             for tournament_index in range(TOURNAMENT_NBR):
-                tournament = self.tournament_model.create({
-                    'event_id': event.id,
-                    'court_ids': courts.ids,
-                    'name': 'event {event_index}, '
-                            'tournament {tournament_index}'.format(
-                        event_index=event_index,
-                        tournament_index=tournament_index),
-                })
+                tournament = self.create_tournament(
+                    courts, event, event_index, tournament_index)
                 self.tournaments |= tournament
                 for team_index in range(TEAM_NBR):
-                    team = self.team_model.create({
-                        'tournament_id': tournament.id,
-                        'name': 'event {event_index}, '
-                                'tournament {tournament_index}, '
-                                'team {team_index}'.format(
-                            event_index=event_index,
-                            tournament_index=tournament_index,
-                            team_index=team_index)
-                    })
+                    team = self.create_team(
+                        event_index, team_index, tournament, tournament_index)
                     self.teams |= team
                     for component_index in range(COMPONENT_NBR):
-                        component = self.component_model.create({
-                            'event_id': event.id,
-                            'tournament_team_ids': [(4, team.id)],
-                            'name': 'event {event_index}, '
-                                    'tournament {tournament_index}, '
-                                    'team {team_index}, '
-                                    'component {component_index}'.format(
-                                event_index=event_index,
-                                tournament_index=tournament_index,
-                                team_index=team_index,
-                                component_index=component_index)
-                        })
+                        component = self.create_component(
+                            component_index, event, event_index,
+                            team, team_index, tournament_index)
                         self.components |= component
+
+    def create_component(self, component_index, event, event_index, team,
+                         team_index, tournament_index):
+        component = self.component_model.create({
+            'event_id': event.id,
+            'tournament_team_ids': [(4, team.id)],
+            'name': 'event {event_index}, '
+                    'tournament {tournament_index}, '
+                    'team {team_index}, '
+                    'component {component_index}'.format(
+                event_index=event_index,
+                tournament_index=tournament_index,
+                team_index=team_index,
+                component_index=component_index)
+        })
+        return component
+
+    def create_team(self, event_index, team_index, tournament,
+                    tournament_index):
+        team = self.team_model.create({
+            'tournament_id': tournament.id,
+            'name': 'event {event_index}, '
+                    'tournament {tournament_index}, '
+                    'team {team_index}'.format(
+                event_index=event_index,
+                tournament_index=tournament_index,
+                team_index=team_index)
+        })
+        return team
+
+    def create_tournament(self, courts, event, event_index, tournament_index):
+        tournament = self.tournament_model.create({
+            'event_id': event.id,
+            'court_ids': courts.ids,
+            'name': 'event {event_index}, '
+                    'tournament {tournament_index}'.format(
+                event_index=event_index,
+                tournament_index=tournament_index),
+        })
+        return tournament
+
+    def create_courts(self, event, event_index):
+        courts = self.court_model.browse()
+        for court_index in range(COURT_NBR):
+            courts |= self.court_model.create({
+                'event_id': event.id,
+                'name': 'event {event_index}, '
+                        'court {court_index}'.format(
+                    event_index=event_index,
+                    court_index=court_index),
+            })
+        return courts
+
+    def create_registrations(self, event, event_index):
+        registrations = self.component_model.browse()
+        for registration_index in range(REGISTRATION_NBR):
+            registrations |= self.component_model.create({
+                'event_id': event.id,
+                'name': 'event {event_index}, '
+                        'component {registration_index}'.format(
+                    event_index=event_index,
+                    registration_index=registration_index),
+            })
+        return registrations
+
+    def create_event(self, event_index):
+        event = self.event_model.create({
+            'name': 'event {event_index}'.format(
+                event_index=event_index),
+            'date_begin': date(2000, 1, 1),
+            'date_end': date(2000, 1, 2),
+        })
+        self.events |= event
+        return event
 
     def get_match_2_1(self, teams):
         tournament = first(self.tournaments)
