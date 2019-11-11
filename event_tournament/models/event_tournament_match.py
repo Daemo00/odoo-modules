@@ -293,7 +293,7 @@ class EventTournamentMatch(models.Model):
         """
         Get the sets won by each team and their points done/taken.
 
-        :return: A dictionary mapping teams to a tuple
+        :return: A dictionary mapping involved teams to a tuple
             (sets lost, sets won, points done, points taken)
         """
         self.ensure_one()
