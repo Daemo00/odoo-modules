@@ -8,17 +8,39 @@
         <field name="arch" type="xml">
             <form string="Team">
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_matches" type="object"
+                                class="oe_stat_button" icon="fa-trophy">
+                            <field name="match_count" widget="statinfo" string="Matches"/>
+                        </button>
+                    </div>
                     <group>
-                        <field name="event_id"/>
-                        <field name="tournament_id"/>
-                        <field name="name"/>
-                        <field name="matches_points"/>
-                        <field name="sets_won"/>
-                        <field name="points_ratio"/>
-                        <field name="component_ids"
-                               domain="[
+                        <group>
+                            <field name="event_id"/>
+                            <field name="tournament_id"/>
+                            <field name="name"/>
+                            <field name="component_ids"
+                                   domain="[
                                ('event_id', '=', event_id),
-                               ('tournament_ids', 'not in', tournament_id)]"/>
+                               ('tournament_ids', 'not in', tournament_id)]">
+                                <tree>
+                                    <field name="name"/>
+                                </tree>
+                            </field>
+                        </group>
+                        <group name="computed_fields" string="Computed fields">
+                            <p class="text-muted">
+                                Fields computed on done matches
+                            </p>
+                            <field name="matches_points"/>
+                            <field name="sets_won"/>
+                            <field name="points_ratio"/>
+                            <field name="points_done"/>
+                            <field name="points_taken"/>
+                            <button name="compute_matches_points" type="object" string="Recompute points"/>
+                        </group>
+                    </group>
+                    <group>
                         <field name="notes"/>
                     </group>
                 </sheet>
@@ -51,6 +73,8 @@
                 <field name="component_ids"/>
                 <filter string="Tournament" name="tournament"
                         context="{'group_by':'tournament_id'}"/>
+                <filter string="Event" name="tournament"
+                        context="{'group_by':'event_id'}"/>
             </search>
         </field>
     </record>
@@ -58,6 +82,7 @@
     <act_window id="event_tournament_team_action"
                 name="Tournament teams"
                 res_model="event.tournament.team"/>
+
     <menuitem id="event_tournament_team_menu"
               parent="event_tournament_root_menu"
               action="event_tournament_team_action"/>

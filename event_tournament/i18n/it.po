@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 13.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-10-20 21:16+0000\n"
-"PO-Revision-Date: 2019-10-20 23:27+0200\n"
+"POT-Creation-Date: 2019-11-13 23:30+0000\n"
+"PO-Revision-Date: 2019-11-14 00:32+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: \n"
 "Language: it\n"
-"X-Generator: Poedit 2.2.1\n"
+"X-Generator: Poedit 2.2.4\n"
 
 #. module: event_tournament
 #: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_match_view_kanban
@@ -69,6 +69,11 @@ msgstr "Componente"
 #: model:ir.model.fields,field_description:event_tournament.field_event_tournament_team__component_ids
 msgid "Components"
 msgstr "Componenti"
+
+#. module: event_tournament
+#: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_team_view_form
+msgid "Computed fields"
+msgstr "Campi calcolati"
 
 #. module: event_tournament
 #: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match__court_id
@@ -174,6 +179,7 @@ msgstr "Totale partite stimato"
 #: model:ir.model.fields,field_description:event_tournament.field_event_tournament__event_id
 #: model:ir.model.fields,field_description:event_tournament.field_event_tournament_court__event_id
 #: model:ir.model.fields,field_description:event_tournament.field_event_tournament_team__event_id
+#: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_team_view_search
 #: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_view_search
 msgid "Event"
 msgstr "Evento"
@@ -187,6 +193,11 @@ msgstr "Registrazione evento"
 #: model:ir.model.fields.selection,name:event_tournament.selection__event_registration__gender__female
 msgid "Female"
 msgstr "Femmina"
+
+#. module: event_tournament
+#: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_team_view_form
+msgid "Fields computed on done matches"
+msgstr "Campi calcolati sulle partite completate"
 
 #. module: event_tournament
 #: model:ir.model.fields,field_description:event_tournament.field_event_tournament_import_csv_bv4w__data
@@ -395,10 +406,10 @@ msgstr ""
 #, python-format
 msgid ""
 "Match {match_name} not valid:\n"
-"Teams have common components."
+"Teams not in tournament {tourn_name}."
 msgstr ""
 "Partita {match_name} non valida:\n"
-"le squadre hanno componenti in comune."
+"squadre non presenti nel torneo {tourn_name}"
 
 #. module: event_tournament
 #: code:addons/event_tournament/models/event_tournament_match.py:0
@@ -406,10 +417,10 @@ msgstr ""
 #, python-format
 msgid ""
 "Match {match_name} not valid:\n"
-"Teams not in tournament {tourn_name}."
+"Teams {team_name} and {other_team_name} have common components ({common_components_names})."
 msgstr ""
 "Partita {match_name} non valida:\n"
-"squadre non presenti nel torneo {tourn_name}"
+"le squadre {team_name} e {other_team_name} hanno componenti in comune ({common_components_names})."
 
 #. module: event_tournament
 #: code:addons/event_tournament/models/event_tournament_match.py:0
@@ -446,20 +457,19 @@ msgstr ""
 
 #. module: event_tournament
 #: code:addons/event_tournament/models/event_tournament_match.py:0
-#: code:addons/event_tournament/models/event_tournament_team.py:0
 #: code:addons/odoo-modules/event_tournament/models/event_tournament_match.py:0
-#: code:addons/odoo-modules/event_tournament/models/event_tournament_team.py:0
 #, python-format
 msgid ""
 "Match {match_name}, {set_string}:\n"
-" Ties are not allowed."
+"Ties are not allowed."
 msgstr ""
-"Partita {match_name}, set {set_string}:\n"
+"Partita {match_name}, {set_string}:\n"
 "i pareggi non sono ammessi."
 
 #. module: event_tournament
 #: model:ir.model.fields,field_description:event_tournament.field_event_tournament__match_ids
 #: model:ir.model.fields,field_description:event_tournament.field_event_tournament_team__match_ids
+#: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_team_view_form
 #: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_view_form
 msgid "Matches"
 msgstr "Partite"
@@ -575,6 +585,11 @@ msgid "Parent tournament"
 msgstr "Torneo genitore"
 
 #. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_team__points_done
+msgid "Points Done"
+msgstr "Punti fatti"
+
+#. module: event_tournament
 #: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match_mode_result__points_lose
 msgid "Points Lose"
 msgstr "Punti sconfitta"
@@ -583,6 +598,11 @@ msgstr "Punti sconfitta"
 #: model:ir.model.fields,field_description:event_tournament.field_event_tournament_team__points_ratio
 msgid "Points Ratio"
 msgstr "Quoziente punti"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_team__points_taken
+msgid "Points Taken"
+msgstr "Punti subiti"
 
 #. module: event_tournament
 #: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match_mode_result__points_win
@@ -845,8 +865,7 @@ msgid ""
 "tournament {tourn_name} requires a minimum of female (or male) components but not all components have gender."
 msgstr ""
 "Torneo {tourn_name}, squadra {team_name} non valida:\n"
-"il torneo {tourn_name} richiede un minimo di donne (o uomini) in squadra ma non tutti i componenti della "
-"squadra hanno genere."
+"il torneo {tourn_name} richiede un minimo di donne (o uomini) in squadra ma non tutti i componenti della squadra hanno genere."
 
 #. module: event_tournament
 #: code:addons/event_tournament/models/event_tournament_team.py:0
@@ -901,7 +920,7 @@ msgid ""
 "A match should have a duration."
 msgstr ""
 "Torneo {tourn_name}:\n"
-"una partita dovrebbe avere una durata."
+"Una partita dovrebbe avere una durata."
 
 #. module: event_tournament
 #: code:addons/event_tournament/models/event_tournament.py:0

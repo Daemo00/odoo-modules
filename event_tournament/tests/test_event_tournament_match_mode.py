@@ -12,7 +12,7 @@ class TestEventTournamentMatchMode (TestCommon):
         check that points are computed correctly with beach volley mode.
         """
         teams = self.teams[:2]
-        match = self.get_match_2_1(teams)
+        match = self.get_match_1_2(teams)
         bv_mode = self.env.ref('event_tournament.'
                                'event_tournament_match_mode_beach_volley')
         self.assertDictEqual(
