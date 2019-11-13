@@ -20,6 +20,10 @@ class TestEventTournamentTeam(TestCommon):
         self.assertIn('match_ids', onchange_values['domain'])
 
     def test_constrain_components_event(self):
+        """
+        Create a team,
+        check that components of a team are from the same event.
+        """
         component_0 = first(self.events[0].registration_ids)
         component_1 = first(self.events[1].registration_ids)
         self.assertTrue(component_0)
@@ -32,3 +36,22 @@ class TestEventTournamentTeam(TestCommon):
                 'component_ids': [(4, component_0.id), (4, component_1.id)]
             })
         self.assertIn(team_name, str(ve.exception))
+
+    def test_compute_matches_points(self):
+        """
+        End a match,
+        check that points are correctly computed.
+        """
+        teams = self.teams[:2]
+        match = self.get_match_1_2(teams)
+        match.match_mode_id = self.ref(
+            'event_tournament.event_tournament_match_mode_beach_volley')
+        winner = teams[1]
+        self.assertEqual(winner.sets_won, 0)
+        self.assertEqual(winner.points_ratio, 0)
+        self.assertEqual(winner.matches_points, 0)
+        match.action_done()
+        self.assertEqual(winner.sets_won, 2)
+        self.assertEqual(winner.matches_points, 2)
+        self.assertEqual(winner.points_ratio,
+                         winner.points_done / winner.points_taken)

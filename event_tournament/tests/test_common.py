@@ -127,7 +127,7 @@ class TestCommon(TransactionCase):
         self.events |= event
         return event
 
-    def get_match_2_1(self, teams):
+    def get_match_1_2(self, teams):
         tournament = first(self.tournaments)
         court = first(self.courts)
         tournament.update({'court_ids': court.ids})

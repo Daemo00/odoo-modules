@@ -4,6 +4,7 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 from odoo.fields import first
+from odoo.tools import safe_eval
 
 
 class EventTournamentTeam (models.Model):
@@ -28,7 +29,16 @@ class EventTournamentTeam (models.Model):
     match_ids = fields.Many2many(
         comodel_name='event.tournament.match',
         string="Matches")
+    match_count = fields.Integer(
+        string="Match count",
+        compute='compute_match_count')
     points_ratio = fields.Float(
+        compute='compute_matches_points',
+        store=True)
+    points_done = fields.Float(
+        compute='compute_matches_points',
+        store=True)
+    points_taken = fields.Float(
         compute='compute_matches_points',
         store=True)
     sets_won = fields.Integer(
@@ -50,6 +60,25 @@ class EventTournamentTeam (models.Model):
             'domain': {
                 'component_ids': components_domain,
                 'match_ids': matches_domain}}
+
+    @api.depends('match_ids')
+    def compute_match_count(self):
+        for team in self:
+            team.match_count = len(team.match_ids)
+
+    def set_team_domain(self, action):
+        self.ensure_one()
+        domain = action.get('domain', list())
+        domain = safe_eval(domain)
+        domain.append(('team_ids', 'in', self.ids))
+        action['domain'] = domain
+
+    def action_view_matches(self):
+        self.ensure_one()
+        action = self.env.ref(
+            'event_tournament.event_tournament_match_action').read()[0]
+        self.set_team_domain(action)
+        return action
 
     @api.constrains('component_ids', 'tournament_id')
     def constrain_components_event(self):
@@ -181,8 +210,11 @@ class EventTournamentTeam (models.Model):
                     points_done += sets_info[2]
                     points_taken += sets_info[3]
                 if match.match_mode_id:
-                    tournament_points = match.match_mode_id.get_points(match)
+                    tournament_points += \
+                        match.match_mode_id.get_points(match)[team]
 
             team.sets_won = sets_won
+            team.points_done = points_done
+            team.points_taken = points_taken
             team.points_ratio = points_done / (points_taken or 1)
             team.matches_points = tournament_points
