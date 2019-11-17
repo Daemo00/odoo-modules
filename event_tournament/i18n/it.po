@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 13.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-11-13 23:30+0000\n"
-"PO-Revision-Date: 2019-11-14 00:32+0100\n"
+"POT-Creation-Date: 2019-11-17 19:41+0000\n"
+"PO-Revision-Date: 2019-11-17 20:42+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -323,6 +323,7 @@ msgstr "Tempo di riscaldamento per la partita"
 
 #. module: event_tournament
 #: model:ir.model.fields,field_description:event_tournament.field_event_tournament__match_count
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_team__match_count
 msgid "Match count"
 msgstr "Totale partite"
 
@@ -635,6 +636,7 @@ msgid "Randomize matches generation"
 msgstr "Rendi casuale la generazione dei match"
 
 #. module: event_tournament
+#: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_team_view_form
 #: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_view_form
 msgid "Recompute points"
 msgstr "Ricalcola punti"
