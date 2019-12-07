@@ -160,7 +160,7 @@ class EventTournamentTeam (models.Model):
                 if tournament.min_components_female:
                     female_components = components.filtered(
                         lambda c: c.gender == 'female')
-                    if len(female_components) > \
+                    if len(female_components) < \
                             tournament.min_components_female:
                         raise ValidationError(_(
                             "Tournament {tourn_name}, "
@@ -168,23 +168,23 @@ class EventTournamentTeam (models.Model):
                             "tournament {tourn_name} requires at least "
                             "{min_female_comp} female components per team.")
                             .format(
-                                team_name=team.display_name,
-                                tourn_name=tournament.display_name,
-                                min_female_comp=tournament
+                            team_name=team.display_name,
+                            tourn_name=tournament.display_name,
+                            min_female_comp=tournament
                                 .min_components_female))
                 if tournament.min_components_male:
                     male_components = components.filtered(
                         lambda c: c.gender == 'male')
-                    if len(male_components) > tournament.min_components_male:
+                    if len(male_components) < tournament.min_components_male:
                         raise ValidationError(_(
                             "Tournament {tourn_name}, "
                             "team {team_name} not valid:\n"
                             "tournament {tourn_name} requires at least "
                             "{min_male_comp} male components per team.")
                             .format(
-                                team_name=team.display_name,
-                                tourn_name=tournament.display_name,
-                                min_male_comp=tournament.min_components_male))
+                            team_name=team.display_name,
+                            tourn_name=tournament.display_name,
+                            min_male_comp=tournament.min_components_male))
 
     @api.depends(lambda m:
                  ('match_ids',
