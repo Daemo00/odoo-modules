@@ -37,6 +37,90 @@ class TestEventTournamentTeam(TestCommon):
             })
         self.assertIn(team_name, str(ve.exception))
 
+    def test_constrain_max_components_tournament(self):
+        """
+        Create a team,
+        check that components of a team cannot be
+        more than max components set on its tournament.
+        """
+        tournament = first(self.tournaments)
+        team = first(tournament.team_ids)
+        tournament.max_components = len(team.component_ids) - 1
+        with self.assertRaises(ValidationError) as ve:
+            tournament.action_check_rules()
+
+        self.assertIn(team.name, str(ve.exception))
+        self.assertIn(tournament.name, str(ve.exception))
+
+    def test_constrain_min_components_tournament(self):
+        """
+        Create a team,
+        check that components of a team cannot be
+        less than min components set on its tournament.
+        """
+        tournament = first(self.tournaments)
+        team = first(tournament.team_ids)
+        tournament.min_components = len(team.component_ids) + 1
+        with self.assertRaises(ValidationError) as ve:
+            tournament.action_check_rules()
+
+        self.assertIn(team.name, str(ve.exception))
+        self.assertIn(tournament.name, str(ve.exception))
+
+    def test_constrain_min_components_female_tournament(self):
+        """
+        Create a team,
+        check that female components of a team cannot be
+        less than min components set on its tournament.
+        """
+        tournament = first(self.tournaments)
+        team = first(tournament.team_ids)
+        tournament.min_components_female = len(team.component_ids) - 1
+
+        # Generic gender check on teams
+        with self.assertRaises(ValidationError) as ve:
+            tournament.action_check_rules()
+
+        tournament.component_ids.update({'gender': 'female'})
+        # Female check on teams succeeds
+        tournament.action_check_rules()
+
+        tournament.min_components_female = len(team.component_ids) + 1
+
+        # Female check on teams now fails
+        with self.assertRaises(ValidationError) as ve:
+            tournament.action_check_rules()
+
+        self.assertIn(team.name, str(ve.exception))
+        self.assertIn(tournament.name, str(ve.exception))
+
+    def test_constrain_min_components_male_tournament(self):
+        """
+        Create a team,
+        check that male components of a team cannot be
+        less than min components set on its tournament.
+        """
+        tournament = first(self.tournaments)
+        team = first(tournament.team_ids)
+        tournament.min_components_male = len(team.component_ids) - 1
+
+        # Generic gender check on teams
+        with self.assertRaises(ValidationError) as ve:
+            tournament.action_check_rules()
+
+        tournament.component_ids.update({'gender': 'male'})
+        # Male check on teams succeeds
+        tournament.action_check_rules()
+
+        tournament.min_components_male = len(team.component_ids) + 1
+
+        # Male check on teams now fails
+        with self.assertRaises(ValidationError) as ve:
+            tournament.action_check_rules()
+
+        self.assertIn(team.name, str(ve.exception))
+        self.assertIn(tournament.name, str(ve.exception))
+
     def test_compute_matches_points(self):
         """
         End a match,
