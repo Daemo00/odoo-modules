@@ -132,10 +132,17 @@ class TestCommon(TransactionCase):
         court = first(self.courts)
         tournament.update({'court_ids': court.ids})
         teams.update({'tournament_id': tournament.id})
-        match = self.match_model.create({
+        match_values = {
             'tournament_id': tournament.id,
             'court_id': court.id,
             'team_ids': teams.ids,
+        }
+        match_values.update(self.get_match_lines_1_2(teams))
+        match = self.match_model.create(match_values)
+        return match
+
+    def get_match_lines_1_2(self, teams):
+        return {
             'line_ids': [
                 (0, 0, {
                     'team_id': teams[0].id,
@@ -149,19 +156,25 @@ class TestCommon(TransactionCase):
                     'set_3': 18,
                     'set_4': 15,
                 }),
-            ]
-        })
-        return match
+            ],
+        }
 
     def get_match_1_1(self, teams):
         tournament = first(self.tournaments)
         court = first(self.courts)
         tournament.update({'court_ids': court.ids})
         teams.update({'tournament_id': tournament.id})
-        match = self.match_model.create({
+        match_values = {
             'tournament_id': tournament.id,
             'court_id': court.id,
             'team_ids': teams.ids,
+        }
+        match_values.update(self.get_match_lines_1_1(teams))
+        match = self.match_model.create(match_values)
+        return match
+
+    def get_match_lines_1_1(self, teams):
+        return {
             'line_ids': [
                 (0, 0, {
                     'team_id': teams[0].id,
@@ -173,6 +186,5 @@ class TestCommon(TransactionCase):
                     'set_1': 21,
                     'set_3': 18,
                 }),
-            ]
-        })
-        return match
+            ],
+        }
