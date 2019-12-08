@@ -79,6 +79,30 @@ class TestEventTournament (TestCommon):
             self.assertTrue(tournament.generate_matches())
         self.assertIn(tournament.name, ue.exception.name)
 
+    def test_generate_matches_match_teams_nbr(self):
+        """
+        Create a tournament,
+        check that at least 1 team per match is required for matches generation.
+        """
+        tournament = first(self.tournaments)
+        tournament.match_teams_nbr = 0
+        with self.assertRaises(UserError) as ue:
+            tournament.generate_matches()
+        self.assertIn(tournament.name, ue.exception.name)
+
+    def test_generate_matches_duration(self):
+        """
+        Create a tournament,
+        check that defining a duration for matches
+        is required for matches generation.
+        """
+        tournament = first(self.tournaments)
+        tournament.match_duration = 0
+        tournament.match_warm_up_duration = 0
+        with self.assertRaises(UserError) as ue:
+            tournament.generate_matches()
+        self.assertIn(tournament.name, ue.exception.name)
+
     def test_generate_matches_court(self):
         """
         Create a tournament,
@@ -88,7 +112,7 @@ class TestEventTournament (TestCommon):
         tournament.start_datetime = fields.Datetime.now()
         tournament.court_ids = self.court_model.browse()
         with self.assertRaises(UserError) as ue:
-            self.assertTrue(tournament.generate_matches())
+            tournament.generate_matches()
         self.assertIn(tournament.name, ue.exception.name)
 
     def test_generate_matches(self):
@@ -100,9 +124,28 @@ class TestEventTournament (TestCommon):
         tournament.randomize_matches_generation = True
         tournament.start_datetime = fields.Datetime.now()
         tournament.court_ids = self.courts
+        matches = tournament.generate_matches()
         self.assertEqual(
-            len(tournament.generate_matches()),
+            len(matches),
             tournament.match_count_estimated)
+
+    def test_regenerate_matches(self):
+        """
+        Create a tournament,
+        check that regenerating the matches keeps the done matches unchanged.
+        """
+        tournament = first(self.tournaments)
+        tournament.randomize_matches_generation = True
+        tournament.start_datetime = fields.Datetime.now()
+        tournament.court_ids = self.courts
+        matches = tournament.generate_matches()
+        match = first(matches)
+        match.update(self.get_match_lines_1_2(match.team_ids[:2]))
+        match.action_done()
+
+        new_matches = tournament.generate_matches()
+        self.assertNotIn(match, new_matches)
+        self.assertIn(match, tournament.match_ids)
 
     def test_action_draft(self):
         """
@@ -111,6 +154,7 @@ class TestEventTournament (TestCommon):
         """
         tournament = first(self.tournaments)
         tournament.state = ''
+        self.assertNotEqual(tournament.state, 'draft')
         tournament.action_draft()
         self.assertEqual(tournament.state, 'draft')
 
@@ -121,6 +165,7 @@ class TestEventTournament (TestCommon):
         """
         tournament = first(self.tournaments)
         tournament.state = ''
+        self.assertNotEqual(tournament.state, 'started')
         tournament.action_start()
         self.assertEqual(tournament.state, 'started')
 
@@ -131,6 +176,7 @@ class TestEventTournament (TestCommon):
         """
         tournament = first(self.tournaments)
         tournament.state = ''
+        self.assertNotEqual(tournament.state, 'done')
         tournament.action_done()
         self.assertEqual(tournament.state, 'done')
 
@@ -146,3 +192,62 @@ class TestEventTournament (TestCommon):
         self.assertIn(tournament.name, str(ve.exception))
         tournament.min_components = 0
         tournament.action_check_rules()
+
+    def test_action_view_matches(self):
+        """
+        Create a tournament,
+        generate the matches and check that the action returned
+        shows all the tournament's matches.
+        """
+        tournament = first(self.tournaments)
+        tournament.randomize_matches_generation = True
+        tournament.start_datetime = fields.Datetime.now()
+        tournament.court_ids = self.courts
+
+        action = tournament.generate_view_matches()
+        matches = tournament.match_ids
+        action_model = action.get('res_model')
+        action_domain = action.get('domain')
+        action_matches = self.env[action_model].search(action_domain)
+        self.assertEqual(matches, action_matches)
+
+    def test_action_view_teams(self):
+        """
+        Create a tournament,
+        check that the method `action_view_teams`
+        returns an action showing all the tournament's teams.
+        """
+        tournament = first(self.tournaments)
+        teams = tournament.team_ids
+        action = tournament.action_view_teams()
+        action_model = action.get('res_model')
+        action_domain = action.get('domain')
+        action_teams = self.env[action_model].search(action_domain)
+        self.assertEqual(teams, action_teams)
+
+    def test_compute_components(self):
+        """
+        Create a tournament,
+        check that the tournament's components equal
+        the union of all the tournament's teams components.
+        """
+        tournament = first(self.tournaments)
+        teams = tournament.team_ids
+        self.assertEqual(
+            teams.mapped('component_ids'),
+            tournament.component_ids)
+
+    def test_open_form_current(self):
+        """
+        Create a tournament,
+        check that method `open_form_current`
+        returns an action that shows the current tournament.
+        """
+        tournament = first(self.tournaments)
+        action = tournament.open_form_current()
+        action_model = action.get('res_model')
+        action_id = action.get('res_id')
+        action_tournament = self.env[action_model].browse(action_id)
+        self.assertEqual(
+            action_tournament,
+            tournament)

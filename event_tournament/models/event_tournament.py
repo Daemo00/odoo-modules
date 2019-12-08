@@ -145,10 +145,18 @@ class EventTournament(models.Model):
         self.team_ids.constrain_components_tournament()
 
     def generate_matches(self):
+        """
+        Generate matches for the current tournament.
+        Matches are generated using `itertools.combinations` built-in
+        and they are assigned a time slot in the following fashion:
+
+            1. Tournament start
+            2. Court
+        """
         self.ensure_one()
         match_model = self.env['event.tournament.match']
         matches = match_model.browse()
-        if self.match_teams_nbr <= 0:
+        if self.match_teams_nbr < 1:
             raise UserError(_("Tournament {tourn_name}:\n"
                               "At least 1 team per match is required "
                               "for matches generation.")
@@ -260,18 +268,24 @@ class EventTournament(models.Model):
         return self.action_view_matches()
 
     def set_tournament_domain(self, action):
+        """
+        Set current tournament domain in `action`.
+        """
         self.ensure_one()
         domain = action.get('domain', list())
         domain = safe_eval(domain)
         domain.append(('tournament_id', '=', self.id))
-        action['domain'] = domain
+        action.update(domain=domain)
 
     def set_tournament_context(self, action):
+        """
+        Set current tournament as default in `action`'s context.
+        """
         self.ensure_one()
         context = action.get('context', dict())
         context = safe_eval(context)
         context.update({'default_tournament_id': self.id})
-        action['context'] = context
+        action.update(context=context)
 
     def action_view_matches(self):
         self.ensure_one()
