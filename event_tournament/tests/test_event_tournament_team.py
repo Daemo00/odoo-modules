@@ -139,3 +139,16 @@ class TestEventTournamentTeam(TestCommon):
         self.assertEqual(winner.matches_points, 2)
         self.assertEqual(winner.points_ratio,
                          winner.points_done / winner.points_taken)
+
+    def test_action_view_matches(self):
+        """
+        Create a team,
+        check that `action_view_matches` creates an action
+        that shows its matches.
+        """
+        team = self.teams[:1]
+        action = team.action_view_matches()
+        action_model = action.get('res_model')
+        action_domain = action.get('domain')
+        action_matches = self.env[action_model].search(action_domain)
+        self.assertEqual(team.match_ids, action_matches)
