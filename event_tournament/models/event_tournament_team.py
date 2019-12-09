@@ -71,7 +71,7 @@ class EventTournamentTeam (models.Model):
         domain = action.get('domain', list())
         domain = safe_eval(domain)
         domain.append(('team_ids', 'in', self.ids))
-        action['domain'] = domain
+        action.update(domain=domain)
 
     def action_view_matches(self):
         self.ensure_one()
