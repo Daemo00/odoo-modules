@@ -2,16 +2,15 @@
 #  License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 from collections import Counter
 
-from odoo import fields, models, _
+from odoo import _, fields, models
 from odoo.exceptions import UserError
 
 
 class EventTournamentMatchModeLine(models.Model):
-    _name = 'event.tournament.match.mode.result'
-    _description = 'Match mode result'
+    _name = "event.tournament.match.mode.result"
+    _description = "Match mode result"
 
-    mode_id = fields.Many2one(
-        comodel_name='event.tournament.match.mode')
+    mode_id = fields.Many2one(comodel_name="event.tournament.match.mode")
     sets_won = fields.Integer()
     sets_lost = fields.Integer()
     points_win = fields.Integer()
@@ -19,13 +18,13 @@ class EventTournamentMatchModeLine(models.Model):
 
 
 class EventTournamentMatchMode(models.Model):
-    _name = 'event.tournament.match.mode'
-    _description = 'Match mode'
+    _name = "event.tournament.match.mode"
+    _description = "Match mode"
 
     name = fields.Char()
     result_ids = fields.One2many(
-        comodel_name='event.tournament.match.mode.result',
-        inverse_name='mode_id')
+        comodel_name="event.tournament.match.mode.result", inverse_name="mode_id"
+    )
 
     def get_points(self, match):
         """
@@ -46,13 +45,15 @@ class EventTournamentMatchMode(models.Model):
                     break
             else:
                 raise UserError(
-                    _("Match {match_name} not valid:\n"
-                      "Result {sets_won} - {sets_lost} not expected "
-                      "for match mode {match_mode}.")
-                    .format(
+                    _(
+                        "Match {match_name} not valid:\n"
+                        "Result {sets_won} - {sets_lost} not expected "
+                        "for match mode {match_mode}."
+                    ).format(
                         match_name=match.display_name,
                         sets_won=sets_won,
                         sets_lost=sets_lost,
                         match_mode=self.display_name,
-                    ))
+                    )
+                )
         return tournament_points

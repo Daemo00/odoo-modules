@@ -5,13 +5,11 @@ from odoo import fields, models
 
 
 class EventEvent(models.Model):
-    _inherit = 'event.event'
+    _inherit = "event.event"
 
     tournament_ids = fields.One2many(
-        comodel_name='event.tournament',
-        inverse_name='event_id',
-        string="Tournaments")
+        comodel_name="event.tournament", inverse_name="event_id", string="Tournaments"
+    )
     court_ids = fields.One2many(
-        comodel_name='event.tournament.court',
-        inverse_name='event_id',
-        string="Courts")
+        comodel_name="event.tournament.court", inverse_name="event_id", string="Courts"
+    )

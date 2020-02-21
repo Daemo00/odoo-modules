@@ -1,7 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <!-- Copyright 2019 Simone Rubino <daemo00@gmail.com> -->
 <!-- License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
-
 <odoo>
     <record id="event_tournament_import_csv_bv4w_view_form" model="ir.ui.view">
         <field name="name">Import teams data</field>
@@ -9,24 +8,33 @@
         <field name="arch" type="xml">
             <form string="Import teams data">
                 <group>
-                    <field name="data" filename="filename"/>
-                    <field name="filename" invisible="1"/>
+                    <field name="data" filename="filename" />
+                    <field name="filename" invisible="1" />
                 </group>
                 <footer>
-                    <button name="import_csv_bv4w" string="Import" type="object" class="btn-primary"/>
-                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    <button
+                        name="import_csv_bv4w"
+                        string="Import"
+                        type="object"
+                        class="btn-primary"
+                    />
+                    <button string="Cancel" class="btn-secondary" special="cancel" />
                 </footer>
             </form>
         </field>
     </record>
 
-    <act_window id="action_event_tournament_import_csv_bv4w_view_form"
-                name="Import CSV BV4W"
-                res_model="event.tournament.import_csv_bv4w"
-                view_mode="form"
-                target="new"/>
+    <act_window
+        id="action_event_tournament_import_csv_bv4w_view_form"
+        name="Import CSV BV4W"
+        res_model="event.tournament.import_csv_bv4w"
+        view_mode="form"
+        target="new"
+    />
 
-    <menuitem id="menu_event_tournament_import_csv_bv4w_view_form"
-              parent="event_tournament_root_menu"
-              action="action_event_tournament_import_csv_bv4w_view_form"/>
+    <menuitem
+        id="menu_event_tournament_import_csv_bv4w_view_form"
+        parent="event_tournament_root_menu"
+        action="action_event_tournament_import_csv_bv4w_view_form"
+    />
 </odoo>

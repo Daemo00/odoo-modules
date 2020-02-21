@@ -1,6 +1,5 @@
 <!-- Copyright 2019 Simone Rubino <daemo00@gmail.com> -->
 <!-- License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
-
 <odoo>
     <record id="event_tournament_team_view_form" model="ir.ui.view">
         <field name="name">event.tournament.team form view</field>
@@ -9,22 +8,32 @@
             <form string="Team">
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="action_view_matches" type="object"
-                                class="oe_stat_button" icon="fa-trophy">
-                            <field name="match_count" widget="statinfo" string="Matches"/>
+                        <button
+                            name="action_view_matches"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-trophy"
+                        >
+                            <field
+                                name="match_count"
+                                widget="statinfo"
+                                string="Matches"
+                            />
                         </button>
                     </div>
                     <group>
                         <group>
-                            <field name="event_id"/>
-                            <field name="tournament_id"/>
-                            <field name="name"/>
-                            <field name="component_ids"
-                                   domain="[
+                            <field name="event_id" />
+                            <field name="tournament_id" />
+                            <field name="name" />
+                            <field
+                                name="component_ids"
+                                domain="[
                                ('event_id', '=', event_id),
-                               ('tournament_ids', 'not in', tournament_id)]">
+                               ('tournament_ids', 'not in', tournament_id)]"
+                            >
                                 <tree>
-                                    <field name="name"/>
+                                    <field name="name" />
                                 </tree>
                             </field>
                         </group>
@@ -32,16 +41,20 @@
                             <p class="text-muted">
                                 Fields computed on done matches
                             </p>
-                            <field name="matches_points"/>
-                            <field name="sets_won"/>
-                            <field name="points_ratio"/>
-                            <field name="points_done"/>
-                            <field name="points_taken"/>
-                            <button name="compute_matches_points" type="object" string="Recompute points"/>
+                            <field name="matches_points" />
+                            <field name="sets_won" />
+                            <field name="points_ratio" />
+                            <field name="points_done" />
+                            <field name="points_taken" />
+                            <button
+                                name="compute_matches_points"
+                                type="object"
+                                string="Recompute points"
+                            />
                         </group>
                     </group>
                     <group>
-                        <field name="notes"/>
+                        <field name="notes" />
                     </group>
                 </sheet>
             </form>
@@ -53,13 +66,13 @@
         <field name="model">event.tournament.team</field>
         <field name="arch" type="xml">
             <tree>
-                <field name="event_id"/>
-                <field name="tournament_id"/>
-                <field name="name"/>
-                <field name="matches_points"/>
-                <field name="sets_won"/>
-                <field name="points_ratio"/>
-                <field name="component_ids" widget="many2many_tags"/>
+                <field name="event_id" />
+                <field name="tournament_id" />
+                <field name="name" />
+                <field name="matches_points" />
+                <field name="sets_won" />
+                <field name="points_ratio" />
+                <field name="component_ids" widget="many2many_tags" />
             </tree>
         </field>
     </record>
@@ -69,21 +82,31 @@
         <field name="model">event.tournament.team</field>
         <field name="arch" type="xml">
             <search>
-                <field name="name"/>
-                <field name="component_ids"/>
-                <filter string="Tournament" name="tournament"
-                        context="{'group_by':'tournament_id'}"/>
-                <filter string="Event" name="tournament"
-                        context="{'group_by':'event_id'}"/>
+                <field name="name" />
+                <field name="component_ids" />
+                <filter
+                    string="Tournament"
+                    name="tournament"
+                    context="{'group_by':'tournament_id'}"
+                />
+                <filter
+                    string="Event"
+                    name="tournament"
+                    context="{'group_by':'event_id'}"
+                />
             </search>
         </field>
     </record>
 
-    <act_window id="event_tournament_team_action"
-                name="Tournament teams"
-                res_model="event.tournament.team"/>
+    <act_window
+        id="event_tournament_team_action"
+        name="Tournament teams"
+        res_model="event.tournament.team"
+    />
 
-    <menuitem id="event_tournament_team_menu"
-              parent="event_tournament_root_menu"
-              action="event_tournament_team_action"/>
+    <menuitem
+        id="event_tournament_team_menu"
+        parent="event_tournament_root_menu"
+        action="event_tournament_team_action"
+    />
 </odoo>

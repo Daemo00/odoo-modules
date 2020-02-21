@@ -5,11 +5,11 @@ import itertools
 from odoo import fields
 from odoo.exceptions import UserError, ValidationError
 from odoo.fields import first
-from .test_common import TestCommon, TEAM_NBR, COMPONENT_NBR
+
+from .test_common import COMPONENT_NBR, TEAM_NBR, TestCommon
 
 
-class TestEventTournament (TestCommon):
-
+class TestEventTournament(TestCommon):
     def test_onchange_event_id(self):
         """
         Change the event in the tournament,
@@ -33,11 +33,13 @@ class TestEventTournament (TestCommon):
         tournament.court_ids = court
 
         self.assertFalse(tournament.match_count)
-        self.match_model.create({
-            'tournament_id': tournament.id,
-            'court_id': court.id,
-            'team_ids': tournament.team_ids.ids,
-        })
+        self.match_model.create(
+            {
+                "tournament_id": tournament.id,
+                "court_id": court.id,
+                "team_ids": tournament.team_ids.ids,
+            }
+        )
         self.assertEqual(tournament.match_count, 1)
 
     def test_compute_match_count_estimated(self):
@@ -48,18 +50,27 @@ class TestEventTournament (TestCommon):
         tournament = first(self.tournaments)
         self.assertEqual(len(tournament.team_ids), TEAM_NBR)
         self.assertEqual(tournament.match_teams_nbr, 2)
-        self.assertEqual(tournament.match_count_estimated,
-                         len(list(itertools.combinations(
-                             tournament.team_ids,
-                             tournament.match_teams_nbr))))
-        self.team_model.create({
-            'tournament_id': tournament.id,
-            'name': 'test',
-        })
-        self.assertEqual(tournament.match_count_estimated,
-                         len(list(itertools.combinations(
-                             tournament.team_ids,
-                             tournament.match_teams_nbr))))
+        self.assertEqual(
+            tournament.match_count_estimated,
+            len(
+                list(
+                    itertools.combinations(
+                        tournament.team_ids, tournament.match_teams_nbr
+                    )
+                )
+            ),
+        )
+        self.team_model.create({"tournament_id": tournament.id, "name": "test"})
+        self.assertEqual(
+            tournament.match_count_estimated,
+            len(
+                list(
+                    itertools.combinations(
+                        tournament.team_ids, tournament.match_teams_nbr
+                    )
+                )
+            ),
+        )
 
     def test_compute_team_count(self):
         """
@@ -125,9 +136,7 @@ class TestEventTournament (TestCommon):
         tournament.start_datetime = fields.Datetime.now()
         tournament.court_ids = self.courts
         matches = tournament.generate_matches()
-        self.assertEqual(
-            len(matches),
-            tournament.match_count_estimated)
+        self.assertEqual(len(matches), tournament.match_count_estimated)
 
     def test_regenerate_matches(self):
         """
@@ -153,10 +162,10 @@ class TestEventTournament (TestCommon):
         check that action_draft changes the state of the tournament.
         """
         tournament = first(self.tournaments)
-        tournament.state = ''
-        self.assertNotEqual(tournament.state, 'draft')
+        tournament.state = ""
+        self.assertNotEqual(tournament.state, "draft")
         tournament.action_draft()
-        self.assertEqual(tournament.state, 'draft')
+        self.assertEqual(tournament.state, "draft")
 
     def test_action_start(self):
         """
@@ -164,10 +173,10 @@ class TestEventTournament (TestCommon):
         check that action_start changes the state of the tournament.
         """
         tournament = first(self.tournaments)
-        tournament.state = ''
-        self.assertNotEqual(tournament.state, 'started')
+        tournament.state = ""
+        self.assertNotEqual(tournament.state, "started")
         tournament.action_start()
-        self.assertEqual(tournament.state, 'started')
+        self.assertEqual(tournament.state, "started")
 
     def test_action_done(self):
         """
@@ -175,10 +184,10 @@ class TestEventTournament (TestCommon):
         check that action_done changes the state of the tournament.
         """
         tournament = first(self.tournaments)
-        tournament.state = ''
-        self.assertNotEqual(tournament.state, 'done')
+        tournament.state = ""
+        self.assertNotEqual(tournament.state, "done")
         tournament.action_done()
-        self.assertEqual(tournament.state, 'done')
+        self.assertEqual(tournament.state, "done")
 
     def test_action_check_rules(self):
         """
@@ -206,8 +215,8 @@ class TestEventTournament (TestCommon):
 
         action = tournament.generate_view_matches()
         matches = tournament.match_ids
-        action_model = action.get('res_model')
-        action_domain = action.get('domain')
+        action_model = action.get("res_model")
+        action_domain = action.get("domain")
         action_matches = self.env[action_model].search(action_domain)
         self.assertEqual(matches, action_matches)
 
@@ -220,8 +229,8 @@ class TestEventTournament (TestCommon):
         tournament = first(self.tournaments)
         teams = tournament.team_ids
         action = tournament.action_view_teams()
-        action_model = action.get('res_model')
-        action_domain = action.get('domain')
+        action_model = action.get("res_model")
+        action_domain = action.get("domain")
         action_teams = self.env[action_model].search(action_domain)
         self.assertEqual(teams, action_teams)
 
@@ -233,9 +242,7 @@ class TestEventTournament (TestCommon):
         """
         tournament = first(self.tournaments)
         teams = tournament.team_ids
-        self.assertEqual(
-            teams.mapped('component_ids'),
-            tournament.component_ids)
+        self.assertEqual(teams.mapped("component_ids"), tournament.component_ids)
 
     def test_open_form_current(self):
         """
@@ -245,9 +252,7 @@ class TestEventTournament (TestCommon):
         """
         tournament = first(self.tournaments)
         action = tournament.open_form_current()
-        action_model = action.get('res_model')
-        action_id = action.get('res_id')
+        action_model = action.get("res_model")
+        action_id = action.get("res_id")
         action_tournament = self.env[action_model].browse(action_id)
-        self.assertEqual(
-            action_tournament,
-            tournament)
+        self.assertEqual(action_tournament, tournament)
