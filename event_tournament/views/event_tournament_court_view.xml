@@ -1,4 +1,4 @@
-<!-- Copyright 2019 Simone Rubino <daemo00@gmail.com> -->
+<!-- Copyright 2020 Simone Rubino <daemo00@gmail.com> -->
 <!-- License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
 <odoo>
     <record id="event_tournament_crt_view_form" model="ir.ui.view">
@@ -17,7 +17,6 @@
             </form>
         </field>
     </record>
-
     <record id="event_tournament_court_view_tree" model="ir.ui.view">
         <field name="name">event.tournament.court tree view</field>
         <field name="model">event.tournament.court</field>

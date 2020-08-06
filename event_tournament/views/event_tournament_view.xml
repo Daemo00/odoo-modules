@@ -1,4 +1,4 @@
-<!-- Copyright 2019 Simone Rubino <daemo00@gmail.com> -->
+<!-- Copyright 2020 Simone Rubino <daemo00@gmail.com> -->
 <!-- License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
 <odoo>
     <menuitem
@@ -6,7 +6,6 @@
         name="Tournaments"
         parent="event.event_main_menu"
     />
-
     <record id="event_tournament_view_form" model="ir.ui.view">
         <field name="name">event.tournament form view</field>
         <field name="model">event.tournament</field>
@@ -123,7 +122,6 @@
             </form>
         </field>
     </record>
-
     <record id="event_tournament_view_tree" model="ir.ui.view">
         <field name="name">event.tournament tree view</field>
         <field name="model">event.tournament</field>
@@ -135,7 +133,6 @@
             </tree>
         </field>
     </record>
-
     <record id="event_tournament_view_search" model="ir.ui.view">
         <field name="name">event.tournament search view</field>
         <field name="model">event.tournament</field>
@@ -150,7 +147,6 @@
             </search>
         </field>
     </record>
-
     <act_window
         id="event_tournament_action"
         name="Tournaments"

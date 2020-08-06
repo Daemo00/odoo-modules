@@ -889,7 +889,7 @@ msgid ""
 "tournament {tourn_name} requires at least {min_female_comp} female components per team."
 msgstr ""
 "Torneo {tourn_name}, squadra {team_name} non valida:\n"
-"il torneo {tourn_name} richiede almeno {min_comp} componenti donna per squadra."
+"il torneo {tourn_name} richiede almeno {min_female_comp} componenti donna per squadra."
 
 #. module: event_tournament
 #: code:addons/event_tournament/models/event_tournament_team.py:0
@@ -900,7 +900,7 @@ msgid ""
 "tournament {tourn_name} requires at least {min_male_comp} male components per team."
 msgstr ""
 "Torneo {tourn_name}, squadra {team_name} non valida:\n"
-"il torneo {tourn_name} richiede almeno {min_comp} componenti uomo per squadra."
+"il torneo {tourn_name} richiede almeno {min_male_comp} componenti uomo per squadra."
 
 #. module: event_tournament
 #: code:addons/event_tournament/models/event_tournament_team.py:0

@@ -1,4 +1,4 @@
-<!-- Copyright 2019 Simone Rubino <daemo00@gmail.com> -->
+<!-- Copyright 2020 Simone Rubino <daemo00@gmail.com> -->
 <!-- License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
 <odoo>
     <record id="event_tournament_match_view_form" model="ir.ui.view">
@@ -48,7 +48,6 @@
             </form>
         </field>
     </record>
-
     <record id="event_tournament_match_view_kanban" model="ir.ui.view">
         <field name="name">event.tournament.match kanban view</field>
         <field name="model">event.tournament.match</field>
@@ -85,7 +84,6 @@
             </kanban>
         </field>
     </record>
-
     <record id="event_tournament_match_view_tree" model="ir.ui.view">
         <field name="name">event.tournament.match tree view</field>
         <field name="model">event.tournament.match</field>
@@ -100,7 +98,6 @@
             </tree>
         </field>
     </record>
-
     <record id="event_tournament_match_view_search" model="ir.ui.view">
         <field name="name">event.tournament.match search view</field>
         <field name="model">event.tournament.match</field>
@@ -117,7 +114,6 @@
             </search>
         </field>
     </record>
-
     <act_window
         id="event_tournament_match_action"
         name="Tournament matches"

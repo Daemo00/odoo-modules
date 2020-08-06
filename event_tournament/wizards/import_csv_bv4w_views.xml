@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<!-- Copyright 2019 Simone Rubino <daemo00@gmail.com> -->
+<!-- Copyright 2020 Simone Rubino <daemo00@gmail.com> -->
 <!-- License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
 <odoo>
     <record id="event_tournament_import_csv_bv4w_view_form" model="ir.ui.view">
@@ -23,7 +23,6 @@
             </form>
         </field>
     </record>
-
     <act_window
         id="action_event_tournament_import_csv_bv4w_view_form"
         name="Import CSV BV4W"
@@ -31,7 +30,6 @@
         view_mode="form"
         target="new"
     />
-
     <menuitem
         id="menu_event_tournament_import_csv_bv4w_view_form"
         parent="event_tournament_root_menu"

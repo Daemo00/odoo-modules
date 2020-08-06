@@ -1,4 +1,4 @@
-<!-- Copyright 2019 Simone Rubino <daemo00@gmail.com> -->
+<!-- Copyright 2020 Simone Rubino <daemo00@gmail.com> -->
 <!-- License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
 <odoo>
     <template id="matches_schedule_table">
@@ -39,7 +39,6 @@
             </tbody>
         </table>
     </template>
-
     <!-- Match report -->
     <template id="matches_schedule_match">
         <t t-call="web.html_container">
@@ -50,14 +49,12 @@
             </t>
         </t>
     </template>
-
     <report
         id="matches_schedule_match_action"
         name="event_tournament.matches_schedule_match"
         model="event.tournament.match"
         string="Matches schedule"
     />
-
     <!-- Tournament report -->
     <template id="matches_schedule_tournament">
         <t t-call="web.html_container">
@@ -66,7 +63,6 @@
             </t>
         </t>
     </template>
-
     <template id="matches_schedule_tournament_document">
         <t t-call="web.internal_layout">
             <h1>
@@ -77,7 +73,6 @@
             </t>
         </t>
     </template>
-
     <report
         id="matches_schedule_tournament_action"
         name="event_tournament.matches_schedule_tournament"
