@@ -1,0 +1,29 @@
+<!-- Copyright 2020 Simone Rubino <daemo00@gmail.com> -->
+<!-- License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <record id="view_event_form" model="ir.ui.view">
+        <field name="name">Tournament into event.event form view</field>
+        <field name="model">event.event</field>
+        <field name="inherit_id" ref="event.view_event_form" />
+        <field name="arch" type="xml">
+            <notebook position="inside">
+                <page name="tournaments" string="Tournaments">
+                    <group>
+                        <field name="tournament_ids" context="{'default_event_id': id}">
+                            <tree>
+                                <button
+                                    name="open_form_current"
+                                    type="object"
+                                    string="Open full-screen"
+                                    icon="fa-external-link"
+                                />
+                                <field name="name" />
+                            </tree>
+                        </field>
+                        <field name="court_ids" context="{'default_event_id': id}" />
+                    </group>
+                </page>
+            </notebook>
+        </field>
+    </record>
+</odoo>
