@@ -1,0 +1,972 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* event_tournament
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 13.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-11-17 19:41+0000\n"
+"PO-Revision-Date: 2019-11-17 20:42+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"Language: it\n"
+"X-Generator: Poedit 2.2.4\n"
+
+#. module: event_tournament
+#: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_match_view_kanban
+msgid "<span class=\"fa fa-clock-o\" title=\"Time start\" aria-label=\"Time start\"/>"
+msgstr "<span class=\"fa fa-clock-o\" title=\"Orario di inizio\" aria-label=\"Orario di inizio\"/>"
+
+#. module: event_tournament
+#: code:addons/event_tournament/models/event_tournament_match.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_match.py:0
+#, python-format
+msgid "A good match needs at least 2 teams"
+msgstr "Per fare una bella partita ci vogliono almeno 2 squadre"
+
+#. module: event_tournament
+#: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_view_form
+msgid "Additional information..."
+msgstr "Ulteriori informazioni..."
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_court__time_availability_end
+msgid "Availability end"
+msgstr "Fine disponibilità"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_court__time_availability_start
+msgid "Availability start"
+msgstr "Inizio disponibilità"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_registration__birthdate_date
+msgid "Birthdate"
+msgstr "Data di nascita"
+
+#. module: event_tournament
+#: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_import_csv_bv4w_view_form
+msgid "Cancel"
+msgstr "Annulla"
+
+#. module: event_tournament
+#: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_view_form
+msgid "Check"
+msgstr "Controlla"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match__component_ids
+msgid "Component"
+msgstr "Componente"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament__component_ids
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_team__component_ids
+msgid "Components"
+msgstr "Componenti"
+
+#. module: event_tournament
+#: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_team_view_form
+msgid "Computed fields"
+msgstr "Campi calcolati"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match__court_id
+#: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_crt_view_form
+#: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_match_view_search
+msgid "Court"
+msgstr "Campo"
+
+#. module: event_tournament
+#: model:ir.model,name:event_tournament.model_event_tournament_court
+msgid "Court for tournaments"
+msgstr "Campo per tornei"
+
+#. module: event_tournament
+#: code:addons/event_tournament/models/event_tournament_match.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_match.py:0
+#, python-format
+msgid ""
+"Court {court_name} not valid:\n"
+"match {match_name} is overlapping {overlapping_match_name}."
+msgstr ""
+"Il campo {court_name} non è valido:\n"
+"la partita {match_name} si sovrappone a {overlapping_match_name}."
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_event__court_ids
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament__court_ids
+msgid "Courts"
+msgstr "Campi"
+
+#. module: event_tournament
+#: model:ir.model.fields,help:event_tournament.field_event_tournament__court_ids
+msgid "Courts available for this tournament"
+msgstr "Campi disponibili per questo torneo"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament__create_uid
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_court__create_uid
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_import_csv_bv4w__create_uid
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match__create_uid
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match_line__create_uid
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match_mode__create_uid
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match_mode_result__create_uid
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_team__create_uid
+msgid "Created by"
+msgstr "Creato da"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament__create_date
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_court__create_date
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_import_csv_bv4w__create_date
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match__create_date
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match_line__create_date
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match_mode__create_date
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match_mode_result__create_date
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_team__create_date
+msgid "Created on"
+msgstr "Creato il"
+
+#. module: event_tournament
+#: model_terms:ir.ui.view,arch_db:event_tournament.matches_schedule_table
+msgid "Datetime"
+msgstr "Data e ora"
+
+#. module: event_tournament
+#: model:ir.model.fields,help:event_tournament.field_event_tournament__reset_matches_before_generation
+msgid "Delete not done matches before generation"
+msgstr "Elimina le partite non completate prima della generazione"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament__display_name
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_court__display_name
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_import_csv_bv4w__display_name
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match__display_name
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match_line__display_name
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match_mode__display_name
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match_mode_result__display_name
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_team__display_name
+msgid "Display Name"
+msgstr "Nome visualizzato"
+
+#. module: event_tournament
+#: model:ir.model.fields.selection,name:event_tournament.selection__event_tournament__state__done
+#: model:ir.model.fields.selection,name:event_tournament.selection__event_tournament_match__state__done
+#: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_match_view_form
+#: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_view_form
+msgid "Done"
+msgstr "Completato"
+
+#. module: event_tournament
+#: model:ir.model.fields.selection,name:event_tournament.selection__event_tournament__state__draft
+#: model:ir.model.fields.selection,name:event_tournament.selection__event_tournament_match__state__draft
+msgid "Draft"
+msgstr "Bozza"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament__match_count_estimated
+msgid "Estimated match count"
+msgstr "Totale partite stimato"
+
+#. module: event_tournament
+#: model:ir.model,name:event_tournament.model_event_event
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament__event_id
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_court__event_id
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_team__event_id
+#: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_team_view_search
+#: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_view_search
+msgid "Event"
+msgstr "Evento"
+
+#. module: event_tournament
+#: model:ir.model,name:event_tournament.model_event_registration
+msgid "Event Registration"
+msgstr "Registrazione evento"
+
+#. module: event_tournament
+#: model:ir.model.fields.selection,name:event_tournament.selection__event_registration__gender__female
+msgid "Female"
+msgstr "Femmina"
+
+#. module: event_tournament
+#: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_team_view_form
+msgid "Fields computed on done matches"
+msgstr "Campi calcolati sulle partite completate"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_import_csv_bv4w__data
+msgid "File"
+msgstr "File"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_import_csv_bv4w__filename
+msgid "File Name"
+msgstr "Nome file"
+
+#. module: event_tournament
+#: code:addons/event_tournament/wizards/import_csv_bv4w.py:0
+#: code:addons/odoo-modules/event_tournament/wizards/import_csv_bv4w.py:0
+#, python-format
+msgid "Found multiple registrations with name {name}"
+msgstr "Trovate diverse iscrizioni con il nome {name}"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_registration__gender
+msgid "Gender"
+msgstr "Genere"
+
+#. module: event_tournament
+#: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_view_form
+msgid "Generate matches"
+msgstr "Genera partite"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament__id
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_court__id
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_import_csv_bv4w__id
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match__id
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match_line__id
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match_mode__id
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match_mode_result__id
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_team__id
+msgid "ID"
+msgstr "ID"
+
+#. module: event_tournament
+#: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_import_csv_bv4w_view_form
+msgid "Import"
+msgstr "Importa"
+
+#. module: event_tournament
+#: model:ir.actions.act_window,name:event_tournament.action_event_tournament_import_csv_bv4w_view_form
+#: model:ir.ui.menu,name:event_tournament.menu_event_tournament_import_csv_bv4w_view_form
+msgid "Import CSV BV4W"
+msgstr "Importa CSV BV4W"
+
+#. module: event_tournament
+#: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_import_csv_bv4w_view_form
+msgid "Import teams data"
+msgstr "Importa dati squadre"
+
+#. module: event_tournament
+#: model:ir.model,name:event_tournament.model_event_tournament_import_csv_bv4w
+msgid "Importing teams from BV4W in CSV format"
+msgstr "Importazione delle squadre da BV4W in formato CSV"
+
+#. module: event_tournament
+#: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_view_form
+msgid "Inheritance"
+msgstr "Ereditarietà"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_registration__is_fipav
+msgid "Is FIPAV"
+msgstr "È tesserato FIPAV"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament____last_update
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_court____last_update
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_import_csv_bv4w____last_update
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match____last_update
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match_line____last_update
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match_mode____last_update
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match_mode_result____last_update
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_team____last_update
+msgid "Last Modified on"
+msgstr "Ultima modifica il"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament__write_uid
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_court__write_uid
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_import_csv_bv4w__write_uid
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match__write_uid
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match_line__write_uid
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match_mode__write_uid
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match_mode_result__write_uid
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_team__write_uid
+msgid "Last Updated by"
+msgstr "Ultimo aggiornamento di"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament__write_date
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_court__write_date
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_import_csv_bv4w__write_date
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match__write_date
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match_line__write_date
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match_mode__write_date
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match_mode_result__write_date
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_team__write_date
+msgid "Last Updated on"
+msgstr "Ultimo aggiornamento il"
+
+#. module: event_tournament
+#: model:ir.model.fields.selection,name:event_tournament.selection__event_registration__gender__male
+msgid "Male"
+msgstr "Maschio"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match_line__match_id
+#: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_match_view_form
+msgid "Match"
+msgstr "Partita"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament__match_warm_up_duration
+msgid "Match Warm Up Duration"
+msgstr "Tempo di riscaldamento per la partita"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament__match_count
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_team__match_count
+msgid "Match count"
+msgstr "Totale partite"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament__match_duration
+msgid "Match duration"
+msgstr "Durata partita"
+
+#. module: event_tournament
+#: model:ir.model,name:event_tournament.model_event_tournament_match_mode
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament__match_mode_id
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match__match_mode_id
+#: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_match_mode_view_form
+msgid "Match mode"
+msgstr "Modalità partita"
+
+#. module: event_tournament
+#: model:ir.model,name:event_tournament.model_event_tournament_match_mode_result
+msgid "Match mode result"
+msgstr "Risultato per modalità partita"
+
+#. module: event_tournament
+#: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_view_form
+msgid "Match rules"
+msgstr "Regole partita"
+
+#. module: event_tournament
+#: code:addons/event_tournament/models/event_tournament_match.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_match.py:0
+#, python-format
+msgid "Match {match_name} already done."
+msgstr "La partita {match_name} è già completata."
+
+#. module: event_tournament
+#: code:addons/event_tournament/models/event_tournament_match.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_match.py:0
+#, python-format
+msgid ""
+"Match {match_name} not valid:\n"
+"Component {comp_name} is already playing in match {cont_match_name}."
+msgstr ""
+"Partita {match_name} non valida:\n"
+"il componente {comp_name} sta già giocando nella partita {cont_match_name}."
+
+#. module: event_tournament
+#: code:addons/event_tournament/models/event_tournament_match.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_match.py:0
+#, python-format
+msgid ""
+"Match {match_name} not valid:\n"
+"Court {court_name} is not available for tournament {tourn_name}."
+msgstr ""
+"Partita {match_name} non valida:\n"
+"Il campo {court_name} non è disponibile per il torneo {tourn_name}."
+
+#. module: event_tournament
+#: code:addons/event_tournament/models/event_tournament_match_mode.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_match_mode.py:0
+#, python-format
+msgid ""
+"Match {match_name} not valid:\n"
+"Result {sets_won} - {sets_lost} not expected for match mode {match_mode}."
+msgstr ""
+"Partite {match_name} non valida:\n"
+"il risultato {sets_won} - {sets_lost} non è atteso per i match in modalità {match_mode}."
+
+#. module: event_tournament
+#: code:addons/event_tournament/models/event_tournament_match.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_match.py:0
+#, python-format
+msgid ""
+"Match {match_name} not valid:\n"
+"Teams from different tournaments."
+msgstr ""
+"Partita {match_name} non valida:\n"
+"Le squadre sono in diversi tornei."
+
+#. module: event_tournament
+#: code:addons/event_tournament/models/event_tournament_match.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_match.py:0
+#, python-format
+msgid ""
+"Match {match_name} not valid:\n"
+"Teams not in tournament {tourn_name}."
+msgstr ""
+"Partita {match_name} non valida:\n"
+"squadre non presenti nel torneo {tourn_name}"
+
+#. module: event_tournament
+#: code:addons/event_tournament/models/event_tournament_match.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_match.py:0
+#, python-format
+msgid ""
+"Match {match_name} not valid:\n"
+"Teams {team_name} and {other_team_name} have common components ({common_components_names})."
+msgstr ""
+"Partita {match_name} non valida:\n"
+"le squadre {team_name} e {other_team_name} hanno componenti in comune ({common_components_names})."
+
+#. module: event_tournament
+#: code:addons/event_tournament/models/event_tournament_match.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_match.py:0
+#, python-format
+msgid ""
+"Match {match_name} not valid:\n"
+"court {court_name} is available from {court_start} but match starts at {match_start}."
+msgstr ""
+"Partita {match_name} non valida:\n"
+"il campo {court_name} è disponibile dalle {court_start} ma la partita inizia alle {match_start}."
+
+#. module: event_tournament
+#: code:addons/event_tournament/models/event_tournament_match.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_match.py:0
+#, python-format
+msgid ""
+"Match {match_name} not valid:\n"
+"court {court_name} is available until {court_end} but match ends at {match_end}."
+msgstr ""
+"Partita {match_name} non valida:\n"
+"il campo {court_name} è disponibile fino alle {court_end} ma la partita finisce alle {match_end}."
+
+#. module: event_tournament
+#: code:addons/event_tournament/models/event_tournament_match.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_match.py:0
+#, python-format
+msgid ""
+"Match {match_name} not valid:\n"
+"winner team {team_name} is not participating."
+msgstr ""
+"Partita {match_name} non valida:\n"
+"la squadra vincitrice {team_name} non ha partecipato."
+
+#. module: event_tournament
+#: code:addons/event_tournament/models/event_tournament_match.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_match.py:0
+#, python-format
+msgid ""
+"Match {match_name}, {set_string}:\n"
+"Ties are not allowed."
+msgstr ""
+"Partita {match_name}, {set_string}:\n"
+"i pareggi non sono ammessi."
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament__match_ids
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_team__match_ids
+#: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_team_view_form
+#: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_view_form
+msgid "Matches"
+msgstr "Partite"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_team__matches_points
+msgid "Matches Points"
+msgstr "Punti da partite"
+
+#. module: event_tournament
+#: model:ir.actions.report,name:event_tournament.matches_schedule_match_action
+#: model:ir.actions.report,name:event_tournament.matches_schedule_tournament_action
+msgid "Matches schedule"
+msgstr "Calendario partite"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament__max_components
+msgid "Maximum components"
+msgstr "Massimo componenti"
+
+#. module: event_tournament
+#: model:ir.model.fields,help:event_tournament.field_event_tournament__max_components
+msgid "Maximum number of components for a team"
+msgstr "Massimo numero di componenti per una squadra"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament__min_components
+msgid "Minimum components"
+msgstr "Minimo componenti"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament__min_components_female
+msgid "Minimum female components"
+msgstr "Minimo componenti donna"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament__min_components_male
+msgid "Minimum male components"
+msgstr "Minimo componenti uomo"
+
+#. module: event_tournament
+#: model:ir.model.fields,help:event_tournament.field_event_tournament__min_components
+msgid "Minimum number of components for a team"
+msgstr "Minimo numero di componenti per una squadra"
+
+#. module: event_tournament
+#: model:ir.model.fields,help:event_tournament.field_event_tournament__min_components_female
+msgid "Minimum number of female components for a team"
+msgstr "Minimo numero di componenti donna per una squadra"
+
+#. module: event_tournament
+#: model:ir.model.fields,help:event_tournament.field_event_tournament__min_components_male
+msgid "Minimum number of male components for a team"
+msgstr "Minimo numero di componenti uomo per una squadra"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_registration__mobile
+msgid "Mobile"
+msgstr "Dispositivo mobile"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match_mode_result__mode_id
+msgid "Mode"
+msgstr "Modalità"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament__name
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_court__name
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match_mode__name
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_team__name
+msgid "Name"
+msgstr "Nome"
+
+#. module: event_tournament
+#: code:addons/event_tournament/wizards/import_csv_bv4w.py:0
+#: code:addons/odoo-modules/event_tournament/wizards/import_csv_bv4w.py:0
+#, python-format
+msgid "No tournament found with name equal to '{csv_tourn_name}'"
+msgstr "Nessun torneo trovato con nome uguale a '{csv_tourn_name}'"
+
+#. module: event_tournament
+#: code:addons/event_tournament/models/event_tournament_match.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_match.py:0
+#, python-format
+msgid "No-one won a set in {match_name}."
+msgstr "Nessuno ha vinto un set nella partita {match_name}."
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament__notes
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_team__notes
+#: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_view_form
+msgid "Notes"
+msgstr "Note"
+
+#. module: event_tournament
+#: model:ir.model.fields,help:event_tournament.field_event_tournament__match_teams_nbr
+msgid "Number of teams per match"
+msgstr "Numero di squadre per partita"
+
+#. module: event_tournament
+#: model_terms:ir.ui.view,arch_db:event_tournament.view_event_form
+msgid "Open full-screen"
+msgstr "Apri a tutto schermo"
+
+#. module: event_tournament
+#: model:ir.model.fields.selection,name:event_tournament.selection__event_registration__gender__other
+msgid "Other"
+msgstr "Altro"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament__parent_id
+msgid "Parent tournament"
+msgstr "Torneo genitore"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_team__points_done
+msgid "Points Done"
+msgstr "Punti fatti"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match_mode_result__points_lose
+msgid "Points Lose"
+msgstr "Punti sconfitta"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_team__points_ratio
+msgid "Points Ratio"
+msgstr "Quoziente punti"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_team__points_taken
+msgid "Points Taken"
+msgstr "Punti subiti"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match_mode_result__points_win
+msgid "Points Win"
+msgstr "Punti vittoria"
+
+#. module: event_tournament
+#: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_view_form
+msgid "Points are computed only on done matches."
+msgstr "I punti sono calcolati solo sulle partite completate."
+
+#. module: event_tournament
+#: model:ir.model.fields,help:event_tournament.field_event_tournament__points_per_win
+msgid "Points gained for each match won"
+msgstr "Punti guadagnati per ogni partita vinta"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament__points_per_win
+msgid "Points per win"
+msgstr "Punti per vittoria"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament__randomize_matches_generation
+msgid "Randomize"
+msgstr "Casuale"
+
+#. module: event_tournament
+#: model:ir.model.fields,help:event_tournament.field_event_tournament__randomize_matches_generation
+msgid "Randomize matches generation"
+msgstr "Rendi casuale la generazione dei match"
+
+#. module: event_tournament
+#: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_team_view_form
+#: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_view_form
+msgid "Recompute points"
+msgstr "Ricalcola punti"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament__reset_matches_before_generation
+msgid "Reset"
+msgstr "Reset"
+
+#. module: event_tournament
+#: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_match_view_form
+#: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_view_form
+msgid "Reset to draft"
+msgstr "Riporta in bozza"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match_mode__result_ids
+msgid "Result"
+msgstr "Risultato"
+
+#. module: event_tournament
+#: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_view_form
+msgid "Rules"
+msgstr "Regole"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match__time_scheduled_end
+msgid "Scheduled end"
+msgstr "Fine prevista"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match__time_scheduled_start
+msgid "Scheduled start"
+msgstr "Inizio previsto"
+
+#. module: event_tournament
+#: code:addons/event_tournament/models/event_tournament.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament.py:0
+#, python-format
+msgid "Scheduling impossibru for a match between "
+msgstr "Schedulazione impossibbile per una partita tra "
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match_line__set_1
+msgid "Set 1"
+msgstr "Set 1"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match_line__set_2
+msgid "Set 2"
+msgstr "Set 2"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match_line__set_3
+msgid "Set 3"
+msgstr "Set 3"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match_line__set_4
+msgid "Set 4"
+msgstr "Set 4"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match_line__set_5
+msgid "Set 5"
+msgstr "Set 5"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match_mode_result__sets_lost
+msgid "Sets Lost"
+msgstr "Set persi"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match_mode_result__sets_won
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_team__sets_won
+msgid "Sets Won"
+msgstr "Set vinti"
+
+#. module: event_tournament
+#: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_view_form
+msgid "Start"
+msgstr "Inizio"
+
+#. module: event_tournament
+#: model:ir.model.fields.selection,name:event_tournament.selection__event_tournament__state__started
+msgid "Started"
+msgstr "Iniziato"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament__state
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match__state
+msgid "State"
+msgstr "Provincia"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament__child_ids
+msgid "Sub tournaments"
+msgstr "Sotto-tornei"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match__team_ids
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match_line__team_id
+#: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_team_view_form
+msgid "Team"
+msgstr "Squadra"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament__team_count
+msgid "Team count"
+msgstr "Totale squadre"
+
+#. module: event_tournament
+#: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_view_form
+msgid "Team rules"
+msgstr "Regole per squadre"
+
+#. module: event_tournament
+#: code:addons/event_tournament/models/event_tournament_team.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_team.py:0
+#, python-format
+msgid ""
+"Team {team_name} not valid:\n"
+"Components from different events."
+msgstr ""
+"Squadra {team_name} non valida:\n"
+"i componenti derivano da diversi eventi."
+
+#. module: event_tournament
+#: code:addons/event_tournament/models/event_tournament_team.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_team.py:0
+#, python-format
+msgid ""
+"Team {team_name} not valid:\n"
+"Components not in event {event_name}."
+msgstr ""
+"Squadra {team_name} non valida:\n"
+"i componenti non sono nell'evento {event_name}."
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_registration__tournament_team_ids
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament__team_ids
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match__line_ids
+#: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_view_form
+msgid "Teams"
+msgstr "Squadre"
+
+#. module: event_tournament
+#: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_view_form
+msgid "Teams & Matches"
+msgstr "Squadre & Partite"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament__match_teams_nbr
+msgid "Teams per match"
+msgstr "Squadre per partita"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match__time_done
+msgid "Time done"
+msgstr "Orario di fine"
+
+#. module: event_tournament
+#: model:ir.model,name:event_tournament.model_event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_registration__tournament_ids
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match__tournament_id
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_team__tournament_id
+#: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_match_view_search
+#: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_team_view_search
+#: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_view_form
+msgid "Tournament"
+msgstr "Torneo"
+
+#. module: event_tournament
+#: model:ir.model,name:event_tournament.model_event_tournament_match
+msgid "Tournament match"
+msgstr "Partita di torneo"
+
+#. module: event_tournament
+#: model:ir.model,name:event_tournament.model_event_tournament_match_line
+msgid "Tournament match line"
+msgstr "Riga di partita di torneo"
+
+#. module: event_tournament
+#: model:ir.actions.act_window,name:event_tournament.event_tournament_match_action
+#: model:ir.ui.menu,name:event_tournament.event_tournament_match_menu
+msgid "Tournament matches"
+msgstr "Partite torneo"
+
+#. module: event_tournament
+#: model:ir.actions.act_window,name:event_tournament.event_tournament_match_mode_action
+#: model:ir.ui.menu,name:event_tournament.event_tournament_match_mode_menu
+msgid "Tournament modes"
+msgstr "Modalità torneo"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament__start_datetime
+msgid "Tournament start"
+msgstr "Inizio torneo"
+
+#. module: event_tournament
+#: model:ir.model,name:event_tournament.model_event_tournament_team
+msgid "Tournament team"
+msgstr "Squadra torneo"
+
+#. module: event_tournament
+#: model:ir.actions.act_window,name:event_tournament.event_tournament_team_action
+#: model:ir.ui.menu,name:event_tournament.event_tournament_team_menu
+msgid "Tournament teams"
+msgstr "Squadre torneo"
+
+#. module: event_tournament
+#: code:addons/event_tournament/models/event_tournament_team.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_team.py:0
+#, python-format
+msgid ""
+"Tournament {tourn_name}, team {team_name} not valid:\n"
+"component {comp_name} is already in team {other_team_name}."
+msgstr ""
+"Torneo {tourn_name}, squadra {team_name} non valida:\n"
+"il componente {comp_name} è già nella squadra {other_team_name}."
+
+#. module: event_tournament
+#: code:addons/event_tournament/models/event_tournament_team.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_team.py:0
+#, python-format
+msgid ""
+"Tournament {tourn_name}, team {team_name} not valid:\n"
+"tournament {tourn_name} requires a minimum of female (or male) components but not all components have gender."
+msgstr ""
+"Torneo {tourn_name}, squadra {team_name} non valida:\n"
+"il torneo {tourn_name} richiede un minimo di donne (o uomini) in squadra ma non tutti i componenti della squadra hanno genere."
+
+#. module: event_tournament
+#: code:addons/event_tournament/models/event_tournament_team.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_team.py:0
+#, python-format
+msgid ""
+"Tournament {tourn_name}, team {team_name} not valid:\n"
+"tournament {tourn_name} requires at least {min_comp} components per team."
+msgstr ""
+"Torneo {tourn_name}, squadra {team_name} non valida:\n"
+"il torneo {tourn_name} richiede almeno {min_comp} componenti per squadra."
+
+#. module: event_tournament
+#: code:addons/event_tournament/models/event_tournament_team.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_team.py:0
+#, python-format
+msgid ""
+"Tournament {tourn_name}, team {team_name} not valid:\n"
+"tournament {tourn_name} requires at least {min_female_comp} female components per team."
+msgstr ""
+"Torneo {tourn_name}, squadra {team_name} non valida:\n"
+"il torneo {tourn_name} richiede almeno {min_female_comp} componenti donna per squadra."
+
+#. module: event_tournament
+#: code:addons/event_tournament/models/event_tournament_team.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_team.py:0
+#, python-format
+msgid ""
+"Tournament {tourn_name}, team {team_name} not valid:\n"
+"tournament {tourn_name} requires at least {min_male_comp} male components per team."
+msgstr ""
+"Torneo {tourn_name}, squadra {team_name} non valida:\n"
+"il torneo {tourn_name} richiede almeno {min_male_comp} componenti uomo per squadra."
+
+#. module: event_tournament
+#: code:addons/event_tournament/models/event_tournament_team.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament_team.py:0
+#, python-format
+msgid ""
+"Tournament {tourn_name}, team {team_name} not valid:\n"
+"tournament {tourn_name} requires at most {max_comp} components per team."
+msgstr ""
+"Torneo {tourn_name}, squadra {team_name} non valida:\n"
+"il torneo {tourn_name} richiede al massimo {max_comp} componenti per squadra."
+
+#. module: event_tournament
+#: code:addons/event_tournament/models/event_tournament.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament.py:0
+#, python-format
+msgid ""
+"Tournament {tourn_name}:\n"
+"A match should have a duration."
+msgstr ""
+"Torneo {tourn_name}:\n"
+"Una partita dovrebbe avere una durata."
+
+#. module: event_tournament
+#: code:addons/event_tournament/models/event_tournament.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament.py:0
+#, python-format
+msgid ""
+"Tournament {tourn_name}:\n"
+"At least 1 team per match is required for matches generation."
+msgstr ""
+"Torneo {tourn_name}:\n"
+"per la generazione delle partite è richiesta almeno una squadra per partita ."
+
+#. module: event_tournament
+#: code:addons/event_tournament/models/event_tournament.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament.py:0
+#, python-format
+msgid ""
+"Tournament {tourn_name}:\n"
+"At least one court is required for matches generation."
+msgstr ""
+"Torneo {tourn_name}:\n"
+"per la generazione delle partite è richiesto almeno un campo."
+
+#. module: event_tournament
+#: code:addons/event_tournament/models/event_tournament.py:0
+#: code:addons/odoo-modules/event_tournament/models/event_tournament.py:0
+#, python-format
+msgid ""
+"Tournament {tourn_name}:\n"
+"Start time is required for matches generation."
+msgstr ""
+"Torneo {tourn_name}:\n"
+"per la generazione delle partite è richiesto l'orario di inizio."
+
+#. module: event_tournament
+#: model:ir.actions.act_window,name:event_tournament.event_tournament_action
+#: model:ir.model.fields,field_description:event_tournament.field_event_event__tournament_ids
+#: model:ir.ui.menu,name:event_tournament.event_tournament_menu
+#: model:ir.ui.menu,name:event_tournament.event_tournament_root_menu
+#: model_terms:ir.ui.view,arch_db:event_tournament.view_event_form
+msgid "Tournaments"
+msgstr "Tornei"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match__winner_team_id
+msgid "Winner"
+msgstr "Vincitore"

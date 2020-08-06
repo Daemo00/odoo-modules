@@ -1,0 +1,49 @@
+<!-- Copyright 2020 Simone Rubino <daemo00@gmail.com> -->
+<!-- License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
+<odoo noupdate="1">
+    <record
+        id="event_tournament_match_mode_beach_volley"
+        model="event.tournament.match.mode"
+    >
+        <field name="name">Beach volley</field>
+        <field
+            name="result_ids"
+            eval="[
+            (0, 0, {
+                'sets_won': 2,
+                'sets_lost': 0,
+                'points_win': 3,
+                'points_lose': 0}),
+            (0, 0, {
+                'sets_won': 2,
+                'sets_lost': 1,
+                'points_win': 2,
+                'points_lose': 1})]"
+        />
+    </record>
+    <record
+        id="event_tournament_match_mode_indoor_volley"
+        model="event.tournament.match.mode"
+    >
+        <field name="name">Volley</field>
+        <field
+            name="result_ids"
+            eval="[
+            (0, 0, {
+                'sets_won': 3,
+                'sets_lost': 0,
+                'points_win': 3,
+                'points_lose': 0}),
+            (0, 0, {
+                'sets_won': 3,
+                'sets_lost': 1,
+                'points_win': 3,
+                'points_lose': 0}),
+            (0, 0, {
+                'sets_won': 3,
+                'sets_lost': 2,
+                'points_win': 2,
+                'points_lose': 1})]"
+        />
+    </record>
+</odoo>
