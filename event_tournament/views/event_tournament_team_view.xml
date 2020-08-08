@@ -31,6 +31,7 @@
                                 domain="[
                                ('event_id', '=', event_id),
                                ('tournament_ids', 'not in', tournament_id)]"
+                                context="{'default_event_id': event_id}"
                             >
                                 <tree>
                                     <field name="name" />

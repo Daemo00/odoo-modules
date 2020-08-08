@@ -22,10 +22,10 @@ class EventTournamentTeam(models.Model):
     )
     name = fields.Char(required=True)
     component_ids = fields.Many2many(
-        comodel_name="event.registration", string="Components"
+        comodel_name="event.registration", string="Components", copy=False,
     )
     match_ids = fields.Many2many(
-        comodel_name="event.tournament.match", string="Matches"
+        comodel_name="event.tournament.match", string="Matches", copy=False
     )
     match_count = fields.Integer(string="Match count", compute="_compute_match_count")
     points_ratio = fields.Float(compute="_compute_matches_points", store=True)
@@ -34,6 +34,21 @@ class EventTournamentTeam(models.Model):
     sets_won = fields.Integer(compute="_compute_matches_points", store=True)
     matches_points = fields.Integer(compute="_compute_matches_points", store=True)
     notes = fields.Text(string="Notes")
+
+    _sql_constraints = [
+        (
+            "name_uniq_in_tournament",
+            "unique (name, tournament_id)",
+            "The name of the team must be unique in the tournament",
+        )
+    ]
+
+    @api.returns("self", lambda value: value.id)
+    def copy(self, default=None):
+        self.ensure_one()
+        default = dict(default or {})
+        default.setdefault("name", _("%s (copy)") % (self.name or ""))
+        return super().copy(default=default)
 
     @api.onchange("tournament_id")
     def onchange_tournament(self):
