@@ -6,7 +6,7 @@
     "summary": "Implement tournaments in Odoo events",
     "version": "13.0.1.0.0",
     "license": "AGPL-3",
-    "author": "Simone Rubino, Odoo Community Association (OCA)",
+    "author": "Simone Rubino",
     "depends": ["event", "partner_contact_birthdate", "partner_contact_gender"],
     "data": [
         "security/ir.model.access.csv",
