@@ -58,7 +58,28 @@
                     <group>
                         <field name="event_id" />
                         <field name="name" />
-                        <field name="start_datetime" />
+                        <label for="date_begin" string="Date" />
+                        <div class="o_row">
+                            <field
+                                name="start_datetime"
+                                widget="daterange"
+                                nolabel="1"
+                                class="oe_inline"
+                                options="{'related_end_date': 'end_datetime'}"
+                            />
+                            <i
+                                class="fa fa-long-arrow-right mx-2"
+                                aria-label="Arrow icon"
+                                title="Arrow"
+                            />
+                            <field
+                                name="end_datetime"
+                                widget="daterange"
+                                nolabel="1"
+                                class="oe_inline"
+                                options="{'related_start_date': 'start_datetime'}"
+                            />
+                        </div>
                     </group>
                     <notebook>
                         <page name="rules" string="Rules">

@@ -89,8 +89,46 @@ class EventTournamentMatch(models.Model):
         for match in self:
             match.component_ids = match.team_ids.mapped("component_ids")
 
+    @api.constrains("time_scheduled_start", "time_scheduled_end")
+    def constrain_tournament_time(self):
+        for match in self:
+            tournament_start = match.tournament_id.start_datetime
+            if (
+                tournament_start
+                and match.time_scheduled_start
+                and tournament_start > match.time_scheduled_start
+            ):
+                raise ValidationError(
+                    _(
+                        "Match {match_name} not valid:\n"
+                        "Tournament starts at {tournament_start} but "
+                        "match starts at {match_start}."
+                    ).format(
+                        match_name=match.display_name,
+                        tournament_start=tournament_start,
+                        match_start=match.time_scheduled_start,
+                    )
+                )
+            tournament_end = match.tournament_id.end_datetime
+            if (
+                tournament_end
+                and match.time_scheduled_end
+                and match.time_scheduled_end > tournament_end
+            ):
+                raise ValidationError(
+                    _(
+                        "Match {match_name} not valid:\n"
+                        "Tournament ends at {tournament_end} but "
+                        "match ends at {match_end}."
+                    ).format(
+                        match_name=match.display_name,
+                        tournament_end=tournament_end,
+                        match_end=match.time_scheduled_end,
+                    )
+                )
+
     @api.constrains("time_scheduled_start", "time_scheduled_end", "component_ids")
-    def constrain_time(self):
+    def constrain_contemporary(self):
         for match in self:
             contemporary_matches_domain = match.contemporary_match_domain()
             contemporary_matches = self.search(contemporary_matches_domain)

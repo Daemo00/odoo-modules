@@ -68,6 +68,7 @@ class EventTournament(models.Model):
         string="Match mode", comodel_name="event.tournament.match.mode"
     )
     start_datetime = fields.Datetime(string="Tournament start")
+    end_datetime = fields.Datetime(string="Tournament end")
     match_duration = fields.Float(string="Match duration", default=1)
     match_warm_up_duration = fields.Float(strin="Match warm-up duration")
     match_teams_nbr = fields.Integer(
@@ -93,6 +94,7 @@ class EventTournament(models.Model):
     def onchange_event_id(self):
         if self.event_id:
             self.start_datetime = self.event_id.date_begin
+            self.end_datetime = self.event_id.date_end
             self.court_ids = self.event_id.court_ids
 
     @api.depends("match_ids")
