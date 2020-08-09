@@ -1,8 +1,10 @@
-#  Copyright 2019 Simone Rubino <daemo00@gmail.com>
+#  Copyright 2020 Simone Rubino <daemo00@gmail.com>
 #  License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+import psycopg2
 
 from odoo.exceptions import ValidationError
 from odoo.fields import first
+from odoo.tools import mute_logger
 
 from .test_common import TestCommon
 
@@ -154,3 +156,26 @@ class TestEventTournamentTeam(TestCommon):
         action_domain = action.get("domain")
         action_matches = self.env[action_model].search(action_domain)
         self.assertEqual(team.match_ids, action_matches)
+
+    def test_unique(self):
+        """
+        Create two teams with the same name,
+        expect a Validation exception.
+        """
+        team = first(self.teams)
+        with mute_logger("odoo.sql_db"), self.assertRaises(
+            psycopg2.Error
+        ) as unique_exc:
+            self.team_model.create(
+                {"name": team.name, "tournament_id": team.tournament_id.id}
+            )
+        # PG code for unique error
+        self.assertEqual(unique_exc.exception.pgcode, "23505")
+
+    def test_copy(self):
+        """
+        Copy a team,
+        check that no exception is raised.
+        """
+        team = first(self.teams)
+        self.assertTrue(team.copy())
