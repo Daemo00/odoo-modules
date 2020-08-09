@@ -263,13 +263,15 @@ class EventTournament(models.Model):
             hours=self.match_warm_up_duration
         )
         min_start = warm_up_start
-        max_start = max(
-            (
-                warm_up_start,
-                *self.mapped("event_id.tournament_ids." "match_ids.time_scheduled_end"),
+
+        if not self.end_datetime:
+            raise UserError(
+                _(
+                    "Tournament {tourn_name}:\n"
+                    "End time is required for matches generation."
+                ).format(tourn_name=self.display_name)
             )
-        )
-        max_start = max_start + match_duration
+        max_start = self.end_datetime - match_duration
         return max_start, min_start
 
     def get_match_duration(self):
