@@ -4,6 +4,7 @@ import psycopg2
 
 from odoo.exceptions import ValidationError
 from odoo.fields import first
+from odoo.tools import mute_logger
 
 from .test_common import TestCommon
 
@@ -162,7 +163,9 @@ class TestEventTournamentTeam(TestCommon):
         expect a Validation exception.
         """
         team = first(self.teams)
-        with self.assertRaises(psycopg2.Error) as unique_exc:
+        with mute_logger("odoo.sql_db"), self.assertRaises(
+            psycopg2.Error
+        ) as unique_exc:
             self.team_model.create(
                 {"name": team.name, "tournament_id": team.tournament_id.id}
             )
