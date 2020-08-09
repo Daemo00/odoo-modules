@@ -39,7 +39,7 @@ class EventTournamentTeam(models.Model):
         (
             "name_uniq_in_tournament",
             "unique (name, tournament_id)",
-            "The name of the team must be unique in the tournament",
+            "The name of the team must be unique in the tournament.",
         )
     ]
 

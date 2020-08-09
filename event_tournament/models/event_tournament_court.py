@@ -17,7 +17,7 @@ class EventCourt(models.Model):
         (
             "name_uniq_in_event",
             "unique (name, event_id)",
-            "The name of the court must be unique in the event",
+            "The name of the court must be unique in the event.",
         )
     ]
 
