@@ -31,15 +31,16 @@
                                 domain="[
                                ('event_id', '=', event_id),
                                ('tournament_ids', 'not in', tournament_id)]"
+                                context="{'default_event_id': event_id}"
                             >
                                 <tree>
                                     <field name="name" />
                                 </tree>
                             </field>
                         </group>
-                        <group name="computed_fields" string="Computed fields">
+                        <group name="results" string="Results">
                             <p class="text-muted">
-                                Fields computed on done matches
+                                Values computed on done matches
                             </p>
                             <field name="matches_points" />
                             <field name="sets_won" />
