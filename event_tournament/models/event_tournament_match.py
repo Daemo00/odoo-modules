@@ -361,6 +361,9 @@ class EventTournamentMatch(models.Model):
         for match in self:
             teams_names = match.team_ids.mapped("name")
             match_name = " vs ".join(teams_names)
+            match_name += _(" (Court {court_name})").format(
+                court_name=match.court_id.display_name
+            )
             res.append((match.id, match_name))
         return res
 
