@@ -1,6 +1,7 @@
-#  Copyright 2019 Simone Rubino <daemo00@gmail.com>
+#  Copyright 2020 Simone Rubino <daemo00@gmail.com>
 #  License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 import itertools
+from datetime import timedelta
 
 from odoo import fields
 from odoo.exceptions import UserError, ValidationError
@@ -17,10 +18,12 @@ class TestEventTournament(TestCommon):
         """
         tournament = first(self.tournaments)
         self.assertFalse(tournament.start_datetime)
+        self.assertFalse(tournament.end_datetime)
         tournament.court_ids = self.court_model.browse()
         tournament.onchange_event_id()
         event = first(self.events)
         self.assertEqual(tournament.start_datetime, event.date_begin)
+        self.assertEqual(tournament.end_datetime, event.date_end)
         self.assertEqual(tournament.court_ids, event.court_ids)
 
     def test_compute_match_count(self):
@@ -121,6 +124,7 @@ class TestEventTournament(TestCommon):
         """
         tournament = first(self.tournaments)
         tournament.start_datetime = fields.Datetime.now()
+        tournament.end_datetime = fields.Datetime.now() + timedelta(days=1)
         tournament.court_ids = self.court_model.browse()
         with self.assertRaises(UserError) as ue:
             tournament.generate_matches()
@@ -134,6 +138,7 @@ class TestEventTournament(TestCommon):
         tournament = first(self.tournaments)
         tournament.randomize_matches_generation = True
         tournament.start_datetime = fields.Datetime.now()
+        tournament.end_datetime = fields.Datetime.now() + timedelta(days=1)
         tournament.court_ids = self.courts
         matches = tournament.generate_matches()
         self.assertEqual(len(matches), tournament.match_count_estimated)
@@ -146,6 +151,7 @@ class TestEventTournament(TestCommon):
         tournament = first(self.tournaments)
         tournament.randomize_matches_generation = True
         tournament.start_datetime = fields.Datetime.now()
+        tournament.end_datetime = fields.Datetime.now() + timedelta(days=1)
         tournament.court_ids = self.courts
         matches = tournament.generate_matches()
         match = first(matches)
@@ -211,6 +217,7 @@ class TestEventTournament(TestCommon):
         tournament = first(self.tournaments)
         tournament.randomize_matches_generation = True
         tournament.start_datetime = fields.Datetime.now()
+        tournament.end_datetime = fields.Datetime.now() + timedelta(days=1)
         tournament.court_ids = self.courts
 
         action = tournament.generate_view_matches()
