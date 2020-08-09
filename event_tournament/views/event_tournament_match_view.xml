@@ -98,6 +98,19 @@
             </tree>
         </field>
     </record>
+    <record id="event_tournament_match_view_calendar" model="ir.ui.view">
+        <field name="name">event.tournament.match calendar view</field>
+        <field name="model">event.tournament.match</field>
+        <field name="arch" type="xml">
+            <calendar
+                date_start="time_scheduled_start"
+                date_stop="time_scheduled_end"
+                color="court_id"
+            >
+                <field name="display_name" />
+            </calendar>
+        </field>
+    </record>
     <record id="event_tournament_match_view_search" model="ir.ui.view">
         <field name="name">event.tournament.match search view</field>
         <field name="model">event.tournament.match</field>
@@ -118,7 +131,7 @@
         id="event_tournament_match_action"
         name="Tournament matches"
         res_model="event.tournament.match"
-        view_mode="kanban,tree,form"
+        view_mode="kanban,calendar,tree,form"
     />
     <menuitem
         id="event_tournament_match_menu"
