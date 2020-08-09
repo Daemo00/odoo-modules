@@ -42,7 +42,10 @@ class EventTournament(models.Model):
         compute="_compute_components",
         string="Components",
     )
-    team_count = fields.Integer(string="Team count", compute="_compute_team_count")
+    component_count = fields.Integer(
+        string="Component count", compute="_compute_components"
+    )
+    team_count = fields.Integer(string="Teams count", compute="_compute_team_count")
     state = fields.Selection(
         selection=[("draft", "Draft"), ("started", "Started"), ("done", "Done")],
         default="draft",
@@ -121,7 +124,9 @@ class EventTournament(models.Model):
     @api.depends("team_ids.component_ids")
     def _compute_components(self):
         for tournament in self:
-            tournament.component_ids = tournament.team_ids.mapped("component_ids")
+            components = tournament.team_ids.mapped("component_ids")
+            tournament.component_ids = components
+            tournament.component_count = len(components)
 
     def action_draft(self):
         for tournament in self:

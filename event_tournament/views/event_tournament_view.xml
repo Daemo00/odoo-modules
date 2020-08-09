@@ -35,14 +35,6 @@
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button
-                            name="action_view_teams"
-                            type="object"
-                            class="oe_stat_button"
-                            icon="fa-users"
-                        >
-                            <field name="team_count" widget="statinfo" string="Teams" />
-                        </button>
-                        <button
                             name="action_view_matches"
                             type="object"
                             class="oe_stat_button"
@@ -52,6 +44,26 @@
                                 name="match_count"
                                 widget="statinfo"
                                 string="Matches"
+                            />
+                        </button>
+                        <button
+                            name="action_view_teams"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-users"
+                        >
+                            <field name="team_count" widget="statinfo" string="Teams" />
+                        </button>
+                        <button
+                            name="%(event_tournament.act_event_registration_from_tournament)d"
+                            type="action"
+                            class="oe_stat_button"
+                            icon="fa-user"
+                        >
+                            <field
+                                name="component_count"
+                                widget="statinfo"
+                                string="Components"
                             />
                         </button>
                     </div>
