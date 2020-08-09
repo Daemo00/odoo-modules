@@ -432,7 +432,7 @@ class EventTournamentMatchLine(models.Model):
         comodel_name="event.tournament.match", required=True, ondelete="cascade"
     )
     team_id = fields.Many2one(
-        comodel_name="event.tournament.team", required=True, ondelete="cascade"
+        comodel_name="event.tournament.team", required=True, ondelete="restrict"
     )
     set_1 = fields.Integer()
     set_2 = fields.Integer()
