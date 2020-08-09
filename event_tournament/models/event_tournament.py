@@ -42,7 +42,10 @@ class EventTournament(models.Model):
         compute="_compute_components",
         string="Components",
     )
-    team_count = fields.Integer(string="Team count", compute="_compute_team_count")
+    component_count = fields.Integer(
+        string="Component count", compute="_compute_components"
+    )
+    team_count = fields.Integer(string="Teams count", compute="_compute_team_count")
     state = fields.Selection(
         selection=[("draft", "Draft"), ("started", "Started"), ("done", "Done")],
         default="draft",
@@ -68,6 +71,7 @@ class EventTournament(models.Model):
         string="Match mode", comodel_name="event.tournament.match.mode"
     )
     start_datetime = fields.Datetime(string="Tournament start")
+    end_datetime = fields.Datetime(string="Tournament end")
     match_duration = fields.Float(string="Match duration", default=1)
     match_warm_up_duration = fields.Float(strin="Match warm-up duration")
     match_teams_nbr = fields.Integer(
@@ -93,6 +97,7 @@ class EventTournament(models.Model):
     def onchange_event_id(self):
         if self.event_id:
             self.start_datetime = self.event_id.date_begin
+            self.end_datetime = self.event_id.date_end
             self.court_ids = self.event_id.court_ids
 
     @api.depends("match_ids")
@@ -119,7 +124,9 @@ class EventTournament(models.Model):
     @api.depends("team_ids.component_ids")
     def _compute_components(self):
         for tournament in self:
-            tournament.component_ids = tournament.team_ids.mapped("component_ids")
+            components = tournament.team_ids.mapped("component_ids")
+            tournament.component_ids = components
+            tournament.component_count = len(components)
 
     def action_draft(self):
         for tournament in self:
@@ -256,13 +263,15 @@ class EventTournament(models.Model):
             hours=self.match_warm_up_duration
         )
         min_start = warm_up_start
-        max_start = max(
-            (
-                warm_up_start,
-                *self.mapped("event_id.tournament_ids." "match_ids.time_scheduled_end"),
+
+        if not self.end_datetime:
+            raise UserError(
+                _(
+                    "Tournament {tourn_name}:\n"
+                    "End time is required for matches generation."
+                ).format(tourn_name=self.display_name)
             )
-        )
-        max_start = max_start + match_duration
+        max_start = self.end_datetime - match_duration
         return max_start, min_start
 
     def get_match_duration(self):
