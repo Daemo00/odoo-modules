@@ -58,7 +58,7 @@
                     <group>
                         <field name="event_id" />
                         <field name="name" />
-                        <label for="date_begin" string="Date" />
+                        <label for="start_datetime" string="Date" />
                         <div class="o_row">
                             <field
                                 name="start_datetime"
@@ -116,7 +116,11 @@
                                 <field
                                     name="court_ids"
                                     domain="[('event_id', '=', event_id)]"
-                                    context="{'default_event_id': event_id}"
+                                    context="{
+                                        'default_event_id': event_id,
+                                        'default_time_availability_start': start_datetime,
+                                        'default_time_availability_end': end_datetime,
+                                        }"
                                 />
                                 <field name="randomize_matches_generation" />
                                 <field name="reset_matches_before_generation" />
