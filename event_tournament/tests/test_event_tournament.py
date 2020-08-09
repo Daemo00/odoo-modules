@@ -14,14 +14,16 @@ class TestEventTournament(TestCommon):
     def test_onchange_event_id(self):
         """
         Change the event in the tournament,
-        check that the start_datetime is now the same of the event.
+        check that the tournament duration and court are now the same of the event.
         """
         tournament = first(self.tournaments)
         self.assertFalse(tournament.start_datetime)
         self.assertFalse(tournament.end_datetime)
         tournament.court_ids = self.court_model.browse()
+        self.assertFalse(tournament.court_ids)
+
         tournament.onchange_event_id()
-        event = first(self.events)
+        event = tournament.event_id
         self.assertEqual(tournament.start_datetime, event.date_begin)
         self.assertEqual(tournament.end_datetime, event.date_end)
         self.assertEqual(tournament.court_ids, event.court_ids)
