@@ -49,12 +49,11 @@
             </tree>
         </field>
     </record>
-    <act_window
-        id="event_tournament_court_action"
-        name="Tournament courts"
-        res_model="event.tournament.court"
-        view_mode="tree,form"
-    />
+    <record id="event_tournament_court_action" model="ir.actions.act_window">
+        <field name="name">Tournament courts</field>
+        <field name="res_model">event.tournament.court</field>
+        <field name="view_mode">tree,form</field>
+    </record>
     <menuitem
         id="event_tournament_court_menu"
         parent="event_tournament_root_menu"

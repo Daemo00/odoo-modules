@@ -4,7 +4,7 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 from odoo.fields import first
-from odoo.tools import safe_eval
+from odoo.tools.safe_eval import safe_eval
 
 
 class EventTournamentTeam(models.Model):
@@ -70,16 +70,15 @@ class EventTournamentTeam(models.Model):
 
     def set_team_domain(self, action):
         self.ensure_one()
-        domain = action.get("domain", list())
+        domain = action.get("domain") or "[]"
         domain = safe_eval(domain)
         domain.append(("team_ids", "in", self.ids))
         action.update(domain=domain)
 
     def action_view_matches(self):
         self.ensure_one()
-        action = self.env.ref("event_tournament.event_tournament_match_action").read()[
-            0
-        ]
+        action = self.env.ref("event_tournament.event_tournament_match_action")
+        action = action.read()[0]
         self.set_team_domain(action)
         return action
 
@@ -242,3 +241,7 @@ class EventTournamentTeam(models.Model):
             team.points_taken = points_taken
             team.points_ratio = points_done / (points_taken or 1)
             team.matches_points = tournament_points
+
+    def button_compute_matches_points(self):
+        """Public method (callable from UI) for computing match's points."""
+        self._compute_matches_points()

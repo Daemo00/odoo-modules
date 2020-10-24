@@ -39,7 +39,7 @@ class TestImportCsvBV4W(TestCommon):
         tournament.unlink()
         with self.assertRaises(UserError) as ue:
             wizard.import_csv_bv4w()
-        self.assertIn(tournament_name, ue.exception.name)
+        self.assertIn(tournament_name, ue.exception.args[0])
 
     def test_import_csv_bv4w_teams(self):
         """
@@ -77,9 +77,9 @@ class TestImportCsvBV4W(TestCommon):
         tournament.component_ids = self.component_model.browse()
         with self.assertRaises(ValidationError) as ue:
             wizard.import_csv_bv4w()
-        self.assertIn(tournament.name, ue.exception.name)
-        self.assertIn("test team 2", ue.exception.name)
-        self.assertIn("TestTeamComponent2", ue.exception.name)
+        self.assertIn(tournament.name, ue.exception.args[0])
+        self.assertIn("test team 2", ue.exception.args[0])
+        self.assertIn("TestTeamComponent2", ue.exception.args[0])
 
     def test_import_csv_bv4w_components_overlap(self):
         """

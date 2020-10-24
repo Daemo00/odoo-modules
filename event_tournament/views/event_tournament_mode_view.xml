@@ -22,11 +22,10 @@
             </form>
         </field>
     </record>
-    <act_window
-        id="event_tournament_match_mode_action"
-        name="Tournament modes"
-        res_model="event.tournament.match.mode"
-    />
+    <record id="event_tournament_match_mode_action" model="ir.actions.act_window">
+        <field name="name">Tournament modes</field>
+        <field name="res_model">event.tournament.match.mode</field>
+    </record>
     <menuitem
         id="event_tournament_match_mode_menu"
         parent="event_tournament_root_menu"
