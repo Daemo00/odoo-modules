@@ -128,11 +128,7 @@
                                 <field
                                     name="court_ids"
                                     domain="[('event_id', '=', event_id)]"
-                                    context="{
-                                        'default_event_id': event_id,
-                                        'default_time_availability_start': start_datetime,
-                                        'default_time_availability_end': end_datetime,
-                                        }"
+                                    context="{                                         'default_event_id': event_id,                                         'default_time_availability_start': start_datetime,                                         'default_time_availability_end': end_datetime,                                         }"
                                 />
                                 <field name="randomize_matches_generation" />
                                 <field name="reset_matches_before_generation" />
@@ -185,11 +181,10 @@
             </search>
         </field>
     </record>
-    <act_window
-        id="event_tournament_action"
-        name="Tournaments"
-        res_model="event.tournament"
-    />
+    <record id="event_tournament_action" model="ir.actions.act_window">
+        <field name="name">Tournaments</field>
+        <field name="res_model">event.tournament</field>
+    </record>
     <menuitem
         id="event_tournament_menu"
         parent="event_tournament_root_menu"
