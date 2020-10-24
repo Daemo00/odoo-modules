@@ -49,12 +49,11 @@
             </t>
         </t>
     </template>
-    <report
-        id="matches_schedule_match_action"
-        name="event_tournament.matches_schedule_match"
-        model="event.tournament.match"
-        string="Matches schedule"
-    />
+    <record id="matches_schedule_match_action" model="ir.actions.report">
+        <field name="report_name">event_tournament.matches_schedule_match</field>
+        <field name="model">event.tournament.match</field>
+        <field name="name">Matches schedule</field>
+    </record>
     <!-- Tournament report -->
     <template id="matches_schedule_tournament">
         <t t-call="web.html_container">
@@ -73,10 +72,9 @@
             </t>
         </t>
     </template>
-    <report
-        id="matches_schedule_tournament_action"
-        name="event_tournament.matches_schedule_tournament"
-        model="event.tournament"
-        string="Matches schedule"
-    />
+    <record id="matches_schedule_tournament_action" model="ir.actions.report">
+        <field name="report_name">event_tournament.matches_schedule_tournament</field>
+        <field name="model">event.tournament</field>
+        <field name="name">Matches schedule</field>
+    </record>
 </odoo>

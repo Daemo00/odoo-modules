@@ -93,7 +93,7 @@ class TestEventTournament(TestCommon):
         tournament = first(self.tournaments)
         with self.assertRaises(UserError) as ue:
             self.assertTrue(tournament.generate_matches())
-        self.assertIn(tournament.name, ue.exception.name)
+        self.assertIn(tournament.name, ue.exception.args[0])
 
     def test_generate_matches_match_teams_nbr(self):
         """
@@ -104,7 +104,7 @@ class TestEventTournament(TestCommon):
         tournament.match_teams_nbr = 0
         with self.assertRaises(UserError) as ue:
             tournament.generate_matches()
-        self.assertIn(tournament.name, ue.exception.name)
+        self.assertIn(tournament.name, ue.exception.args[0])
 
     def test_generate_matches_duration(self):
         """
@@ -117,7 +117,7 @@ class TestEventTournament(TestCommon):
         tournament.match_warm_up_duration = 0
         with self.assertRaises(UserError) as ue:
             tournament.generate_matches()
-        self.assertIn(tournament.name, ue.exception.name)
+        self.assertIn(tournament.name, ue.exception.args[0])
 
     def test_generate_matches_court(self):
         """
@@ -130,7 +130,7 @@ class TestEventTournament(TestCommon):
         tournament.court_ids = self.court_model.browse()
         with self.assertRaises(UserError) as ue:
             tournament.generate_matches()
-        self.assertIn(tournament.name, ue.exception.name)
+        self.assertIn(tournament.name, ue.exception.args[0])
 
     def test_generate_matches(self):
         """

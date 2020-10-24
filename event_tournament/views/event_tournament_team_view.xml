@@ -28,9 +28,7 @@
                             <field name="name" />
                             <field
                                 name="component_ids"
-                                domain="[
-                               ('event_id', '=', event_id),
-                               ('tournament_ids', 'not in', tournament_id)]"
+                                domain="[('event_id', '=', event_id),('tournament_ids', 'not in', tournament_id)]"
                                 context="{'default_event_id': event_id}"
                             >
                                 <tree>
@@ -46,7 +44,7 @@
                             <field name="points_done" />
                             <field name="points_taken" />
                             <button
-                                name="compute_matches_points"
+                                name="button_compute_matches_points"
                                 type="object"
                                 string="Recompute points"
                             />
@@ -94,11 +92,10 @@
             </search>
         </field>
     </record>
-    <act_window
-        id="event_tournament_team_action"
-        name="Tournament teams"
-        res_model="event.tournament.team"
-    />
+    <record id="event_tournament_team_action" model="ir.actions.act_window">
+        <field name="name">Tournament teams</field>
+        <field name="res_model">event.tournament.team</field>
+    </record>
     <menuitem
         id="event_tournament_team_menu"
         parent="event_tournament_root_menu"
