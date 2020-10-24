@@ -22,7 +22,9 @@ class EventTournamentTeam(models.Model):
     )
     name = fields.Char(required=True)
     component_ids = fields.Many2many(
-        comodel_name="event.registration", string="Components", copy=False,
+        comodel_name="event.registration",
+        string="Components",
+        copy=False,
     )
     match_ids = fields.Many2many(
         comodel_name="event.tournament.match", string="Matches", copy=False
