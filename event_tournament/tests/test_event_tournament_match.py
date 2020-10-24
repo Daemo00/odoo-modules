@@ -28,7 +28,7 @@ class TestEventTournamentMatch(TestCommon):
         self.assertTrue(match.winner_team_id == teams[1])
         with self.assertRaises(UserError) as ue:
             match.action_done()
-        self.assertIn(match.display_name, ue.exception.name)
+        self.assertIn(match.display_name, ue.exception.args[0])
 
     def test_action_done_tie(self):
         """
