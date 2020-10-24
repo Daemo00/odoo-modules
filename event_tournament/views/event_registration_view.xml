@@ -16,9 +16,9 @@
         </field>
     </record>
     <record id="view_event_registration_tournament_tree" model="ir.ui.view">
-        <field
-            name="name"
-        >Tournament into event.registration tree view for tournaments</field>
+        <field name="name">
+            Tournament into event.registration tree view for tournaments
+        </field>
         <field name="model">event.registration</field>
         <field name="arch" type="xml">
             <tree name="attendee">
