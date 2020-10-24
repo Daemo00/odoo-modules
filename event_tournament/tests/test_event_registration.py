@@ -12,7 +12,7 @@ class TestEventRegistration(TestCommon):
             {"event_id": first(self.events).id}
         )
 
-    def test_onchange_partner(self):
+    def test_onchange_partner_id(self):
         """
         Assign a partner to the component,
         check that the gender is propagated from the partner to the component.
@@ -21,10 +21,10 @@ class TestEventRegistration(TestCommon):
             {"name": "test partner", "gender": "male"}
         )
         self.assertFalse(self.component.gender)
-        self.component._onchange_partner()
+        self.component._onchange_partner_id()
         self.assertFalse(self.component.gender)
         self.component.partner_id = partner
-        self.component._onchange_partner()
+        self.component._onchange_partner_id()
         self.assertEqual(self.component.gender, partner.gender)
 
     def test_compute_tournaments(self):
