@@ -6,7 +6,8 @@ from datetime import timedelta
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
-from odoo.tools import logging, safe_eval
+from odoo.tools import logging
+from odoo.tools.safe_eval import safe_eval
 
 _logger = logging.getLogger(__name__)
 
@@ -73,7 +74,7 @@ class EventTournament(models.Model):
     start_datetime = fields.Datetime(string="Tournament start")
     end_datetime = fields.Datetime(string="Tournament end")
     match_duration = fields.Float(string="Match duration", default=1)
-    match_warm_up_duration = fields.Float(strin="Match warm-up duration")
+    match_warm_up_duration = fields.Float(string="Match warm-up duration")
     match_teams_nbr = fields.Integer(
         string="Teams per match", help="Number of teams per match", default=2
     )
@@ -313,7 +314,7 @@ class EventTournament(models.Model):
         Set current tournament domain in `action`.
         """
         self.ensure_one()
-        domain = action.get("domain", list())
+        domain = action.get("domain") or "[]"
         domain = safe_eval(domain)
         domain.append(("tournament_id", "=", self.id))
         action.update(domain=domain)
@@ -323,16 +324,15 @@ class EventTournament(models.Model):
         Set current tournament as default in `action`'s context.
         """
         self.ensure_one()
-        context = action.get("context", dict())
+        context = action.get("context") or "{}"
         context = safe_eval(context)
         context.update({"default_tournament_id": self.id})
         action.update(context=context)
 
     def action_view_matches(self):
         self.ensure_one()
-        action = self.env.ref("event_tournament.event_tournament_match_action").read()[
-            0
-        ]
+        action = self.env.ref("event_tournament.event_tournament_match_action")
+        action = action.read()[0]
         self.set_tournament_domain(action)
         self.set_tournament_context(action)
         return action
