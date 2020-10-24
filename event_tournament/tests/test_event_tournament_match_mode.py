@@ -32,5 +32,5 @@ class TestEventTournamentMatchMode(TestCommon):
         with self.assertRaises(UserError) as ue:
             bv_mode.get_points(match)
         for team in teams:
-            self.assertIn(team.name, ue.exception.name)
-        self.assertIn(bv_mode.name, ue.exception.name)
+            self.assertIn(team.name, ue.exception.args[0])
+        self.assertIn(bv_mode.name, ue.exception.args[0])
