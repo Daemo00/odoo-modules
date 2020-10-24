@@ -1,7 +1,5 @@
-[![Runbot Status](https://runbot.odoo-community.org/runbot/badge/flat//14.0.svg)](https://runbot.odoo-community.org/runbot/repo/github-com-oca-odoo-modules-)
-[![Build Status](https://travis-ci.com/OCA/odoo-modules.svg?branch=14.0)](https://travis-ci.com/OCA/odoo-modules)
-[![codecov](https://codecov.io/gh/OCA/odoo-modules/branch/14.0/graph/badge.svg)](https://codecov.io/gh/OCA/odoo-modules)
-[![Translation Status](https://translation.odoo-community.org/widgets/odoo-modules-14-0/-/svg-badge.svg)](https://translation.odoo-community.org/engage/odoo-modules-14-0/?utm_source=widget)
+[![Build Status](https://travis-ci.com/Daemo00/odoo-modules.svg?branch=14.0)](https://travis-ci.com/Daemo00/odoo-modules)
+[![codecov](https://codecov.io/gh/Daemo00/odoo-modules/branch/14.0/graph/badge.svg)](https://codecov.io/gh/Daemo00/odoo-modules)
 
 <!-- /!\ do not modify above this line -->
 
