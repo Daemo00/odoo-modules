@@ -39,9 +39,7 @@
                             </field>
                         </group>
                         <group name="results" string="Results">
-                            <p class="text-muted">
-                                Values computed on done matches
-                            </p>
+                            <p class="text-muted">Values computed on done matches</p>
                             <field name="matches_points" />
                             <field name="sets_won" />
                             <field name="points_ratio" />
