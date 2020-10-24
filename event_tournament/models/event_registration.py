@@ -21,8 +21,8 @@ class EventRegistration(models.Model):
     is_fipav = fields.Boolean(string="Is FIPAV")
 
     @api.onchange("partner_id")
-    def _onchange_partner(self):
-        res = super()._onchange_partner()
+    def _onchange_partner_id(self):
+        res = super()._onchange_partner_id()
         if self.partner_id:
             contact_id = self.partner_id.address_get().get("contact", False)
             if contact_id:
