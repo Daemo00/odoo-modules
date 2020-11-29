@@ -1,0 +1,68 @@
+name: Check formatting and execute automated tests
+
+on:
+  push:
+    branches: [14.0]
+  pull_request:
+    branches: [14.0]
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+      - uses: pre-commit/action@v2.0.0
+        with:
+          extra_args: --all-files --show-diff-on-failure --verbose --color always
+  test:
+    runs-on: ubuntu-latest
+    needs: pre-commit
+    strategy:
+      matrix:
+        # Python 3.9 still has issues, specifically https://github.com/odoo/odoo/issues/59980
+        python-version: [3.6, 3.7, 3.8]
+        odoo-code: [odoo/odoo, OCA/OCB]
+    env:
+      TRAVIS_BUILD_DIR: "."
+      LINT_CHECK: "0"
+      TESTS: "1"
+      MAKEPOT: "1"
+      VERSION: "14.0"
+      MQT_DEP: "PIP"
+      NPM_CONFIG_PREFIX: "${HOME}/.npm-global"
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Test with base ${{ matrix.odoo-code }}
+        env:
+          ODOO_REPO: ${{ matrix.odoo-code }}
+        run: |
+          git clone --depth=1 https://github.com/OCA/maintainer-quality-tools.git ${HOME}/maintainer-quality-tools
+          export \
+            PATH=${HOME}/maintainer-quality-tools/travis:${PATH}
+          # MQT requirements
+          sudo apt-get update
+          sudo apt-get install expect-dev
+          pip install -r ${HOME}/maintainer-quality-tools/requirements.txt
+
+          # Odoo requirements and Postgres setup,
+          # from https://www.odoo.com/documentation/14.0/setup/install.html
+          sudo apt-get install postgresql postgresql-client
+          sudo service postgresql start
+          sudo service postgresql status
+          sudo -u postgres createuser -s $USER
+          createdb $USER
+          sudo apt install python3-dev libxml2-dev libxslt1-dev libldap2-dev libsasl2-dev \
+            libtiff5-dev libjpeg8-dev libopenjp2-7-dev zlib1g-dev libfreetype6-dev \
+            liblcms2-dev libwebp-dev libharfbuzz-dev libfribidi-dev libxcb1-dev libpq-dev
+
+          # Create a dedicated virtualenv for Odoo
+          python -m venv odoo-venv
+          source odoo-venv/bin/activate
+          travis_install_nightly \
+          && travis_run_tests \
+          && travis_after_tests_success
