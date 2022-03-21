@@ -17,7 +17,7 @@ class EventRegistration(models.Model):
     gender = fields.Selection(
         selection=[("male", "Male"), ("female", "Female"), ("other", "Other")]
     )
-    mobile = fields.Char(string="Mobile")
+    mobile = fields.Char()
     is_fipav = fields.Boolean(string="Is FIPAV")
 
     @api.onchange("partner_id")

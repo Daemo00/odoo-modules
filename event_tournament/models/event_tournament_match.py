@@ -62,7 +62,11 @@ class EventTournamentMatch(models.Model):
         string="Scheduled end", states={"done": [("readonly", True)]}
     )
     time_done = fields.Datetime(
-        string="Time done", states={"done": [("readonly", True)]}
+        states={
+            "done": [
+                ("readonly", True),
+            ],
+        },
     )
 
     @api.onchange("tournament_id")
@@ -359,7 +363,8 @@ class EventTournamentMatch(models.Model):
     def name_get(self):
         res = list()
         for match in self:
-            teams_names = match.team_ids.mapped("name")
+            teams = match.line_ids.mapped("team_id")
+            teams_names = teams.mapped("name")
             match_name = " vs ".join(teams_names)
             match_name += _(" (Court {court_name})").format(
                 court_name=match.court_id.display_name
