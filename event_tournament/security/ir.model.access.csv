@@ -1,7 +1,8 @@
 "id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
 access_event_tournament,access_event_tournament,model_event_tournament,base.group_user,1,1,1,1
 access_event_tournament_court,access_event_tournament_court,model_event_tournament_court,base.group_user,1,1,1,1
-access_event_tournament_import_csv_bv4w,access_event_tournament_import_csv_bv4w,model_event_tournament_import_csv_bv4w,base.group_user,1,1,1,1access_event_tournament_match,access_event_tournament_match,model_event_tournament_match,base.group_user,1,1,1,1
+access_event_tournament_import_csv_bv4w,access_event_tournament_import_csv_bv4w,model_event_tournament_import_csv_bv4w,base.group_user,1,1,1,1
+access_event_tournament_match,access_event_tournament_match,model_event_tournament_match,base.group_user,1,1,1,1
 access_event_tournament_match,access_event_tournament_match,model_event_tournament_match,base.group_user,1,1,1,1
 access_event_tournament_match_line,access_event_tournament_match_line,model_event_tournament_match_line,base.group_user,1,1,1,1
 access_event_tournament_match_mode,access_event_tournament_match_mode,model_event_tournament_match_mode,base.group_user,1,1,1,1
