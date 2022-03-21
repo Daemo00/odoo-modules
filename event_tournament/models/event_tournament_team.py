@@ -29,13 +29,15 @@ class EventTournamentTeam(models.Model):
     match_ids = fields.Many2many(
         comodel_name="event.tournament.match", string="Matches", copy=False
     )
-    match_count = fields.Integer(string="Match count", compute="_compute_match_count")
+    match_count = fields.Integer(
+        compute="_compute_match_count",
+    )
     points_ratio = fields.Float(compute="_compute_matches_points", store=True)
     points_done = fields.Float(compute="_compute_matches_points", store=True)
     points_taken = fields.Float(compute="_compute_matches_points", store=True)
     sets_won = fields.Integer(compute="_compute_matches_points", store=True)
     matches_points = fields.Integer(compute="_compute_matches_points", store=True)
-    notes = fields.Text(string="Notes")
+    notes = fields.Text()
 
     _sql_constraints = [
         (

@@ -32,7 +32,9 @@ class EventTournament(models.Model):
     match_count_estimated = fields.Integer(
         string="Estimated match count", compute="_compute_match_count_estimated"
     )
-    match_count = fields.Integer(string="Match count", compute="_compute_match_count")
+    match_count = fields.Integer(
+        compute="_compute_match_count",
+    )
     team_ids = fields.One2many(
         comodel_name="event.tournament.team",
         inverse_name="tournament_id",
@@ -44,7 +46,7 @@ class EventTournament(models.Model):
         string="Components",
     )
     component_count = fields.Integer(
-        string="Component count", compute="_compute_components"
+        compute="_compute_components",
     )
     team_count = fields.Integer(string="Teams count", compute="_compute_team_count")
     state = fields.Selection(
@@ -66,17 +68,23 @@ class EventTournament(models.Model):
         help="Minimum number of male components for a team",
     )
     points_per_win = fields.Integer(
-        string="Points per win", help="Points gained for each match won"
+        help="Points gained for each match won",
     )
     match_mode_id = fields.Many2one(
-        string="Match mode", comodel_name="event.tournament.match.mode"
+        comodel_name="event.tournament.match.mode",
     )
     start_datetime = fields.Datetime(string="Tournament start")
     end_datetime = fields.Datetime(string="Tournament end")
-    match_duration = fields.Float(string="Match duration", default=1)
-    match_warm_up_duration = fields.Float(string="Match warm-up duration")
+    match_duration = fields.Float(
+        default=1,
+    )
+    match_warm_up_duration = fields.Float(
+        string="Match warm-up duration",
+    )
     match_teams_nbr = fields.Integer(
-        string="Teams per match", help="Number of teams per match", default=2
+        string="Teams per match",
+        help="Number of teams per match",
+        default=2,
     )
     randomize_matches_generation = fields.Boolean(
         string="Randomize", help="Randomize matches generation"
@@ -92,7 +100,7 @@ class EventTournament(models.Model):
         inverse_name="parent_id",
         string="Sub tournaments",
     )
-    notes = fields.Text(string="Notes")
+    notes = fields.Text()
 
     @api.onchange("event_id")
     def onchange_event_id(self):
