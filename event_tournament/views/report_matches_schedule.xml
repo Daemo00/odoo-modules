@@ -53,6 +53,8 @@
         <field name="report_name">event_tournament.matches_schedule_match</field>
         <field name="model">event.tournament.match</field>
         <field name="name">Matches schedule</field>
+        <field name="binding_model_id" ref="model_event_tournament_match" />
+        <field name="binding_type">report</field>
     </record>
     <!-- Tournament report -->
     <template id="matches_schedule_tournament">
@@ -76,5 +78,7 @@
         <field name="report_name">event_tournament.matches_schedule_tournament</field>
         <field name="model">event.tournament</field>
         <field name="name">Matches schedule</field>
+        <field name="binding_model_id" ref="model_event_tournament" />
+        <field name="binding_type">report</field>
     </record>
 </odoo>
