@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  ~ Copyright 2022 Simone Rubino
+  ~ License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+  -->
+<odoo>
+    <template
+        id="registration_attendee_details"
+        inherit_id="website_event.registration_attendee_details"
+        name="Add tournament details to attendee registration"
+    >
+        <xpath
+            expr="//t[@name='attendee_loop']//*[hasclass('modal-body')]"
+            position="inside"
+        >
+            <div
+                t-foreach="event.tournament_ids"
+                t-as="tournament"
+                class="row"
+                style="border: solid 2px red;"
+            >
+                <div class="col-2 align-self-center">
+                    <strong t-esc="tournament.name" />
+                </div>
+                <div class="col">
+                    <label>Team names</label>
+                    <input
+                        class="form-control"
+                        type="text"
+                        t-attf-name="#{counter}-team_name"
+                        required="This field is required"
+                        t-attf-aria-describedby="#{counter}-team_name_help"
+                        placeholder="Banana hammocks, &quot;You know, we are great&quot;, Pterodactyls"
+                    />
+                    <small
+                        t-attf-id="#{counter}-team_name_help"
+                        class="form-text text-muted"
+                    >
+                        List team names with comma (',').
+                        If your team name has a comma in it, enter the team name between double quotes ('"').
+                    </small>
+                </div>
+                <!-- TODO Add button to copy team names in other attendees -->
+            </div>
+        </xpath>
+    </template>
+</odoo>
