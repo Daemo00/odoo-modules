@@ -13,6 +13,7 @@
         "event_tournament",
     ],
     "data": [
+        "security/ir.model.access.csv",
         "templates/event_registration_templates.xml",
     ],
 }
