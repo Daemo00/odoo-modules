@@ -43,4 +43,35 @@
             </div>
         </xpath>
     </template>
+
+    <template
+        id="registration_complete"
+        inherit_id="website_event.registration_complete"
+        name="Add tournament details to attendee confirmation"
+    >
+        <xpath expr="//t[@t-if='attendee.email']/.." position="before">
+            <t t-set="tournaments" t-value="attendee.tournament_ids" />
+            <ul class="fa-ul" t-if="tournaments">
+                <li t-foreach="attendee.tournament_ids" t-as="tournament">
+                    <span class="fa-li">
+                        <i class="fa fa-trophy" />
+                    </span>
+                    <span t-esc="tournament.name" />
+
+                    <t
+                        t-set="tournament_teams"
+                        t-value="attendee.tournament_team_ids.filtered(lambda t: t.tournament_id == tournament)"
+                    />
+                    <ul class="fa-ul">
+                        <li t-foreach="tournament_teams" t-as="team">
+                            <span class="fa-li">
+                                <i class="fa fa-users" />
+                            </span>
+                            <span t-esc="team.name" />
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </xpath>
+    </template>
 </odoo>
