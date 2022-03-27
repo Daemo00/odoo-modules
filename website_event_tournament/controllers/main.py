@@ -40,11 +40,9 @@ class WebsiteEventTournamentController(WebsiteEventController):
                 input_name, registration_index, tournament_id = key.split("-")
                 # Registration form is 1-based but list is 0-based
                 registration_index = int(registration_index) - 1
+
                 registration_values = registrations_values[registration_index]
                 tournament = tournament_model.browse(int(tournament_id))
-                registration_values.setdefault("tournament_ids", list()).append(
-                    (4, tournament.id)
-                )
                 if input_name == "team_names":
                     tournament_teams = tournament.team_ids
                     teams_names = self.get_team_names(value)
