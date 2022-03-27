@@ -27,13 +27,12 @@
                     <input
                         class="form-control"
                         type="text"
-                        t-attf-name="#{counter}-team_name"
-                        required="This field is required"
-                        t-attf-aria-describedby="#{counter}-team_name_help"
+                        t-attf-name="team_names-#{counter}-#{tournament.id}"
+                        t-attf-aria-describedby="help_team_names-#{counter}-#{tournament.id}"
                         placeholder="Banana hammocks, &quot;You know, we are great&quot;, Pterodactyls"
                     />
                     <small
-                        t-attf-id="#{counter}-team_name_help"
+                        t-attf-id="help_team_names-#{counter}-#{tournament.id}"
                         class="form-text text-muted"
                     >
                         List team names with comma (',').
