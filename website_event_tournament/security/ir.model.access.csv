@@ -1,0 +1,3 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+access_event_tournament,public_event_tournament,event_tournament.model_event_tournament,,1,0,0,0
+access_event_tournament_team,public_event_tournament_team,event_tournament.model_event_tournament_team,,1,1,1,0
