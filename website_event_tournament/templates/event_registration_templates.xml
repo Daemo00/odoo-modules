@@ -13,6 +13,52 @@
             expr="//t[@name='attendee_loop']//*[hasclass('modal-body')]"
             position="inside"
         >
+            <div class="row" style="border: solid 2px red;">
+                <div class="col">
+                    <label>Birthday</label>
+                    <input
+                        class="form-control"
+                        type="date"
+                        t-attf-name="#{counter}-birthday_date"
+                        required="required"
+                    />
+                </div>
+                <div class="col">
+                    <t
+                        t-set="gender_description"
+                        t-value="event.registration_ids._fields['gender'].get_description(env)"
+                    />
+                    <t
+                        t-set="gender_selection"
+                        t-value="gender_description['selection']"
+                    />
+                    <label>Gender</label>
+                    <select
+                        class="form-control"
+                        t-attf-name="#{counter}-gender"
+                        required="required"
+                    >
+                        <option selected="selected">Select...</option>
+                        <t t-foreach="gender_selection" t-as="value_string">
+                            <option
+                                t-att-value="value_string[0]"
+                                t-esc="value_string[1]"
+                            />
+                        </t>
+                    </select>
+                </div>
+                <div class="col">
+                    <label t-attf-for="#{counter}-is_fipav">
+                        Is FIPAV
+                    </label>
+                    <input
+                        class="form-control"
+                        type="checkbox"
+                        t-attf-name="#{counter}-is_fipav"
+                        t-attf-id="#{counter}-is_fipav"
+                    />
+                </div>
+            </div>
             <div
                 t-foreach="event.tournament_ids"
                 t-as="tournament"
