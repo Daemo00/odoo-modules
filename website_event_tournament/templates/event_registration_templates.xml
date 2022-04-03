@@ -19,7 +19,7 @@
                     <input
                         class="form-control"
                         type="date"
-                        t-attf-name="#{counter}-birthday_date"
+                        t-attf-name="#{counter}-birthdate_date"
                         required="required"
                     />
                 </div>
