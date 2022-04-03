@@ -38,7 +38,7 @@
                         t-attf-name="#{counter}-gender"
                         required="required"
                     >
-                        <option selected="selected">Select...</option>
+                        <option value="" selected="selected">Select...</option>
                         <t t-foreach="gender_selection" t-as="value_string">
                             <option
                                 t-att-value="value_string[0]"
