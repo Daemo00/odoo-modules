@@ -35,30 +35,38 @@ class WebsiteEventTournamentController(WebsiteEventController):
         registrations_values = super()._process_attendees_form(event, form_details)
 
         for key, value in form_details.items():
-            if key.startswith("team_names"):
+            if key.startswith("team_name"):
                 input_name, registration_index, tournament_id = key.split("-")
                 # Registration form is 1-based but list is 0-based
                 registration_index = int(registration_index) - 1
 
+                if input_name != "team_name":
+                    # Skip any false positive
+                    continue
+
+                team_name = value.strip()
+                if not team_name:
+                    continue
+
+                # Teams have to be created
+                # when there are the components
+                # because a team without components is not valid.
+                # Just save them for later use,
+                # see _create_attendees_from_registration_post.
                 registration_values = registrations_values[registration_index]
-                if input_name == "team_names":
-                    teams_names = self.get_team_names(value)
-                    for team_name in teams_names:
-                        # Teams have to be created
-                        # when there are the components
-                        # because a team without components is not valid
-                        registration_values.setdefault(
-                            "tournament_team_ids", list()
-                        ).append((tournament_id, team_name))
+                registration_values.setdefault("tournament_team_ids", list()).append(
+                    (tournament_id, team_name)
+                )
 
         return registrations_values
 
     def _create_attendees_from_registration_post(self, event, registration_data):
         attendees_teams = dict()
         for registration_index, registration_values in enumerate(registration_data):
-            attendees_teams[registration_index] = registration_values.pop(
-                "tournament_team_ids"
-            )
+            if "tournament_team_ids" in registration_values:
+                attendees_teams[registration_index] = registration_values.pop(
+                    "tournament_team_ids"
+                )
 
         attendees = super()._create_attendees_from_registration_post(
             event, registration_data
@@ -70,7 +78,6 @@ class WebsiteEventTournamentController(WebsiteEventController):
         #         team (name): component (model),
         #     },
         # }
-
         tournament_to_team_to_components = dict()
 
         tournament_model = request.env["event.tournament"]
