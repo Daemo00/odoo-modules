@@ -69,21 +69,13 @@
                     <strong t-esc="tournament.name" />
                 </div>
                 <div class="col">
-                    <label>Team names</label>
+                    <label>Team name</label>
                     <input
                         class="form-control"
                         type="text"
-                        t-attf-name="team_names-#{counter}-#{tournament.id}"
-                        t-attf-aria-describedby="help_team_names-#{counter}-#{tournament.id}"
-                        placeholder="Banana hammocks, &quot;You know, we are great&quot;, Pterodactyls"
+                        t-attf-name="team_name-#{counter}-#{tournament.id}"
+                        placeholder="Banana hammocks"
                     />
-                    <small
-                        t-attf-id="help_team_names-#{counter}-#{tournament.id}"
-                        class="form-text text-muted"
-                    >
-                        List team names with comma (',').
-                        If your team name has a comma in it, enter the team name between double quotes ('"').
-                    </small>
                 </div>
                 <!-- TODO Add button to copy team names in other attendees -->
             </div>
