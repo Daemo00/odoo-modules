@@ -25,6 +25,9 @@ class EventTournamentTeam(models.Model):
         comodel_name="event.registration",
         string="Components",
         copy=False,
+        relation="event_tournament_team_component_rel",
+        column1="component_id",
+        column2="team_id",
     )
     match_ids = fields.Many2many(
         comodel_name="event.tournament.match", string="Matches", copy=False
