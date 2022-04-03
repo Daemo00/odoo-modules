@@ -91,9 +91,10 @@ class EventTournamentTeam(models.Model):
     def constrain_components_event(self):
         for team in self:
             components = team.component_ids
-            event = team.event_id
-            if not components or not event:
+            if not components:
                 continue
+
+            # Check all the components are from the same event
             components_events = components.mapped("event_id")
             if len(components_events) > 1:
                 raise ValidationError(
@@ -102,6 +103,12 @@ class EventTournamentTeam(models.Model):
                         "Components from different events."
                     ).format(team_name=team.display_name)
                 )
+
+            event = team.event_id
+            if not event:
+                continue
+
+            # Check all the components are from the team's event
             components_event = first(components_events)
             if components_event != event:
                 raise ValidationError(
@@ -116,8 +123,6 @@ class EventTournamentTeam(models.Model):
         for team in self:
             components = team.component_ids
             tournament = team.tournament_id
-            if not components or not tournament:
-                continue
             for other_team in tournament.team_ids - team:
                 for component in components:
                     if component in other_team.component_ids:
