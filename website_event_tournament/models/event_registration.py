@@ -11,7 +11,7 @@ class EventRegistration(models.Model):
         allowed_fields = super()._get_website_registration_allowed_fields()
         allowed_fields.update(
             {
-                "birthday_date",
+                "birthdate_date",
                 "gender",
                 "mobile",
                 "is_fipav",
