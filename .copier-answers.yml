@@ -1,14 +1,17 @@
 # Do NOT update manually; changes here will be overwritten by Copier
-_commit: v1.5.1
+_commit: v1.5.2
 _src_path: https://github.com/OCA/oca-addons-repo-template.git
 ci: GitHub
 dependency_installation_mode: PIP
 generate_requirements_txt: true
 include_wkhtmltopdf: true
 odoo_version: 15.0
+org_name: Daemo00's developments
+org_slug: Daemo00
 rebel_module_groups: []
-repo_description: My Odoo modules
-repo_name: My Odoo modules
+repo_description: Daemo00's odoo modules
+repo_name: Daemo00's odoo modules
 repo_slug: odoo-modules
+repo_website: https://github.com/Daemo00/odoo-modules
 travis_apt_packages: []
 travis_apt_sources: []
