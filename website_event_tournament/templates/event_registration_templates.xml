@@ -13,7 +13,7 @@
             expr="//t[@name='attendee_loop']//*[hasclass('modal-body')]"
             position="inside"
         >
-            <div class="row" style="border: solid 2px red;">
+            <div class="row" style="border: solid 2px red;" t-if="event.tournament_ids">
                 <div class="col">
                     <label>Birthday</label>
                     <input
