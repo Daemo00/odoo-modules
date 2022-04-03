@@ -34,7 +34,6 @@ class WebsiteEventTournamentController(WebsiteEventController):
         """
         registrations_values = super()._process_attendees_form(event, form_details)
 
-        tournament_model = request.env["event.tournament"]
         for key, value in form_details.items():
             if key.startswith("team_names"):
                 input_name, registration_index, tournament_id = key.split("-")
@@ -42,25 +41,73 @@ class WebsiteEventTournamentController(WebsiteEventController):
                 registration_index = int(registration_index) - 1
 
                 registration_values = registrations_values[registration_index]
-                tournament = tournament_model.browse(int(tournament_id))
                 if input_name == "team_names":
-                    tournament_teams = tournament.team_ids
                     teams_names = self.get_team_names(value)
                     for team_name in teams_names:
-                        tournament_team = tournament_teams.filtered_domain(
-                            [("name", "=", team_name)]
-                        )
-                        tournament_team = first(tournament_team)
-                        if not tournament_team:
-                            # Team does not exist, create it
-                            tournament_team = tournament_team.create(
-                                {
-                                    "tournament_id": tournament.id,
-                                    "name": team_name,
-                                }
-                            )
+                        # Teams have to be created
+                        # when there are the components
+                        # because a team without components is not valid
                         registration_values.setdefault(
                             "tournament_team_ids", list()
-                        ).append((4, tournament_team.id))
+                        ).append((tournament_id, team_name))
 
         return registrations_values
+
+    def _create_attendees_from_registration_post(self, event, registration_data):
+        attendees_teams = dict()
+        for registration_index, registration_values in enumerate(registration_data):
+            attendees_teams[registration_index] = registration_values.pop(
+                "tournament_team_ids"
+            )
+
+        attendees = super()._create_attendees_from_registration_post(
+            event, registration_data
+        )
+
+        # {
+        #     tournament (model):
+        #     {
+        #         team (name): component (model),
+        #     },
+        # }
+
+        tournament_to_team_to_components = dict()
+
+        tournament_model = request.env["event.tournament"]
+        for attendee_index, attendee in enumerate(attendees):
+            attendee_teams = attendees_teams[attendee_index]
+            for tournament_id, team_name in attendee_teams:
+                tournament = tournament_model.browse(int(tournament_id))
+                if tournament not in tournament_to_team_to_components:
+                    tournament_to_team_to_components[tournament] = dict()
+
+                team_dict = tournament_to_team_to_components[tournament]
+                if team_name not in team_dict:
+                    team_dict[team_name] = attendee.browse()
+                team_dict[team_name] |= attendee
+
+        # Create or update the teams
+        for tournament, team_dict in tournament_to_team_to_components.items():
+            tournament_teams = tournament.team_ids
+            for team_name, components in team_dict.items():
+                tournament_team = tournament_teams.filtered_domain(
+                    [("name", "=", team_name)]
+                )
+                tournament_team = first(tournament_team)
+                # Sudo is needed to manipulate teams
+                # because their validation must
+                # check with other attendees of the event
+                # that is normally forbidden to portal users
+                if not tournament_team:
+                    # Team does not exist, create it
+                    tournament_team.sudo().create(
+                        {
+                            "tournament_id": tournament.id,
+                            "name": team_name,
+                            "component_ids": components,
+                        }
+                    )
+                else:
+                    tournament_team.sudo().component_ids |= components
+
+        return attendees
