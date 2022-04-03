@@ -15,5 +15,7 @@
     "data": [
         "security/ir.model.access.csv",
         "templates/event_registration_templates.xml",
+        "templates/event_templates.xml",
+        "views/event_tournament_view.xml",
     ],
 }

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  ~ Copyright 2022 Simone Rubino
+  ~ License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+  -->
+<odoo>
+    <template
+        id="event_description_full"
+        inherit_id="website_event.event_description_full"
+        name="Tournament details in event description"
+    >
+        <span t-field="event.description" position="after">
+            <t t-foreach="event.tournament_ids" t-as="tournament">
+                <span t-esc="tournament.website_description" />
+            </t>
+        </span>
+    </template>
+</odoo>
