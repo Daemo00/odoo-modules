@@ -26,7 +26,7 @@
                 <div class="col">
                     <t
                         t-set="gender_description"
-                        t-value="event.registration_ids._fields['gender'].get_description(env)"
+                        t-value="env['event.registration']._fields['gender'].get_description(env)"
                     />
                     <t
                         t-set="gender_selection"
