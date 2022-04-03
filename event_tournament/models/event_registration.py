@@ -8,7 +8,11 @@ class EventRegistration(models.Model):
     _inherit = "event.registration"
 
     tournament_team_ids = fields.Many2many(
-        comodel_name="event.tournament.team", string="Teams"
+        comodel_name="event.tournament.team",
+        string="Teams",
+        relation="event_tournament_team_component_rel",
+        column1="team_id",
+        column2="component_id",
     )
     tournament_ids = fields.Many2many(
         comodel_name="event.tournament", compute="_compute_tournaments", store=True
