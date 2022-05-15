@@ -142,7 +142,9 @@ class TestEventTournamentTeam(TestCommon):
         match.action_done()
         self.assertEqual(winner.sets_won, 2)
         self.assertEqual(winner.matches_points, 2)
-        self.assertEqual(winner.points_ratio, winner.points_done / winner.points_taken)
+        self.assertAlmostEqual(
+            winner.points_ratio, winner.points_done / winner.points_taken, 5
+        )
 
     def test_action_view_matches(self):
         """

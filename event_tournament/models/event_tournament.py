@@ -68,7 +68,9 @@ class EventTournament(models.Model):
         default=1,
     )
     max_components = fields.Integer(
-        string="Maximum components", help="Maximum number of components for a team"
+        string="Maximum components",
+        help="Maximum number of components for a team",
+        default=10,
     )
     min_components_female = fields.Integer(
         string="Minimum female components",

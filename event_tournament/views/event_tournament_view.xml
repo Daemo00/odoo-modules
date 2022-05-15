@@ -138,7 +138,7 @@
                                 <field
                                     name="court_ids"
                                     domain="[('event_id', '=', event_id)]"
-                                    context="{                                         'default_event_id': event_id,                                         'default_time_availability_start': start_datetime,                                         'default_time_availability_end': end_datetime,                                         }"
+                                    context="{'default_event_id': event_id, 'default_time_availability_start': start_datetime, 'default_time_availability_end': end_datetime,}"
                                 />
                                 <field name="randomize_matches_generation" />
                                 <field name="reset_matches_before_generation" />
