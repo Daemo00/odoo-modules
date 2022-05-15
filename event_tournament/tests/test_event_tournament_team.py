@@ -175,7 +175,10 @@ class TestEventTournamentTeam(TestCommon):
     def test_copy(self):
         """
         Copy a team,
-        check that no exception is raised.
+        check that an exception is raised because it doesn't have components.
         """
         team = first(self.teams)
-        self.assertTrue(team.copy())
+        with self.assertRaises(ValidationError) as ve:
+            team.copy()
+        exception_msg = ve.exception.args[0]
+        self.assertIn("at least 1 component", exception_msg)

@@ -45,41 +45,35 @@ class TestCommon(TransactionCase):
                 self.tournaments |= tournament
                 for team_index in range(TEAM_NBR):
                     team = self.create_team(
-                        event_index, team_index, tournament, tournament_index
+                        event, tournament, event_index, team_index, tournament_index
                     )
                     self.teams |= team
-                    for component_index in range(COMPONENT_NBR):
-                        component = self.create_component(
-                            component_index,
-                            event,
-                            event_index,
-                            team,
-                            team_index,
-                            tournament_index,
-                        )
-                        self.components |= component
+                    self.components |= team.component_ids
 
-    def create_component(
-        self, component_index, event, event_index, team, team_index, tournament_index
+    def component_values(
+        self, component_index, event, event_index, team_index, tournament_index
     ):
-        component = self.component_model.create(
-            {
-                "event_id": event.id,
-                "tournament_team_ids": [(4, team.id)],
-                "name": "event {event_index}, "
-                "tournament {tournament_index}, "
-                "team {team_index}, "
-                "component {component_index}".format(
-                    event_index=event_index,
-                    tournament_index=tournament_index,
-                    team_index=team_index,
-                    component_index=component_index,
-                ),
-            }
-        )
-        return component
+        return {
+            "event_id": event.id,
+            "name": "event {event_index}, "
+            "tournament {tournament_index}, "
+            "team {team_index}, "
+            "component {component_index}".format(
+                event_index=event_index,
+                tournament_index=tournament_index,
+                team_index=team_index,
+                component_index=component_index,
+            ),
+        }
 
-    def create_team(self, event_index, team_index, tournament, tournament_index):
+    def create_team(
+        self,
+        event,
+        tournament,
+        event_index=None,
+        team_index=None,
+        tournament_index=None,
+    ):
         team = self.team_model.create(
             {
                 "tournament_id": tournament.id,
@@ -90,6 +84,20 @@ class TestCommon(TransactionCase):
                     tournament_index=tournament_index,
                     team_index=team_index,
                 ),
+                "component_ids": [
+                    (
+                        0,
+                        0,
+                        self.component_values(
+                            component_index,
+                            event,
+                            event_index,
+                            team_index,
+                            tournament_index,
+                        ),
+                    )
+                    for component_index in range(COMPONENT_NBR)
+                ],
             }
         )
         return team
