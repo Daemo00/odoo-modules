@@ -35,7 +35,9 @@ class EventTournamentTeam(models.Model):
     match_count = fields.Integer(
         compute="_compute_match_count",
     )
-    points_ratio = fields.Float(compute="_compute_matches_points", store=True)
+    points_ratio = fields.Float(
+        compute="_compute_matches_points", store=True, digits=(16, 5)
+    )
     points_done = fields.Float(compute="_compute_matches_points", store=True)
     points_taken = fields.Float(compute="_compute_matches_points", store=True)
     sets_won = fields.Integer(compute="_compute_matches_points", store=True)
