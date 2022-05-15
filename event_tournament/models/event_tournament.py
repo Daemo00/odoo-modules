@@ -4,6 +4,8 @@ import itertools
 import random
 from datetime import timedelta
 
+from more_itertools import grouper
+
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools import logging
@@ -40,6 +42,13 @@ class EventTournament(models.Model):
         inverse_name="tournament_id",
         string="Teams",
     )
+    team_count_estimated = fields.Integer(
+        string="Estimated team count",
+        help="Teams are generated randomly from the event's participants.\n"
+        "Each team has the minimum amount of components "
+        "allowed from the tournament rules.",
+        compute="_compute_team_count_estimated",
+    )
     component_ids = fields.Many2many(
         comodel_name="event.registration",
         compute="_compute_components",
@@ -54,7 +63,9 @@ class EventTournament(models.Model):
         default="draft",
     )
     min_components = fields.Integer(
-        string="Minimum components", help="Minimum number of components for a team"
+        string="Minimum components",
+        help="Minimum number of components for a team",
+        default=1,
     )
     max_components = fields.Integer(
         string="Maximum components", help="Maximum number of components for a team"
@@ -102,6 +113,22 @@ class EventTournament(models.Model):
     )
     notes = fields.Text()
 
+    _sql_constraints = [
+        (
+            "check_number_min_components",
+            "CHECK(0 < min_components)",
+            _("The minimum number of components must be positive."),
+        ),
+        (
+            "check_number_max_min_components",
+            "CHECK(min_components <= max_components)",
+            _(
+                "The minimum number of components must be "
+                "lower or equal to the maximum number of components."
+            ),
+        ),
+    ]
+
     @api.onchange("event_id")
     def onchange_event_id(self):
         if self.event_id:
@@ -124,6 +151,17 @@ class EventTournament(models.Model):
                     )
                 )
             )
+
+    @api.depends("event_id.registration_ids", "min_components")
+    def _compute_team_count_estimated(self):
+        for tournament in self:
+            available_components_nbr = len(tournament.event_id.registration_ids)
+            team_components_nbr = tournament.min_components
+            if team_components_nbr:
+                teams_nbr = available_components_nbr // team_components_nbr
+                tournament.team_count_estimated = teams_nbr
+            else:
+                tournament.team_count_estimated = 0
 
     @api.depends("team_ids")
     def _compute_team_count(self):
@@ -362,3 +400,43 @@ class EventTournament(models.Model):
             "res_id": self.id,
             "target": "current",
         }
+
+    def generate_teams(self):
+        """
+        Generate random teams from the event's participants.
+        """
+        self.ensure_one()
+        if not self.min_components:
+            raise UserError(
+                _(
+                    "Tournament {tourn_name}:\n"
+                    "The minimum number of components must be positive."
+                ).format(tourn_name=self.display_name)
+            )
+        components_ids = self.event_id.registration_ids.ids
+        random.shuffle(components_ids)
+
+        components_tuples = grouper(components_ids, self.min_components, fillvalue="x")
+        teams_values = list()
+        for team_index, component_tuple in enumerate(components_tuples):
+            if any(component_id == "x" for component_id in component_tuple):
+                exceeding_components = filter(
+                    lambda component_id: component_id != "x", component_tuple
+                )
+                last_team_components_ids = teams_values[-1]["component_ids"][0][2]
+                last_team_components_ids += tuple(exceeding_components)
+                teams_values[-1]["component_ids"][0] = (6, 0, last_team_components_ids)
+                continue
+            team_values = {
+                "tournament_id": self.id,
+                "name": _("Team") + str(team_index),
+                "component_ids": [(6, 0, component_tuple)],
+            }
+            teams_values.append(team_values)
+
+        teams = self.team_ids.create(teams_values)
+        return teams
+
+    def generate_view_teams(self):
+        self.generate_teams()
+        return self.action_view_teams()
