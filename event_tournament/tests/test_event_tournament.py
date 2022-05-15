@@ -65,7 +65,7 @@ class TestEventTournament(TestCommon):
                 )
             ),
         )
-        self.team_model.create({"tournament_id": tournament.id, "name": "test"})
+        self.create_team(tournament.event_id, tournament)
         self.assertEqual(
             tournament.match_count_estimated,
             len(
@@ -265,3 +265,13 @@ class TestEventTournament(TestCommon):
         action_id = action.get("res_id")
         action_tournament = self.env[action_model].browse(action_id)
         self.assertEqual(action_tournament, tournament)
+
+    def test_generate_teams(self):
+        """
+        Create a tournament,
+        check that all the estimated teams are created.
+        """
+        tournament = first(self.tournaments)
+        tournament.team_ids.unlink()
+        teams = tournament.generate_teams()
+        self.assertEqual(len(teams), tournament.team_count_estimated)
