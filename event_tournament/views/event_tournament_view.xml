@@ -116,7 +116,17 @@
                                 />
                             </group>
                         </page>
-                        <page name="teams_matches" string="Teams &amp; Matches">
+                        <page name="teams" string="Teams">
+                            <group>
+                                <button
+                                    name="generate_view_teams"
+                                    type="object"
+                                    string="Generate teams"
+                                />
+                                <field name="team_count_estimated" />
+                            </group>
+                        </page>
+                        <page name="matches" string="Matches">
                             <group>
                                 <field
                                     name="match_warm_up_duration"
