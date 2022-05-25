@@ -221,6 +221,7 @@ class EventTournament(models.Model):
             match = match_model.browse()
             curr_start = min_start
             # Try to schedule the match as soon as possible
+            last_error = False
             while curr_start <= max_start:
                 # Try to put this match in a court at curr_start
                 for court in courts:
@@ -239,6 +240,7 @@ class EventTournament(models.Model):
                     except ValidationError as ve:
                         # The match is not valid, try the following court
                         _logger.info(ve)
+                        last_error = ve.args[0]
                         continue
                     else:
                         # The match is valid
@@ -254,10 +256,16 @@ class EventTournament(models.Model):
                 else:
                     curr_start = curr_start + match_duration
             if not match:
-                raise UserError(
-                    _("Scheduling impossibru for a match between ")
-                    + ", ".join(team.display_name for team in match_teams)
-                )
+                error_message = _(
+                    "Scheduling impossibru for a match between "
+                ) + ", ".join(team.display_name for team in match_teams)
+                if last_error:
+                    error_message += (
+                        "\n"
+                        + _("Last match could not be scheduled due to:\n")
+                        + last_error
+                    )
+                raise UserError(error_message)
             max_start = max(max_start, match.time_scheduled_end)
             # Try to not make components play two matches in a row:
             # rearrange matches_teams so that components
