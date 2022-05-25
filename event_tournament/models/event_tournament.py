@@ -119,15 +119,13 @@ class EventTournament(models.Model):
         (
             "check_number_min_components",
             "CHECK(0 < min_components)",
-            _("The minimum number of components must be positive."),
+            "The minimum number of components must be positive.",
         ),
         (
             "check_number_max_min_components",
             "CHECK(min_components <= max_components)",
-            _(
-                "The minimum number of components must be "
-                "lower or equal to the maximum number of components."
-            ),
+            "The minimum number of components must be "
+            "lower or equal to the maximum number of components.",
         ),
     ]
 
