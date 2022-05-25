@@ -273,5 +273,47 @@ class TestEventTournament(TestCommon):
         """
         tournament = first(self.tournaments)
         tournament.team_ids.unlink()
+        components = tournament.event_id.registration_ids
+
         teams = tournament.generate_teams()
+
         self.assertEqual(len(teams), tournament.team_count_estimated)
+        # Check everyone is in a team
+        self.assertEqual(components, teams.component_ids)
+
+    def test_generate_mixed_teams(self):
+        """
+        Create a tournament with female attendees
+        and a minimum female components number,
+        check that teams are created correctly.
+        """
+        tournament = first(self.tournaments)
+        tournament.team_ids.unlink()
+
+        tournament.min_components_female = 1
+        tournament.min_components_male = 2
+        tournament.min_components = 3
+        components = tournament.event_id.registration_ids
+        required_females_nbr = (
+            len(components)
+            // tournament.min_components
+            * tournament.min_components_female
+        )
+        female_components = components[:required_females_nbr]
+        female_components.update(
+            {
+                "gender": "female",
+            }
+        )
+        male_components = components - female_components
+        male_components.update(
+            {
+                "gender": "male",
+            }
+        )
+
+        teams = tournament.generate_teams()
+
+        self.assertEqual(len(teams), tournament.team_count_estimated)
+        # Check everyone is in a team
+        self.assertEqual(components, teams.component_ids)
