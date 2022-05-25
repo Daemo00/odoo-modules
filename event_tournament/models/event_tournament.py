@@ -308,10 +308,7 @@ class EventTournament(models.Model):
                     "Start time is required for matches generation."
                 ).format(tourn_name=self.display_name)
             )
-        warm_up_start = self.start_datetime - timedelta(
-            hours=self.match_warm_up_duration
-        )
-        min_start = warm_up_start
+        min_start = self.start_datetime
 
         if not self.end_datetime:
             raise UserError(
