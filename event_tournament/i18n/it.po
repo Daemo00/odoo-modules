@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 15.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-05-15 16:09+0000\n"
-"PO-Revision-Date: 2022-05-15 16:09+0000\n"
+"POT-Creation-Date: 2022-05-25 21:09+0000\n"
+"PO-Revision-Date: 2022-05-25 21:09+0000\n"
 "Last-Translator: Simone Rubino\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -41,7 +41,9 @@ msgstr ""
 #. module: event_tournament
 #: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_match_view_kanban
 msgid "<span class=\"fa fa-clock-o\" title=\"Time start\" aria-label=\"Time start\"/>"
-msgstr "<span class=\"fa fa-clock-o\" title=\"Orario di inizio\" aria-label=\"Orario di inizio\"/>"
+msgstr ""
+"<span class=\"fa fa-clock-o\" title=\"Orario di inizio\" aria-label=\"Orario"
+" di inizio\"/>"
 
 #. module: event_tournament
 #: code:addons/event_tournament/models/event_tournament_match.py:0
@@ -341,6 +343,12 @@ msgid "Last Updated on"
 msgstr "Ultimo aggiornamento il"
 
 #. module: event_tournament
+#: code:addons/event_tournament/models/event_tournament.py:0
+#, python-format
+msgid "Last match could not be scheduled due to:\n"
+msgstr "L'ultima partita non è stata programmata a causa di:\n"
+
+#. module: event_tournament
 #: model:ir.model.fields.selection,name:event_tournament.selection__event_registration__gender__male
 msgid "Male"
 msgstr "Maschio"
@@ -524,6 +532,12 @@ msgid "Matches"
 msgstr "Partite"
 
 #. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_registration__matches_done
+msgid "Matches Done"
+msgstr "Partite fatte"
+
+#. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_registration__matches_points
 #: model:ir.model.fields,field_description:event_tournament.field_event_tournament_team__matches_points
 msgid "Matches Points"
 msgstr "Punti da partite"
@@ -632,6 +646,7 @@ msgid "Parent tournament"
 msgstr "Torneo genitore"
 
 #. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_registration__points_done
 #: model:ir.model.fields,field_description:event_tournament.field_event_tournament_team__points_done
 msgid "Points Done"
 msgstr "Punti fatti"
@@ -647,11 +662,13 @@ msgid "Points Per Win"
 msgstr "Punti vittoria"
 
 #. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_registration__points_ratio
 #: model:ir.model.fields,field_description:event_tournament.field_event_tournament_team__points_ratio
 msgid "Points Ratio"
 msgstr "Quoziente punti"
 
 #. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_registration__points_taken
 #: model:ir.model.fields,field_description:event_tournament.field_event_tournament_team__points_taken
 msgid "Points Taken"
 msgstr "Punti subiti"
@@ -760,6 +777,7 @@ msgid "Sets Lost"
 msgstr "Set persi"
 
 #. module: event_tournament
+#: model:ir.model.fields,field_description:event_tournament.field_event_registration__sets_won
 #: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match_mode_result__sets_won
 #: model:ir.model.fields,field_description:event_tournament.field_event_tournament_team__sets_won
 msgid "Sets Won"
@@ -837,7 +855,6 @@ msgstr ""
 "Le squadre sono generate casualmente dai partecipanti dell'evento.\n"
 "Ogni squadra ha il numero di componenti minimo permesso dalle regole del torneo."
 
-
 #. module: event_tournament
 #: model:ir.model.fields,field_description:event_tournament.field_event_tournament__team_count
 msgid "Teams count"
@@ -849,9 +866,7 @@ msgid "Teams per match"
 msgstr "Squadre per partita"
 
 #. module: event_tournament
-#: code:addons/event_tournament/models/event_tournament.py:0
 #: model:ir.model.constraint,message:event_tournament.constraint_event_tournament_check_number_max_min_components
-#, python-format
 msgid ""
 "The minimum number of components must be lower or equal to the maximum "
 "number of components."
@@ -860,9 +875,7 @@ msgstr ""
 "numero massimo di componenti."
 
 #. module: event_tournament
-#: code:addons/event_tournament/models/event_tournament.py:0
 #: model:ir.model.constraint,message:event_tournament.constraint_event_tournament_check_number_min_components
-#, python-format
 msgid "The minimum number of components must be positive."
 msgstr "Il numero minimo di componenti per squadra deve essere positivo."
 
@@ -889,6 +902,7 @@ msgstr "Orario di fine"
 #: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_match_view_search
 #: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_team_view_search
 #: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_view_form
+#: model_terms:ir.ui.view,arch_db:event_tournament.view_event_registration_form
 msgid "Tournament"
 msgstr "Torneo"
 
