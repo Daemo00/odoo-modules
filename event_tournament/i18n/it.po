@@ -1056,10 +1056,10 @@ msgstr ""
 #, python-format
 msgid ""
 "Tournament {tourn_name}:\n"
-"The minimum number of components must be positive."
+"The minimum number of components must be positive for teams generation.."
 msgstr ""
 "Torneo {tourn_name}:\n"
-"il numero minimo di componenti per squadra deve essere positivo."
+"il numero minimo di componenti per squadra deve essere positivo per la generazione delle squadre."
 
 #. module: event_tournament
 #: model:ir.actions.act_window,name:event_tournament.event_tournament_action
