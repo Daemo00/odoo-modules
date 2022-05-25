@@ -412,18 +412,56 @@ class EventTournament(models.Model):
             raise UserError(
                 _(
                     "Tournament {tourn_name}:\n"
-                    "The minimum number of components must be positive."
+                    "The minimum number of components must be positive "
+                    "for teams generation."
                 ).format(tourn_name=self.display_name)
             )
-        components_ids = self.event_id.registration_ids.ids
-        random.shuffle(components_ids)
+        components = self.event_id.registration_ids
+        components_ids = components.ids
+        components_fill_value = "x"
+        if any(components.mapped("gender")):
+            female_components_ids = components.filtered(
+                lambda c: c.gender == "female"
+            ).ids
+            random.shuffle(female_components_ids)
+            female_components_tuples = grouper(
+                female_components_ids,
+                self.min_components_female,
+                fillvalue=components_fill_value,
+            )
 
-        components_tuples = grouper(components_ids, self.min_components, fillvalue="x")
+            male_components_ids = [
+                c_id for c_id in components_ids if c_id not in female_components_ids
+            ]
+            random.shuffle(male_components_ids)
+            male_components_tuples = grouper(
+                male_components_ids,
+                self.min_components_male,
+                fillvalue=components_fill_value,
+            )
+
+            f_m_components_tuples = itertools.zip_longest(
+                female_components_tuples,
+                male_components_tuples,
+                fillvalue=(components_fill_value,),
+            )
+            # Flatten [((f), (m, m), ...)]
+            components_tuples = [f + m for f, m in f_m_components_tuples]
+        else:
+            random.shuffle(components_ids)
+            components_tuples = grouper(
+                components_ids, self.min_components, fillvalue=components_fill_value
+            )
+
         teams_values = list()
         for team_index, component_tuple in enumerate(components_tuples):
-            if any(component_id == "x" for component_id in component_tuple):
+            if any(
+                component_id == components_fill_value
+                for component_id in component_tuple
+            ):
                 exceeding_components = filter(
-                    lambda component_id: component_id != "x", component_tuple
+                    lambda component_id: component_id != components_fill_value,
+                    component_tuple,
                 )
                 last_team_components_ids = teams_values[-1]["component_ids"][0][2]
                 last_team_components_ids += tuple(exceeding_components)
