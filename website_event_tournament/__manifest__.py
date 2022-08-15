@@ -6,7 +6,8 @@
     "version": "15.0.1.0.0",
     "category": "Website",
     "author": "Daemo00's developments",
-    "website": "https://github.com/Daemo00/odoo-modules",
+    "website": "https://github.com/Daemo00/odoo-modules"
+    "/tree/15.0/website_event_tournament",
     "license": "AGPL-3",
     "depends": [
         "website_event",
