@@ -3,10 +3,10 @@
 {
     "name": "Tournaments in website",
     "summary": "Manage tournaments in website",
-    "version": "15.0.1.0.0",
+    "version": "16.0.1.0.0",
     "category": "Website",
     "author": "Daemo00's developments",
-    "website": "https://github.com/Daemo00/odoo-modules/tree/15.0/event_tournament",
+    "website": "https://github.com/Daemo00/odoo-modules",
     "license": "AGPL-3",
     "depends": [
         "website_event",
