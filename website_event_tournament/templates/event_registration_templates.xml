@@ -65,7 +65,7 @@
                 class="row"
                 style="border: solid 2px red;"
             >
-                <div class="col-2 align-self-center">
+                <div class="col-2 align-self-center" style="text-align-last: end;">
                     <strong t-esc="tournament.name" />
                 </div>
                 <div class="col">
@@ -76,6 +76,16 @@
                         t-attf-name="team_name-#{counter}-#{tournament.id}"
                         placeholder="Banana hammocks"
                     />
+                </div>
+                <div class="align-self-center col-2" t-if="ticket['quantity'] > 1">
+                    <button
+                        type="button"
+                        class="btn btn-info"
+                        name="js_copy_team"
+                        t-attf-data-team-input="team_name-#{counter}-#{tournament.id}"
+                    >
+                        Copy to other participants
+                    </button>
                 </div>
                 <!-- TODO Add button to copy team names in other attendees -->
             </div>
