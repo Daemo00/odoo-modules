@@ -19,4 +19,9 @@
         "templates/event_templates.xml",
         "views/event_tournament_view.xml",
     ],
+    "assets": {
+        "web.assets_frontend": [
+            "website_event_tournament/static/src/js/registration.js",
+        ],
+    },
 }
