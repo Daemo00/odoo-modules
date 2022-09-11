@@ -45,6 +45,7 @@
         <field name="model">event.tournament.court</field>
         <field name="arch" type="xml">
             <tree>
+                <field name="sequence" widget="handle" />
                 <field name="event_id" />
                 <field name="name" />
                 <field name="time_availability_start" />
