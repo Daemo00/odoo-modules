@@ -67,12 +67,12 @@ def parse_team_line(values: list):
     # Strip all the values!
     values = list(map(str.strip, values))
     res = dict()
-    common_fields = ["date_open", "tournament", "team_name"]
+    common_fields = ["date_open", "email_cap", "email", "tournament", "team_name"]
     common_values = values[: len(common_fields)]
     res.update(dict(zip(common_fields, common_values)))
     values = values[len(common_fields) :]
 
-    common2_fields = ("notes", "rules", "email_cap", "email", "score")
+    common2_fields = ("notes", "rules", "score")
     common2_values = values[-len(common2_fields) :]
     res.update(dict(zip(common2_fields, common2_values)))
     values = values[: -len(common2_fields)]
@@ -143,7 +143,9 @@ class ImportCSVBV4W(models.TransientModel):
         registrations = tournament.event_id.registration_ids
 
         players_values = list()
-        date_open = datetime.strptime(team_dict["date_open"], "%m/%d/%Y %H:%M:%S")
+        date_open = datetime.strptime(
+            team_dict["date_open"], "%Y/%m/%d %H:%M:%S %p EET"
+        )
 
         def same_player(registration, new_player_values):
             return (
@@ -157,7 +159,7 @@ class ImportCSVBV4W(models.TransientModel):
                 player_values["name"].title().replace(" ", "")
             )  # Clean user data
             player_values["birthdate_date"] = datetime.strptime(
-                player_values["birthdate_date"], "%m/%d/%Y"
+                player_values["birthdate_date"], "%Y-%m-%d"
             ).date()
             player_values["event_id"] = tournament.event_id.id
             player_values["date_open"] = date_open
