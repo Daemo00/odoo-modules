@@ -59,6 +59,40 @@
             </form>
         </field>
     </record>
+    <record id="event_tournament_team_view_kanban" model="ir.ui.view">
+        <field name="name">event.tournament.team kanban view</field>
+        <field name="model">event.tournament.team</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile">
+                <templates>
+                    <t t-name="kanban-box">
+                        <div
+              t-attf-class="oe_kanban_card oe_kanban_global_click"
+            >
+                            <div class="o_kanban_record_top">
+                                <div class="o_kanban_record_headings">
+                                    <strong>
+                                        <field name="name" />
+                                    </strong>
+                                    <div class="text-muted">
+                                        <field name="tournament_id" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="o_kanban_record_bottom">
+                                <div class="oe_kanban_bottom_left">
+                                    <field
+                    name="component_ids"
+                    widget="many2many_tags"
+                  />
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
     <record id="event_tournament_team_view_tree" model="ir.ui.view">
         <field name="name">event.tournament.team tree view</field>
         <field name="model">event.tournament.team</field>
@@ -80,6 +114,7 @@
         <field name="arch" type="xml">
             <search>
                 <field name="name" />
+                <field name="tournament_id" />
                 <field name="component_ids" />
                 <filter
           string="Tournament"
@@ -97,6 +132,7 @@
     <record id="event_tournament_team_action" model="ir.actions.act_window">
         <field name="name">Tournament teams</field>
         <field name="res_model">event.tournament.team</field>
+        <field name="view_mode">tree,kanban,form</field>
     </record>
     <menuitem
     id="event_tournament_team_menu"

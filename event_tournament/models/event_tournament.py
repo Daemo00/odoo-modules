@@ -17,6 +17,7 @@ class EventTournament(models.Model):
     _name = "event.tournament"
     _description = "Tournament"
     _rec_name = "name"
+    _order = "start_datetime, name"
 
     name = fields.Char(required=True)
     event_id = fields.Many2one(comodel_name="event.event", string="Event")
@@ -140,16 +141,16 @@ class EventTournament(models.Model):
         for tournament in self:
             tournament.match_count = len(tournament.match_ids)
 
-    @api.depends("team_ids", "match_teams_nbr")
+    @api.depends(
+        "team_ids",
+        "match_teams_nbr",
+        "child_ids",
+        "child_ids.team_ids",
+        "child_ids.match_teams_nbr",
+    )
     def _compute_match_count_estimated(self):
         for tournament in self:
-            tournament.match_count_estimated = len(
-                list(
-                    itertools.combinations(
-                        tournament.team_ids, tournament.match_teams_nbr
-                    )
-                )
-            )
+            tournament.match_count_estimated = len(list(tournament.get_match_tuples()))
 
     @api.depends("event_id.registration_ids", "min_components")
     def _compute_team_count_estimated(self):
@@ -201,20 +202,23 @@ class EventTournament(models.Model):
         """
         self.ensure_one()
 
-        match_duration = self.get_match_duration()
-        max_start, min_start = self.get_max_min_start(match_duration)
-        courts = self.get_courts()
-
         matches_teams = self.get_match_tuples()
         if self.randomize_matches_generation:
             random.shuffle(matches_teams)
         if self.reset_matches_before_generation:
             matches_teams = self.reset_matches(matches_teams)
 
+        team_model = self.env["event.tournament.team"]
         match_model = self.env["event.tournament.match"]
         matches = match_model.browse()
         while matches_teams:
             match_teams = matches_teams.pop()
+            teams_ids = [t.id for t in match_teams]
+            tournament = team_model.browse(teams_ids).mapped("tournament_id")
+            match_duration = tournament.get_match_duration()
+            max_start, min_start = tournament.get_max_min_start(match_duration)
+            courts = tournament.get_courts()
+
             match = match_model.browse()
             curr_start = min_start
             # Try to schedule the match as soon as possible
@@ -227,9 +231,9 @@ class EventTournament(models.Model):
                             # The first match of the court does not need warm-up
                             match = match_model.create(
                                 {
-                                    "tournament_id": self.id,
+                                    "tournament_id": tournament.id,
                                     "court_id": court.id,
-                                    "team_ids": [t.id for t in match_teams],
+                                    "team_ids": teams_ids,
                                     "time_scheduled_start": curr_start,
                                     "time_scheduled_end": curr_start + match_duration,
                                 }
@@ -291,6 +295,14 @@ class EventTournament(models.Model):
             )
         return courts
 
+    def get_children(self, depth=0):
+        children = self.mapped("child_ids")
+        if not children:
+            return self
+        if depth == 1:
+            return children
+        return self + children.get_children(depth - 1)
+
     def get_match_tuples(self):
         all_tournaments = self | self.get_children()
         all_tournaments_matches = dict.fromkeys(all_tournaments)
@@ -346,7 +358,8 @@ class EventTournament(models.Model):
 
     def reset_matches(self, matches_teams):
         clean_matches_teams = list()
-        done_matches = self.match_ids.filtered(lambda m: m.state == "done")
+        matches = self.get_children().mapped("match_ids")
+        done_matches = matches.filtered(lambda m: m.state == "done")
         for match_teams in matches_teams:
             for done_match in done_matches:
                 if done_match.team_ids.ids == [mt.id for mt in match_teams]:
@@ -356,11 +369,11 @@ class EventTournament(models.Model):
                 # Corresponding match_team not found
                 clean_matches_teams.append(match_teams)
         matches_teams = clean_matches_teams
-        (self.match_ids - done_matches).unlink()
+        (matches - done_matches).unlink()
         return matches_teams
 
     def recompute_matches_points(self):
-        self.mapped("team_ids").compute_matches_points()
+        self.get_children().mapped("team_ids").compute_matches_points()
 
     def generate_view_matches(self):
         self.generate_matches()

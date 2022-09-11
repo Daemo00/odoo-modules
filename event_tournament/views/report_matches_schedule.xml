@@ -2,7 +2,7 @@
 <!-- License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
 <odoo>
     <template id="matches_schedule_table">
-        <t t-set="courts" t-value="matches.mapped('court_id')" />
+        <t t-set="courts" t-value="matches.mapped('court_id').sorted('name')" />
         <table class="table table-bordered table-striped">
             <thead>
                 <th>Datetime</th>
@@ -13,9 +13,8 @@
             <tbody>
                 <t
           t-set="times"
-          t-value="list(set(matches.mapped('time_scheduled_start')))"
+          t-value="sorted(list(set(matches.mapped('time_scheduled_start'))))"
         />
-                <t t-set="" t-value="times.sort()" />
                 <tr t-foreach="times" t-as="time">
                     <t
             t-set="time_matches"
@@ -32,7 +31,12 @@
               t-value="time_matches.filtered(lambda m: m.court_id == court)"
             />
                         <td>
-                            <span t-esc="match.display_name" />
+                            <t t-if="match">
+                                (<span
+                  t-esc="match.tournament_id.display_name"
+                />) -
+                                <span t-esc="match.display_name" />
+                            </t>
                         </td>
                     </t>
                 </tr>

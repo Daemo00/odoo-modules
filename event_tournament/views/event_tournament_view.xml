@@ -180,6 +180,7 @@
             <tree>
                 <field name="event_id" />
                 <field name="name" />
+                <field name="court_ids" widget="many2many_tags" />
                 <field name="state" />
             </tree>
         </field>
