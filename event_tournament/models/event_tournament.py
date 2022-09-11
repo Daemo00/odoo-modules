@@ -292,17 +292,24 @@ class EventTournament(models.Model):
         return courts
 
     def get_match_tuples(self):
-        if self.match_teams_nbr < 1:
-            raise UserError(
-                _(
-                    "Tournament {tourn_name}:\n"
-                    "At least 1 team per match is required "
-                    "for matches generation."
-                ).format(tourn_name=self.display_name)
+        all_tournaments = self | self.get_children()
+        all_tournaments_matches = dict.fromkeys(all_tournaments)
+        for tournament in all_tournaments:
+            if tournament.match_teams_nbr < 1:
+                raise UserError(
+                    _(
+                        "Tournament {tourn_name}:\n"
+                        "At least 1 team per match is required "
+                        "for matches generation."
+                    ).format(tourn_name=tournament.display_name)
+                )
+            all_tournaments_matches[tournament] = itertools.combinations(
+                tournament.team_ids, tournament.match_teams_nbr
             )
-        matches_teams = list(
-            itertools.combinations(self.team_ids, self.match_teams_nbr)
-        )
+
+        matches_by_index = itertools.zip_longest(*all_tournaments_matches.values())
+        flat_matches = itertools.chain.from_iterable(matches_by_index)
+        matches_teams = list(filter(None, flat_matches))
         return matches_teams
 
     def get_max_min_start(self, match_duration):
