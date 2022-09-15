@@ -14,6 +14,10 @@ class EventRegistration(models.Model):
         column1="team_id",
         column2="component_id",
     )
+    teams_number = fields.Integer(
+        compute="_compute_teams_number",
+        store=True,
+    )
     points_done = fields.Float(compute="_compute_teams_points", store=True)
     points_taken = fields.Float(compute="_compute_teams_points", store=True)
     points_ratio = fields.Float(compute="_compute_teams_points", store=True)
@@ -34,6 +38,13 @@ class EventRegistration(models.Model):
         readonly=True,
         default=lambda self: fields.Datetime.now(),
     )
+
+    @api.depends(
+        "tournament_team_ids",
+    )
+    def _compute_teams_number(self):
+        for component in self:
+            component.teams_number = len(component.tournament_team_ids)
 
     @api.onchange("partner_id")
     def _onchange_partner_id(self):
