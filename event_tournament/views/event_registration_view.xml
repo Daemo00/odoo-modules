@@ -34,6 +34,7 @@
                 <field name="name" />
                 <field name="is_fipav" />
                 <field name="tournament_team_ids" widget="many2many_tags" />
+                <field name="teams_number" />
             </tree>
         </field>
     </record>
