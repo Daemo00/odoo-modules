@@ -5,7 +5,6 @@ import random
 from datetime import timedelta
 
 from more_itertools import grouper
-
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools import logging
