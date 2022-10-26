@@ -10,23 +10,23 @@
                 <page name="tournaments" string="Tournaments">
                     <group>
                         <field
-                            name="tournament_ids"
-                            context="{'default_event_id': active_id}"
-                        >
+              name="tournament_ids"
+              context="{'default_event_id': active_id}"
+            >
                             <tree>
                                 <button
-                                    name="open_form_current"
-                                    type="object"
-                                    string="Open full-screen"
-                                    icon="fa-external-link"
-                                />
+                  name="open_form_current"
+                  type="object"
+                  string="Open full-screen"
+                  icon="fa-external-link"
+                />
                                 <field name="name" />
                             </tree>
                         </field>
                         <field
-                            name="court_ids"
-                            context="{'default_event_id': active_id}"
-                        />
+              name="court_ids"
+              context="{'default_event_id': active_id}"
+            />
                     </group>
                 </page>
             </notebook>

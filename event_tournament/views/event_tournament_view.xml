@@ -2,10 +2,10 @@
 <!-- License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
 <odoo>
     <menuitem
-        id="event_tournament_root_menu"
-        name="Tournaments"
-        parent="event.event_main_menu"
-    />
+    id="event_tournament_root_menu"
+    name="Tournaments"
+    parent="event.event_main_menu"
+  />
     <record id="event_tournament_view_form" model="ir.ui.view">
         <field name="name">event.tournament form view</field>
         <field name="model">event.tournament</field>
@@ -13,58 +13,62 @@
             <form string="Tournament">
                 <header>
                     <button
-                        name="action_draft"
-                        string="Reset to draft"
-                        type="object"
-                        states="started,done"
-                    />
+            name="action_draft"
+            string="Reset to draft"
+            type="object"
+            states="started,done"
+          />
                     <button
-                        name="action_start"
-                        string="Start"
-                        type="object"
-                        states="draft,done"
-                    />
+            name="action_start"
+            string="Start"
+            type="object"
+            states="draft,done"
+          />
                     <button
-                        name="action_done"
-                        string="Done"
-                        type="object"
-                        states="draft,started"
-                    />
+            name="action_done"
+            string="Done"
+            type="object"
+            states="draft,started"
+          />
                     <field name="state" widget="statusbar" />
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button
-                            name="action_view_matches"
-                            type="object"
-                            class="oe_stat_button"
-                            icon="fa-trophy"
-                        >
+              name="action_view_matches"
+              type="object"
+              class="oe_stat_button"
+              icon="fa-trophy"
+            >
                             <field
-                                name="match_count"
-                                widget="statinfo"
-                                string="Matches"
-                            />
+                name="match_count"
+                widget="statinfo"
+                string="Matches"
+              />
                         </button>
                         <button
-                            name="action_view_teams"
-                            type="object"
-                            class="oe_stat_button"
-                            icon="fa-users"
-                        >
-                            <field name="team_count" widget="statinfo" string="Teams" />
+              name="action_view_teams"
+              type="object"
+              class="oe_stat_button"
+              icon="fa-users"
+            >
+                            <field
+                name="team_count"
+                widget="statinfo"
+                string="Teams"
+              />
                         </button>
                         <button
-                            name="%(event_tournament.act_event_registration_from_tournament)d"
-                            type="action"
-                            class="oe_stat_button"
-                            icon="fa-user"
-                        >
+              name="%(event_tournament.act_event_registration_from_tournament)d"
+              type="action"
+              class="oe_stat_button"
+              icon="fa-user"
+            >
                             <field
-                                name="component_count"
-                                widget="statinfo"
-                                string="Components"
-                            />
+                name="component_count"
+                widget="statinfo"
+                string="Components"
+              />
                         </button>
                     </div>
                     <group>
@@ -73,24 +77,24 @@
                         <label for="start_datetime" string="Date" />
                         <div class="o_row">
                             <field
-                                name="start_datetime"
-                                widget="daterange"
-                                nolabel="1"
-                                class="oe_inline"
-                                options="{'related_end_date': 'end_datetime'}"
-                            />
+                name="start_datetime"
+                widget="daterange"
+                nolabel="1"
+                class="oe_inline"
+                options="{'related_end_date': 'end_datetime'}"
+              />
                             <i
-                                class="fa fa-long-arrow-right mx-2"
-                                aria-label="Arrow icon"
-                                title="Arrow"
-                            />
+                class="fa fa-long-arrow-right mx-2"
+                aria-label="Arrow icon"
+                title="Arrow"
+              />
                             <field
-                                name="end_datetime"
-                                widget="daterange"
-                                nolabel="1"
-                                class="oe_inline"
-                                options="{'related_start_date': 'start_datetime'}"
-                            />
+                name="end_datetime"
+                widget="daterange"
+                nolabel="1"
+                class="oe_inline"
+                options="{'related_start_date': 'start_datetime'}"
+              />
                         </div>
                     </group>
                     <notebook>
@@ -101,52 +105,55 @@
                                 <field name="min_components_female" />
                                 <field name="min_components_male" />
                                 <button
-                                    name="action_check_rules"
-                                    type="object"
-                                    string="Check"
-                                />
+                  name="action_check_rules"
+                  type="object"
+                  string="Check"
+                />
                             </group>
                             <group name="match_rules" string="Match rules">
                                 <p>Points are computed only on done matches.</p>
                                 <field name="match_mode_id" />
                                 <button
-                                    name="recompute_matches_points"
-                                    type="object"
-                                    string="Recompute points"
-                                />
+                  name="recompute_matches_points"
+                  type="object"
+                  string="Recompute points"
+                />
                             </group>
                         </page>
                         <page name="teams" string="Teams">
                             <group>
                                 <button
-                                    name="generate_view_teams"
-                                    type="object"
-                                    string="Generate teams"
-                                />
+                  name="generate_view_teams"
+                  type="object"
+                  string="Generate teams"
+                />
                                 <field name="team_count_estimated" />
                             </group>
                         </page>
                         <page name="matches" string="Matches">
                             <group>
                                 <field
-                                    name="match_warm_up_duration"
-                                    widget="float_time"
-                                />
-                                <field name="match_duration" widget="float_time" />
+                  name="match_warm_up_duration"
+                  widget="float_time"
+                />
+                                <field
+                  name="match_duration"
+                  widget="float_time"
+                />
                                 <field name="match_teams_nbr" />
                                 <field name="match_count_estimated" />
                                 <field
-                                    name="court_ids"
-                                    domain="[('event_id', '=', event_id)]"
-                                    context="{'default_event_id': event_id, 'default_time_availability_start': start_datetime, 'default_time_availability_end': end_datetime,}"
-                                />
+                  name="court_ids"
+                  domain="[('event_id', '=', event_id)]"
+                  context="{'default_event_id': event_id, 'default_time_availability_start': start_datetime, 'default_time_availability_end': end_datetime,}"
+                />
                                 <field name="randomize_matches_generation" />
                                 <field name="reset_matches_before_generation" />
                                 <button
-                                    name="generate_view_matches"
-                                    type="object"
-                                    string="Generate matches"
-                                />
+                  name="generate_view_matches"
+                  type="object"
+                  string="Generate matches"
+                />
                             </group>
                         </page>
                         <page name="inheritance" string="Inheritance">
@@ -157,9 +164,9 @@
                         </page>
                         <page name="notes" string="Notes">
                             <field
-                                name="notes"
-                                placeholder="Additional information..."
-                            />
+                name="notes"
+                placeholder="Additional information..."
+              />
                         </page>
                     </notebook>
                 </sheet>
@@ -184,10 +191,10 @@
             <search>
                 <field name="name" />
                 <filter
-                    string="Event"
-                    name="event_id"
-                    context="{'group_by':'event_id'}"
-                />
+          string="Event"
+          name="event_id"
+          context="{'group_by':'event_id'}"
+        />
             </search>
         </field>
     </record>
@@ -196,8 +203,8 @@
         <field name="res_model">event.tournament</field>
     </record>
     <menuitem
-        id="event_tournament_menu"
-        parent="event_tournament_root_menu"
-        action="event_tournament_action"
-    />
+    id="event_tournament_menu"
+    parent="event_tournament_root_menu"
+    action="event_tournament_action"
+  />
 </odoo>
