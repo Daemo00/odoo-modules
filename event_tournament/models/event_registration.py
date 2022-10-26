@@ -29,10 +29,14 @@ class EventRegistration(models.Model):
     )
     mobile = fields.Char()
     is_fipav = fields.Boolean(string="Is FIPAV")
+    date_open = fields.Datetime(
+        string="Registration Date",
+        readonly=True,
+        default=lambda self: fields.Datetime.now(),
+    )
 
     @api.onchange("partner_id")
     def _onchange_partner_id(self):
-        res = super()._onchange_partner_id()
         if self.partner_id:
             contact_id = self.partner_id.address_get().get("contact", False)
             if contact_id:
@@ -40,7 +44,6 @@ class EventRegistration(models.Model):
                 self.gender = contact.gender or self.gender
                 self.birthdate_date = contact.birthdate_date or self.birthdate_date
                 self.mobile = contact.mobile or self.mobile
-        return res
 
     @api.depends(
         "tournament_team_ids.tournament_id",
