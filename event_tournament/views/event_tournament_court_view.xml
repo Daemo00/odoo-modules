@@ -10,27 +10,30 @@
                     <group>
                         <field name="event_id" />
                         <field name="name" />
-                        <label for="time_availability_start" string="Availability" />
+                        <label
+              for="time_availability_start"
+              string="Availability"
+            />
                         <div class="o_row">
                             <field
-                                name="time_availability_start"
-                                widget="daterange"
-                                nolabel="1"
-                                class="oe_inline"
-                                options="{'related_end_date': 'time_availability_end'}"
-                            />
+                name="time_availability_start"
+                widget="daterange"
+                nolabel="1"
+                class="oe_inline"
+                options="{'related_end_date': 'time_availability_end'}"
+              />
                             <i
-                                class="fa fa-long-arrow-right mx-2"
-                                aria-label="Arrow icon"
-                                title="Arrow"
-                            />
+                class="fa fa-long-arrow-right mx-2"
+                aria-label="Arrow icon"
+                title="Arrow"
+              />
                             <field
-                                name="time_availability_end"
-                                widget="daterange"
-                                nolabel="1"
-                                class="oe_inline"
-                                options="{'related_start_date': 'time_availability_start'}"
-                            />
+                name="time_availability_end"
+                widget="daterange"
+                nolabel="1"
+                class="oe_inline"
+                options="{'related_start_date': 'time_availability_start'}"
+              />
                         </div>
                     </group>
                 </sheet>
@@ -55,8 +58,8 @@
         <field name="view_mode">tree,form</field>
     </record>
     <menuitem
-        id="event_tournament_court_menu"
-        parent="event_tournament_root_menu"
-        action="event_tournament_court_action"
-    />
+    id="event_tournament_court_menu"
+    parent="event_tournament_root_menu"
+    action="event_tournament_court_action"
+  />
 </odoo>
