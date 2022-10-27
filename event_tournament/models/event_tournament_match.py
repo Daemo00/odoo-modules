@@ -366,9 +366,6 @@ class EventTournamentMatch(models.Model):
             teams = match.line_ids.mapped("team_id")
             teams_names = teams.mapped("name")
             match_name = " vs ".join(teams_names)
-            match_name += _(" (Court {court_name})").format(
-                court_name=match.court_id.display_name
-            )
             res.append((match.id, match_name))
         return res
 
