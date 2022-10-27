@@ -1,0 +1,31 @@
+<!-- Copyright 2020 Simone Rubino <daemo00@gmail.com> -->
+<!-- License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <template id="matches_schedule_tournament">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t
+          t-call="event_tournament.matches_schedule_tournament_document"
+        />
+            </t>
+        </t>
+    </template>
+    <template id="matches_schedule_tournament_document">
+        <t t-call="web.internal_layout">
+            <t t-set="matches" t-value="o.match_ids" />
+            <h1>
+                <span t-esc="o.name" />: <span t-esc="len(matches)" /> matches
+            </h1>
+            <t t-call="event_tournament.matches_schedule_table" />
+        </t>
+    </template>
+    <record id="matches_schedule_tournament_action" model="ir.actions.report">
+        <field
+      name="report_name"
+    >event_tournament.matches_schedule_tournament</field>
+        <field name="model">event.tournament</field>
+        <field name="name">Matches schedule</field>
+        <field name="binding_model_id" ref="model_event_tournament" />
+        <field name="binding_type">report</field>
+    </record>
+</odoo>

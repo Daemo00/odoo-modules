@@ -17,6 +17,9 @@
     "data": [
         "security/ir.model.access.csv",
         "data/event_tournament_match_mode_data.xml",
+        "templates/report_matches_schedule.xml",
+        "templates/report_matches_schedule_component.xml",
+        "templates/report_matches_schedule_tournament.xml",
         "views/event_event_view.xml",
         "views/event_registration_view.xml",
         "views/event_tournament_view.xml",
@@ -24,7 +27,6 @@
         "views/event_tournament_match_view.xml",
         "views/event_tournament_mode_view.xml",
         "views/event_tournament_team_view.xml",
-        "views/report_matches_schedule.xml",
         "wizards/import_csv_bv4w_views.xml",
     ],
 }
