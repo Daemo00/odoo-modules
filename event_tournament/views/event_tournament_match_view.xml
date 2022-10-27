@@ -71,11 +71,15 @@
                                         <field
                       name="state"
                       widget="state_selection"
+                      class="ms-auto float-end"
                     />
                                         <field name="display_name" />
                                     </strong>
                                     <div class="text-muted">
                                         <field name="tournament_id" />
+                                    </div>
+                                    <div class="text-muted">
+                                        <field name="court_id" />
                                     </div>
                                 </div>
                             </div>
