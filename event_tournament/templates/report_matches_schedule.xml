@@ -2,7 +2,7 @@
 <!-- License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
 <odoo>
     <template id="matches_schedule_table">
-        <t t-set="courts" t-value="matches.mapped('court_id').sorted('name')" />
+        <t t-set="courts" t-value="matches.mapped('court_id').sorted()" />
         <table class="table table-bordered table-striped">
             <thead>
                 <th>Datetime</th>
@@ -32,10 +32,16 @@
             />
                         <td>
                             <t t-if="match">
-                                (<span
-                  t-esc="match.tournament_id.display_name"
-                />) -
-                                <span t-esc="match.display_name" />
+                                <div>
+                                    <strong>
+                                        <span
+                      t-esc="match.tournament_id.display_name"
+                    />
+                                    </strong>
+                                </div>
+                                <div>
+                                    <span t-esc="match.display_name" />
+                                </div>
                             </t>
                         </td>
                     </t>
@@ -60,35 +66,6 @@
         <field name="model">event.tournament.match</field>
         <field name="name">Matches schedule</field>
         <field name="binding_model_id" ref="model_event_tournament_match" />
-        <field name="binding_type">report</field>
-    </record>
-    <!-- Tournament report -->
-    <template id="matches_schedule_tournament">
-        <t t-call="web.html_container">
-            <t t-foreach="docs" t-as="o">
-                <t
-          t-call="event_tournament.matches_schedule_tournament_document"
-        />
-            </t>
-        </t>
-    </template>
-    <template id="matches_schedule_tournament_document">
-        <t t-call="web.internal_layout">
-            <h1>
-                <span t-esc="o.name" />
-            </h1>
-            <t t-call="event_tournament.matches_schedule_table">
-                <t t-set="matches" t-value="o.match_ids" />
-            </t>
-        </t>
-    </template>
-    <record id="matches_schedule_tournament_action" model="ir.actions.report">
-        <field
-      name="report_name"
-    >event_tournament.matches_schedule_tournament</field>
-        <field name="model">event.tournament</field>
-        <field name="name">Matches schedule</field>
-        <field name="binding_model_id" ref="model_event_tournament" />
         <field name="binding_type">report</field>
     </record>
 </odoo>
