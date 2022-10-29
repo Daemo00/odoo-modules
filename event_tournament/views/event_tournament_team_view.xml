@@ -9,16 +9,16 @@
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button
-              name="action_view_matches"
-              type="object"
-              class="oe_stat_button"
-              icon="fa-trophy"
-            >
+                            name="action_view_matches"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-trophy"
+                        >
                             <field
-                name="match_count"
-                widget="statinfo"
-                string="Matches"
-              />
+                                name="match_count"
+                                widget="statinfo"
+                                string="Matches"
+                            />
                         </button>
                     </div>
                     <group>
@@ -27,29 +27,27 @@
                             <field name="tournament_id" />
                             <field name="name" />
                             <field
-                name="component_ids"
-                domain="[('event_id', '=', event_id),('tournament_ids', 'not in', tournament_id)]"
-                context="{'default_event_id': event_id}"
-              >
+                                name="component_ids"
+                                domain="[('event_id', '=', event_id),('tournament_ids', 'not in', tournament_id)]"
+                                context="{'default_event_id': event_id}"
+                            >
                                 <tree>
                                     <field name="name" />
                                 </tree>
                             </field>
                         </group>
                         <group name="results" string="Results">
-                            <p
-                class="text-muted"
-              >Values computed on done matches</p>
+                            <p class="text-muted">Values computed on done matches</p>
                             <field name="matches_points" />
                             <field name="sets_won" />
                             <field name="points_ratio" />
                             <field name="points_done" />
                             <field name="points_taken" />
                             <button
-                name="button_compute_matches_points"
-                type="object"
-                string="Recompute points"
-              />
+                                name="button_compute_matches_points"
+                                type="object"
+                                string="Recompute points"
+                            />
                         </group>
                     </group>
                     <group>
@@ -66,9 +64,7 @@
             <kanban class="o_kanban_mobile">
                 <templates>
                     <t t-name="kanban-box">
-                        <div
-              t-attf-class="oe_kanban_card oe_kanban_global_click"
-            >
+                        <div t-attf-class="oe_kanban_card oe_kanban_global_click">
                             <div class="o_kanban_record_top">
                                 <div class="o_kanban_record_headings">
                                     <strong>
@@ -82,9 +78,9 @@
                             <div class="o_kanban_record_bottom">
                                 <div class="oe_kanban_bottom_left">
                                     <field
-                    name="component_ids"
-                    widget="many2many_tags"
-                  />
+                                        name="component_ids"
+                                        widget="many2many_tags"
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -117,15 +113,15 @@
                 <field name="tournament_id" />
                 <field name="component_ids" />
                 <filter
-          string="Tournament"
-          name="tournament"
-          context="{'group_by':'tournament_id'}"
-        />
+                    string="Tournament"
+                    name="tournament"
+                    context="{'group_by':'tournament_id'}"
+                />
                 <filter
-          string="Event"
-          name="tournament"
-          context="{'group_by':'event_id'}"
-        />
+                    string="Event"
+                    name="tournament"
+                    context="{'group_by':'event_id'}"
+                />
             </search>
         </field>
     </record>
@@ -135,8 +131,8 @@
         <field name="view_mode">tree,kanban,form</field>
     </record>
     <menuitem
-    id="event_tournament_team_menu"
-    parent="event_tournament_root_menu"
-    action="event_tournament_team_action"
-  />
+        id="event_tournament_team_menu"
+        parent="event_tournament_root_menu"
+        action="event_tournament_team_action"
+    />
 </odoo>
