@@ -12,32 +12,28 @@
                 </group>
                 <footer>
                     <button
-            name="import_csv_bv4w"
-            string="Import"
-            type="object"
-            class="btn-primary"
-          />
-                    <button
-            string="Cancel"
-            class="btn-secondary"
-            special="cancel"
-          />
+                        name="import_csv_bv4w"
+                        string="Import"
+                        type="object"
+                        class="btn-primary"
+                    />
+                    <button string="Cancel" class="btn-secondary" special="cancel" />
                 </footer>
             </form>
         </field>
     </record>
     <record
-    id="action_event_tournament_import_csv_bv4w_view_form"
-    model="ir.actions.act_window"
-  >
+        id="action_event_tournament_import_csv_bv4w_view_form"
+        model="ir.actions.act_window"
+    >
         <field name="name">Import CSV BV4W</field>
         <field name="res_model">event.tournament.import_csv_bv4w</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
     </record>
     <menuitem
-    id="menu_event_tournament_import_csv_bv4w_view_form"
-    parent="event_tournament_root_menu"
-    action="action_event_tournament_import_csv_bv4w_view_form"
-  />
+        id="menu_event_tournament_import_csv_bv4w_view_form"
+        parent="event_tournament_root_menu"
+        action="action_event_tournament_import_csv_bv4w_view_form"
+    />
 </odoo>

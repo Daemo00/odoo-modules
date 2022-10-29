@@ -12,31 +12,31 @@
             </thead>
             <tbody>
                 <t
-          t-set="times"
-          t-value="sorted(list(set(matches.mapped('time_scheduled_start'))))"
-        />
+                    t-set="times"
+                    t-value="sorted(list(set(matches.mapped('time_scheduled_start'))))"
+                />
                 <tr t-foreach="times" t-as="time">
                     <t
-            t-set="time_matches"
-            t-value="matches.filtered(lambda m: m.time_scheduled_start == time)"
-          />
+                        t-set="time_matches"
+                        t-value="matches.filtered(lambda m: m.time_scheduled_start == time)"
+                    />
                     <td>
                         <span
-              t-esc="context_timestamp(time).strftime('%d/%m/%Y %H:%M:%S')"
-            />
+                            t-esc="context_timestamp(time).strftime('%d/%m/%Y %H:%M:%S')"
+                        />
                     </td>
                     <t t-foreach="courts" t-as="court">
                         <t
-              t-set="match"
-              t-value="time_matches.filtered(lambda m: m.court_id == court)"
-            />
+                            t-set="match"
+                            t-value="time_matches.filtered(lambda m: m.court_id == court)"
+                        />
                         <td>
                             <t t-if="match">
                                 <div>
                                     <strong>
                                         <span
-                      t-esc="match.tournament_id.display_name"
-                    />
+                                            t-esc="match.tournament_id.display_name"
+                                        />
                                     </strong>
                                 </div>
                                 <div>
@@ -60,9 +60,7 @@
         </t>
     </template>
     <record id="matches_schedule_match_action" model="ir.actions.report">
-        <field
-      name="report_name"
-    >event_tournament.matches_schedule_match</field>
+        <field name="report_name">event_tournament.matches_schedule_match</field>
         <field name="model">event.tournament.match</field>
         <field name="name">Matches schedule</field>
         <field name="binding_model_id" ref="model_event_tournament_match" />
