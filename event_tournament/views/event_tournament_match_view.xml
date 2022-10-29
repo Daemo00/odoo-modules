@@ -8,17 +8,17 @@
             <form string="Match">
                 <header>
                     <button
-            name="action_draft"
-            string="Reset to draft"
-            type="object"
-            states="done"
-          />
+                        name="action_draft"
+                        string="Reset to draft"
+                        type="object"
+                        states="done"
+                    />
                     <button
-            name="action_done"
-            string="Done"
-            type="object"
-            states="draft"
-          />
+                        name="action_done"
+                        string="Done"
+                        type="object"
+                        states="draft"
+                    />
                     <field name="state" widget="statusbar" />
                 </header>
                 <sheet>
@@ -27,15 +27,12 @@
                         <field name="court_id" />
                         <field name="time_scheduled_start" />
                         <field name="time_scheduled_end" />
-                        <field
-              name="line_ids"
-              context="{'default_match_id': id}"
-            >
+                        <field name="line_ids" context="{'default_match_id': id}">
                             <tree editable="bottom">
                                 <field
-                  name="team_id"
-                  domain="[('tournament_id', '=', parent.tournament_id)]"
-                />
+                                    name="team_id"
+                                    domain="[('tournament_id', '=', parent.tournament_id)]"
+                                />
                                 <field name="set_1" />
                                 <field name="set_2" />
                                 <field name="set_3" />
@@ -57,22 +54,20 @@
         <field name="arch" type="xml">
             <kanban class="o_kanban_mobile">
                 <progressbar
-          field="state"
-          colors="{&quot;done&quot;: &quot;success&quot;, &quot;draft&quot;: &quot;danger&quot;}"
-        />
+                    field="state"
+                    colors="{&quot;done&quot;: &quot;success&quot;, &quot;draft&quot;: &quot;danger&quot;}"
+                />
                 <templates>
                     <t t-name="kanban-box">
-                        <div
-              t-attf-class="oe_kanban_card oe_kanban_global_click"
-            >
+                        <div t-attf-class="oe_kanban_card oe_kanban_global_click">
                             <div class="o_kanban_record_top">
                                 <div class="o_kanban_record_headings">
                                     <strong>
                                         <field
-                      name="state"
-                      widget="state_selection"
-                      class="ms-auto float-end"
-                    />
+                                            name="state"
+                                            widget="state_selection"
+                                            class="ms-auto float-end"
+                                        />
                                         <field name="display_name" />
                                     </strong>
                                     <div class="text-muted">
@@ -86,10 +81,10 @@
                             <div class="o_kanban_record_bottom">
                                 <div class="oe_kanban_bottom_left">
                                     <span
-                    class="fa fa-clock-o"
-                    title="Time start"
-                    aria-label="Time start"
-                  />
+                                        class="fa fa-clock-o"
+                                        title="Time start"
+                                        aria-label="Time start"
+                                    />
                                     <field name="time_scheduled_start" />
                                 </div>
                             </div>
@@ -118,10 +113,10 @@
         <field name="model">event.tournament.match</field>
         <field name="arch" type="xml">
             <calendar
-        date_start="time_scheduled_start"
-        date_stop="time_scheduled_end"
-        color="court_id"
-      >
+                date_start="time_scheduled_start"
+                date_stop="time_scheduled_end"
+                color="court_id"
+            >
                 <field name="display_name" />
             </calendar>
         </field>
@@ -134,16 +129,12 @@
                 <field name="tournament_id" />
                 <field name="team_ids" />
                 <field name="component_ids" />
+                <filter string="Court" name="court" context="{'group_by':'court_id'}" />
                 <filter
-          string="Court"
-          name="court"
-          context="{'group_by':'court_id'}"
-        />
-                <filter
-          string="Tournament"
-          name="tournament"
-          context="{'group_by':'tournament_id'}"
-        />
+                    string="Tournament"
+                    name="tournament"
+                    context="{'group_by':'tournament_id'}"
+                />
             </search>
         </field>
     </record>
@@ -153,8 +144,8 @@
         <field name="view_mode">kanban,calendar,tree,form</field>
     </record>
     <menuitem
-    id="event_tournament_match_menu"
-    parent="event_tournament_root_menu"
-    action="event_tournament_match_action"
-  />
+        id="event_tournament_match_menu"
+        parent="event_tournament_root_menu"
+        action="event_tournament_match_action"
+    />
 </odoo>
