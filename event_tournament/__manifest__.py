@@ -6,8 +6,8 @@
     "summary": "Implement tournaments in Odoo events",
     "version": "16.0.1.0.0",
     "license": "AGPL-3",
-    "author": "Daemo00's developments",
-    "website": "https://github.com/Daemo00/odoo-modules" "/tree/15.0/event_tournament",
+    "author": "Simone Rubino",
+    "website": "https://github.com/Daemo00/odoo-modules" "/tree/16.0/event_tournament",
     "depends": ["event", "partner_contact_birthdate", "partner_contact_gender"],
     "external_dependencies": {
         "python": [
