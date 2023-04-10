@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  ~ Copyright 2022 Simone Rubino <daemo00@gmail.com>
+  ~ License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+  -->
+<odoo>
+    <record id="split_account_view_form" model="ir.ui.view">
+        <field name="name">Split Account form view</field>
+        <field name="model">account_partner_split.account</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                            name="action_view_report"
+                            type="object"
+                            class="oe_stat_button"
+                            string="Graph"
+                            icon="fa-line-chart"
+                        />
+                    </div>
+                    <group>
+                        <field name="name" />
+                    </group>
+                    <notebook>
+                        <page name="lines" string="Lines">
+                            <field
+                                name="line_ids"
+                                context="{
+                                    'invisible_account': True,
+                                }"
+                            />
+                        </page>
+                        <page name="config" string="Configuration">
+                            <group>
+                                <group>
+                                    <field name="partner_split_weight_ids" />
+                                </group>
+                            </group>
+                        </page>
+                        <page name="payment" string="Payments">
+                            <group>
+                                <group>
+                                    <field name="partner_payment_ids" />
+                                </group>
+                                <group>
+                                    <button
+                                        name="generate_payment_proposals"
+                                        type="object"
+                                        string="Propose payments"
+                                    />
+                                </group>
+                            </group>
+                        </page>
+                        <page name="total" string="Total">
+                            <group>
+                                <group>
+                                    <field
+                                        name="total_partner_split_ids"
+                                        context="{
+                                           'tree_view_ref': 'account_partner_split.partner_total_split_view_tree_editable',
+                                       }"
+                                    />
+                                </group>
+                                <group>
+                                    <field name="total_amount" />
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" />
+                    <field name="activity_ids" />
+                    <field name="message_ids" />
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="split_account_view_tree" model="ir.ui.view">
+        <field name="name">Split Account tree view</field>
+        <field name="model">account_partner_split.account</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" />
+                <field
+                    name="total_partner_split_ids"
+                    widget="many2many_tags"
+                    optional="hide"
+                />
+                <field name="total_amount" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="split_account_action" model="ir.actions.act_window">
+        <field name="name">Split Accounts</field>
+        <field name="res_model">account_partner_split.account</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        id="split_account_menu_accounts"
+        parent="account_partner_split.split_account_menu"
+        action="split_account_action"
+    />
+</odoo>
