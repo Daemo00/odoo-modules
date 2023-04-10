@@ -1,0 +1,10 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+manage_account_partner_split_partner_pay_split,Manage Partner pay split,model_account_partner_split_partner_pay_split,base.group_user,1,1,1,1
+manage_account_partner_split_partner_payment,Manage Partner payment,model_account_partner_split_partner_payment,base.group_user,1,1,1,1
+manage_account_partner_split_partner_total_split,Manage Partner total split,model_account_partner_split_partner_total_split,base.group_user,1,1,1,1
+manage_account_partner_split_partner_split_weight,Manage Partner split,model_account_partner_split_partner_split_weight,base.group_user,1,1,1,1
+manage_account_partner_split_account,Manage Split Account,model_account_partner_split_account,base.group_user,1,1,1,1
+manage_account_partner_split_account_line,Manage Split Account Line,model_account_partner_split_account_line,base.group_user,1,1,1,1
+manage_account_partner_split_account_line_tag,Manage Split Account Line Tag,model_account_partner_split_account_line_tag,base.group_user,1,1,1,1
+manage_account_partner_split_import_conti,Manage Import Conti,model_account_partner_split_import_conti,base.group_user,1,1,1,1
+manage_account_partner_split_export_csv,Manage Export CSV,model_account_partner_split_export_csv,base.group_user,1,1,1,1

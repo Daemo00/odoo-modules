@@ -1,0 +1,5 @@
+Data operazione,Data valuta,Tipologia,Descrizione operazione, Importo EUR, Saldo progressivo EUR,Partner,,Partner 1,Partner 2,Progressivo
+16/12/2019,12/12/2019,Altre entrate,Accredito comune,5000,5000,,,2500,2500,5000
+,08/02/2020,Stipendi e pensione,Stipendio 1,1000,6000,Partner 1,,3500,2500,6000
+24/02/2020,24/02/2020,Bonifici in uscita,Spesa comune,-2000,4000,,,2500,1500,4000
+16/12/2019,16/12/2019,Stipendi e pensione,Stipendio 2,3000,7000,Partner 2,,2500,4500,7000

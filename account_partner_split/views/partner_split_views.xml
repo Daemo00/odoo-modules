@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  ~ Copyright 2022 Simone Rubino <daemo00@gmail.com>
+  ~ License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+  -->
+<odoo>
+    <record id="partner_split_view_form" model="ir.ui.view">
+        <field name="name">Split Partner form view</field>
+        <field name="model">account_partner_split.partner_split_weight</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="partner_id" />
+                        <field name="weight" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="partner_split_view_kanban" model="ir.ui.view">
+        <field name="name">Split Partner kanban view</field>
+        <field name="model">account_partner_split.partner_split_weight</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-1">
+                                    <a
+                                        t-if="widget.editable"
+                                        type="edit"
+                                        class="fa fa-edit"
+                                    />
+                                </div>
+                                <div class="col-7">
+                                    <field name="partner_id" />
+                                </div>
+                                <div class="col-3">
+                                    <strong class="float-start">Weight: </strong>
+                                    <field class="float-end" name="weight" />
+                                </div>
+                                <div class="col-1">
+                                    <a
+                                        t-if="widget.editable"
+                                        type="delete"
+                                        class="fa fa-trash-o"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="partner_split_view_tree" model="ir.ui.view">
+        <field name="name">Split Partner tree view</field>
+        <field name="model">account_partner_split.partner_split_weight</field>
+        <field name="arch" type="xml">
+            <tree editable="top">
+                <field name="partner_id" />
+                <field name="weight" />
+            </tree>
+        </field>
+    </record>
+</odoo>

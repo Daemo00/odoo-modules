@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  ~ Copyright 2022 Simone Rubino <daemo00@gmail.com>
+  ~ License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+  -->
+<odoo>
+    <record id="split_account_line_view_form" model="ir.ui.view">
+        <field name="name">Split Account Line form view</field>
+        <field name="model">account_partner_split.account.line</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" />
+                        </group>
+                    <group />
+                        <notebook>
+                            <page name="payment" string="Payment">
+                                <group>
+                                    <group>
+                                        <field name="paying_partner_split_ids" />
+                                    </group>
+                                    <group>
+                                        <field name="paid_amount" />
+                                    </group>
+                                </group>
+                            </page>
+                            <page name="split" string="Split">
+                                <field name="partner_split_weight_ids" />
+                            </page>
+                            <page name="other" string="Other info">
+                                <group>
+                                    <field name="invoice_date" />
+                                    <field name="tag_ids" widget="many2many_tags" />
+                                    <field name="partner_id" />
+                                    <field name="is_payment" />
+                                    <field
+                                        name="split_account_id"
+                                        invisible="context.get('invisible_account', False)"
+                                    />
+                                    <field name="to_pay_amount" />
+                                    <field name="amount" />
+                                </group>
+                            </page>
+                            <page name="total" string="Total">
+                                <field
+                                    name="total_partner_split_ids"
+                                    context="{
+                                       'tree_view_ref': 'account_partner_split.partner_total_split_view_tree_editable',
+                                   }"
+                                />
+                            </page>
+                        </notebook>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="split_account_line_view_kanban" model="ir.ui.view">
+        <field name="name">Split Account Line kanban view</field>
+        <field name="model">account_partner_split.account.line</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-1">
+                                    <a
+                                        t-if="widget.editable"
+                                        type="edit"
+                                        class="fa fa-edit"
+                                    />
+                                </div>
+                                <div class="col-6">
+                                    <field name="name" />
+                                </div>
+                                <div class="col-4">
+                                    <strong class="float-start">Paid: </strong>
+                                    <field class="float-end" name="amount" />
+                                </div>
+                                <div class="col-1">
+                                    <a
+                                        t-if="widget.editable"
+                                        type="delete"
+                                        class="fa fa-trash-o"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="split_account_line_view_tree" model="ir.ui.view">
+        <field name="name">Split Account Line tree view</field>
+        <field name="model">account_partner_split.account.line</field>
+        <field name="arch" type="xml">
+            <tree>
+                <button
+                    name="get_formview_action"
+                    type="object"
+                    icon="fa-external-link"
+                    string="Open"
+                />
+                <field name="split_account_id" optional="hide" />
+                <field name="accounting_date" optional="hide" />
+                <field name="invoice_date" />
+                <field name="name" />
+                <field name="amount" />
+                <field name="currency_id" groups="base.group_multi_currency" />
+                <field
+                    name="paying_partner_split_ids"
+                    widget="many2many_tags"
+                    optional="hide"
+                />
+                <field
+                    name="total_partner_split_ids"
+                    widget="many2many_tags"
+                    optional="hide"
+                />
+                <field name="partner_id" optional="hide" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="split_account_line_action" model="ir.actions.act_window">
+        <field name="name">Split Accounts Lines</field>
+        <field name="res_model">account_partner_split.account.line</field>
+        <field name="view_mode">tree,form,graph,pivot,kanban</field>
+    </record>
+
+    <menuitem
+        id="split_account_menu_accounts_lines"
+        parent="account_partner_split.split_account_menu"
+        action="split_account_line_action"
+    />
+</odoo>
