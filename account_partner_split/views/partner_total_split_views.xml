@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  ~ Copyright 2022 Simone Rubino <daemo00@gmail.com>
+  ~ License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+  -->
+<odoo>
+    <record id="partner_total_split_view_form" model="ir.ui.view">
+        <field name="name">Split total Partner form view</field>
+        <field name="model">account_partner_split.partner_total_split</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="partner_id" />
+                        <field name="amount" />
+                        <field name="line_split_account_id" />
+                        <field name="line_invoice_date" />
+                        <field name="split_account_line_id" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="partner_total_split_view_kanban" model="ir.ui.view">
+        <field name="name">Split total Partner kanban view</field>
+        <field name="model">account_partner_split.partner_total_split</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-1">
+                                    <a
+                                        t-if="widget.editable"
+                                        type="edit"
+                                        class="fa fa-edit"
+                                    />
+                                </div>
+                                <div class="col-6">
+                                    <field name="partner_id" />
+                                </div>
+                                <div class="col-4">
+                                    <strong class="float-start">Amount: </strong>
+                                    <field class="float-end" name="amount" />
+                                </div>
+                                <div class="col-1">
+                                    <a
+                                        t-if="widget.editable"
+                                        type="delete"
+                                        class="fa fa-trash-o"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="partner_total_split_view_tree" model="ir.ui.view">
+        <field name="name">Split total Partner tree view</field>
+        <field name="model">account_partner_split.partner_total_split</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="line_split_account_id" />
+                <field name="line_invoice_date" />
+                <field name="split_account_line_id" />
+                <field name="partner_id" />
+                <field name="credit_amount" optional="hide" sum="Credit" />
+                <field name="debit_amount" optional="hide" sum="Debit" />
+                <field name="amount" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="partner_total_split_view_graph" model="ir.ui.view">
+        <field name="name">Split total Partner graph view</field>
+        <field name="model">account_partner_split.partner_total_split</field>
+        <field name="arch" type="xml">
+            <graph type="line" stacked="False" cumulated="True" disable_linking="False">
+                <field name="line_invoice_date" interval="day" />
+                <field name="partner_id" />
+                <field name="amount" type="measure" />
+            </graph>
+        </field>
+    </record>
+
+    <record id="partner_total_split_view_search" model="ir.ui.view">
+        <field name="name">Split total Partner search view</field>
+        <field name="model">account_partner_split.partner_total_split</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="line_split_account_id" />
+                <field name="line_invoice_date" />
+                <field name="split_account_line_id" />
+                <field name="partner_id" />
+                <field name="amount" />
+                <group expand="0" string="Group By">
+                    <filter
+                        name="group_by_line_split_account_id"
+                        context="{'group_by':'line_split_account_id'}"
+                    />
+                    <filter
+                        name="group_by_line_invoice_date"
+                        context="{'group_by':'line_invoice_date:day'}"
+                    />
+                    <filter
+                        name="group_by_split_account_line_id"
+                        context="{'group_by':'split_account_line_id'}"
+                    />
+                    <filter
+                        name="group_by_partner_id"
+                        context="{'group_by':'partner_id'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="partner_total_split_view_tree_editable" model="ir.ui.view">
+        <field name="name">Split total Partner tree editable view</field>
+        <field name="model">account_partner_split.partner_total_split</field>
+        <field name="priority">32</field>
+        <field name="arch" type="xml">
+            <tree editable="top">
+                <field name="partner_id" />
+                <field name="credit_amount" optional="hide" sum="Credit" />
+                <field name="debit_amount" optional="hide" sum="Debit" />
+                <field name="amount" sum="Total" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="partner_total_split_action" model="ir.actions.act_window">
+        <field name="name">Split Accounts Total Lines</field>
+        <field name="res_model">account_partner_split.partner_total_split</field>
+        <field name="view_mode">graph,tree,form,pivot,kanban</field>
+    </record>
+
+    <menuitem
+        id="partner_total_split_menu"
+        parent="account_partner_split.split_account_menu"
+        action="partner_total_split_action"
+    />
+</odoo>
