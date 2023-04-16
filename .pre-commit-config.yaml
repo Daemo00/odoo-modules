@@ -37,8 +37,9 @@ repos:
     hooks:
       # update the NOT INSTALLABLE ADDONS section above
       - id: oca-update-pre-commit-excluded-addons
-      - id: oca-fix-manifest-website
-        args: ["https://github.com/Daemo00/odoo-modules"]
+  # Disable until it allows per-module link
+  #      - id: oca-fix-manifest-website
+  #        args: ["https://github.com/Daemo00/odoo-modules"]
   - repo: https://github.com/myint/autoflake
     rev: v1.6.1
     hooks:
