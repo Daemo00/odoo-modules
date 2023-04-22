@@ -358,7 +358,7 @@ class EventTournament(models.Model):
         return match_duration
 
     def reset_matches(self, matches_teams):
-        clean_matches_teams = list()
+        clean_matches_teams = []
         matches = self.get_children().mapped("match_ids")
         done_matches = matches.filtered(lambda m: m.state == "done")
         for match_teams in matches_teams:
@@ -476,7 +476,7 @@ class EventTournament(models.Model):
                 components_ids, self.min_components, fillvalue=components_fill_value
             )
 
-        teams_values = list()
+        teams_values = []
         for team_index, component_tuple in enumerate(components_tuples):
             if any(
                 component_id == components_fill_value

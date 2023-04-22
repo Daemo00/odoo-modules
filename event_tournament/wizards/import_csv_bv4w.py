@@ -66,7 +66,7 @@ COLUMNS = [
 def parse_team_line(values: list):
     # Strip all the values!
     values = list(map(str.strip, values))
-    res = dict()
+    res = {}
     common_fields = ["date_open", "email_cap", "email", "tournament", "team_name"]
     common_values = values[: len(common_fields)]
     res.update(dict(zip(common_fields, common_values)))
@@ -82,7 +82,7 @@ def parse_team_line(values: list):
     if res["tournament"].startswith("4x4"):
         player_fields += ["is_fipav"]
 
-    players = list()
+    players = []
     captain_fields = player_fields + ["mobile"]
     captain_values = values[: len(captain_fields)]
     players.append(dict(zip(captain_fields, captain_values)))
@@ -115,9 +115,7 @@ class ImportCSVBV4W(models.TransientModel):
         content = base64.decodebytes(self.data).decode()
         csv_lines = content.splitlines()
         csv_lines = list(csv.reader(csv_lines))
-        team_lines = list()
-        for line in csv_lines[1:]:
-            team_lines.append(parse_team_line(line))
+        team_lines = [parse_team_line(line) for line in csv_lines[1:]]
 
         team_model = self.env["event.tournament.team"]
         for team_line in team_lines:
@@ -142,7 +140,7 @@ class ImportCSVBV4W(models.TransientModel):
 
         registrations = tournament.event_id.registration_ids
 
-        players_values = list()
+        players_values = []
         date_open = datetime.strptime(
             team_dict["date_open"], "%Y/%m/%d %H:%M:%S %p EET"
         )

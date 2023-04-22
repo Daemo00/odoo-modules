@@ -82,10 +82,11 @@ class EventTournamentMatch(models.Model):
     def _inverse_teams(self):
         for match in self:
             team_lines = match.line_ids.mapped("team_id")
-            lines_vals = list()
-            for team in match.team_ids:
-                if team not in team_lines:
-                    lines_vals.append({"match_id": match.id, "team_id": team.id})
+            lines_vals = [
+                {"match_id": match.id, "team_id": team.id}
+                for team in match.team_ids
+                if team not in team_lines
+            ]
             match.line_ids.create(lines_vals)
 
     @api.depends("team_ids.component_ids")
@@ -156,7 +157,7 @@ class EventTournamentMatch(models.Model):
 
     def contemporary_match_domain(self):
         self.ensure_one()
-        domain = list()
+        domain = []
         if self.time_scheduled_start:
             domain = expression.AND(
                 [
@@ -351,7 +352,7 @@ class EventTournamentMatch(models.Model):
         for team, sets_won in sets_won_dict.items():
             if sets_won == max_sets_won:
                 winner_teams |= team
-        win_vals = dict({"time_done": fields.Datetime.now(), "state": "done"})
+        win_vals = {"time_done": fields.Datetime.now(), "state": "done"}
 
         winner_id = False
         if len(winner_teams) == 1:
@@ -361,7 +362,7 @@ class EventTournamentMatch(models.Model):
         return self.update(win_vals)
 
     def name_get(self):
-        res = list()
+        res = []
         for match in self:
             teams = match.line_ids.mapped("team_id")
             teams_names = teams.mapped("name")
@@ -383,7 +384,7 @@ class EventTournamentMatch(models.Model):
         points_done = Counter()
         points_taken = Counter()
         for set_field in set_fields:
-            set_points = dict()
+            set_points = {}
             for line in self.line_ids:
                 set_points[line.team_id] = getattr(line, set_field)
             if not sum(set_points.values()):
