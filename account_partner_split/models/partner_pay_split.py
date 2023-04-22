@@ -43,7 +43,7 @@ class PartnerPaySplit(models.Model):
 
     def name_get(self):
         name_template = _("{partner} pays {amount}")
-        res = list()
+        res = []
         for partner_split in self:
             currency = partner_split.currency_id
             if currency:

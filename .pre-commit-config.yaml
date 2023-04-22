@@ -137,3 +137,8 @@ repos:
       - id: pylint_odoo
         args:
           - --rcfile=.pylintrc-mandatory
+  - repo: https://github.com/dosisod/refurb
+    rev: v1.15.0
+    hooks:
+      - id: refurb
+        name: Refurb

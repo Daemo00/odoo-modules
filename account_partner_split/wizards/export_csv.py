@@ -38,12 +38,12 @@ class ExportCSV(models.TransientModel):
             "Partner",
         ]
 
-        csv_lines = list()
+        csv_lines = []
         for line in account.line_ids:
             csv_line = {
                 "Accounting Date": format_date(self.env, line.accounting_date),
                 "Invoice Date": format_date(self.env, line.invoice_date),
-                "Description": line.name,
+                "Description": line.name or "",
                 "Category": ", ".join(line.tag_ids.mapped("name")),
             }
             totals = line.total_partner_split_ids
