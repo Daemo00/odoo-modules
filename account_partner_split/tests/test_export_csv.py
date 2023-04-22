@@ -52,6 +52,7 @@ class TestImportCSV(TestCommon):
         expense.tag_ids = tags
 
         partner_expense = self._add_expense(account, 100)
+        partner_expense.invoice_date = False
         self._add_payment(partner_expense, partner, 100)
 
         # Act
