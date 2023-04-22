@@ -34,6 +34,7 @@
                                         t-if="widget.editable"
                                         type="edit"
                                         class="fa fa-edit"
+                                        title="Edit"
                                     />
                                 </div>
                                 <div class="col-8">
@@ -57,6 +58,7 @@
                                         t-if="widget.editable"
                                         type="delete"
                                         class="fa fa-trash-o"
+                                        title="Delete"
                                     />
                                 </div>
                             </div>
