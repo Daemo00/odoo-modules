@@ -104,7 +104,7 @@ class AccountLine(models.Model):
     def _get_amount_by_partner(self):
         """Group amounts owed by partner."""
         self.ensure_one()
-        amount_by_partner = dict()
+        amount_by_partner = {}
 
         # Subtract owed amounts
         amount_to_share = self._get_amount_to_share()

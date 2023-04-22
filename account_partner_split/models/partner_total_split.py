@@ -85,7 +85,7 @@ class PartnerTotalSplit(models.Model):
 
     def name_get(self):
         name_template = _("{partner} {amount}")
-        res = list()
+        res = []
         for partner_total_split in self:
             currency = partner_total_split.currency_id
             if currency:

@@ -64,7 +64,7 @@ class Account(models.Model):
     def _get_amount_by_partner(self):
         """Group amounts of each line by partner."""
         self.ensure_one()
-        account_total = dict()
+        account_total = {}
 
         lines = self.line_ids
         line_totals = lines.total_partner_split_ids
@@ -124,7 +124,7 @@ class Account(models.Model):
             {creditor.partner_id: creditor.amount for creditor in creditors}
         )
 
-        payments = list()
+        payments = []
         for creditor in creditors:
             for debtor, debit_amount in debtors.items():
                 credit_amount = creditors.get(creditor, 0)
