@@ -33,7 +33,7 @@ class TestImportCsvBV4W(TestCommon):
         """
         wizard = self.get_wizard_for_file("bv4w_test_1.csv")
         tournament = self.tournaments.filtered(
-            lambda t: t.name in ["event 0, tournament 0"]
+            lambda t: t.name in ("event 0, tournament 0",)
         )
         tournament_name = tournament.name
         tournament.unlink()
@@ -47,7 +47,7 @@ class TestImportCsvBV4W(TestCommon):
         """
         wizard = self.get_wizard_for_file("bv4w_test_1.csv")
         tournament = self.tournaments.filtered(
-            lambda t: t.name in ["event 0, tournament 0"]
+            lambda t: t.name in ("event 0, tournament 0",)
         )
         self.assertEqual(len(tournament.team_ids), TEAM_NBR)
         wizard.import_csv_bv4w()
@@ -59,7 +59,7 @@ class TestImportCsvBV4W(TestCommon):
         """
         wizard = self.get_wizard_for_file("bv4w_test_1.csv")
         tournament = self.tournaments.filtered(
-            lambda t: t.name in ["event 0, tournament 0"]
+            lambda t: t.name in ("event 0, tournament 0",)
         )
         tournament.component_ids.unlink()
         wizard.import_csv_bv4w()
@@ -72,7 +72,7 @@ class TestImportCsvBV4W(TestCommon):
         """
         wizard = self.get_wizard_for_file("bv4w_test_2.csv")
         tournament = self.tournaments.filtered(
-            lambda t: t.name in ["event 0, tournament 0"]
+            lambda t: t.name in ("event 0, tournament 0",)
         )
         tournament.component_ids = self.component_model.browse()
         with self.assertRaises(ValidationError) as ue:
@@ -88,7 +88,7 @@ class TestImportCsvBV4W(TestCommon):
         """
         wizard = self.get_wizard_for_file("bv4w_test_3.csv")
         tournaments = self.tournaments.filtered(
-            lambda t: t.name in ["event 0, tournament 0", "event 0, tournament 1"]
+            lambda t: t.name in ("event 0, tournament 0", "event 0, tournament 1")
         )
         tournaments.mapped("component_ids").unlink()
 
@@ -105,7 +105,7 @@ class TestImportCsvBV4W(TestCommon):
         """
         wizard = self.get_wizard_for_file("bv4w_test_4.csv")
         tournament = self.tournaments.filtered(
-            lambda t: t.name in ["event 0, tournament 0"]
+            lambda t: t.name in ("event 0, tournament 0",)
         )
         tournament.component_ids.unlink()
         wizard.import_csv_bv4w()
