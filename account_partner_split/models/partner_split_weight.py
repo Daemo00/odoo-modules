@@ -55,7 +55,7 @@ class PartnerSplitWeight(models.Model):
 
     def name_get(self):
         name_template = _("{partner} has weight {weight}")
-        res = list()
+        res = []
         for partner_weight in self:
             weight = partner_weight.weight
             name = name_template.format(
