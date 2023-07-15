@@ -37,7 +37,10 @@
                             </field>
                         </group>
                         <group name="results" string="Results">
-                            <p class="text-muted">Values computed on done matches</p>
+                            <p
+                                colspan="2"
+                                class="text-muted"
+                            >Values computed on done matches</p>
                             <field name="matches_points" />
                             <field name="sets_won" />
                             <field name="points_ratio" />
@@ -45,6 +48,8 @@
                             <field name="points_taken" />
                             <button
                                 name="button_compute_matches_points"
+                                class="btn-info"
+                                colspan="2"
                                 type="object"
                                 string="Recompute points"
                             />
