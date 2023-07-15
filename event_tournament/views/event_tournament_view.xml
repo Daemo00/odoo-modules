@@ -95,64 +95,83 @@
                     </group>
                     <notebook>
                         <page name="rules" string="Rules">
-                            <group name="team_rules" string="Team rules">
-                                <field name="min_components" />
-                                <field name="max_components" />
-                                <field name="min_components_female" />
-                                <field name="min_components_male" />
-                                <button
-                                    name="action_check_rules"
-                                    type="object"
-                                    string="Check"
-                                />
-                            </group>
-                            <group name="match_rules" string="Match rules">
-                                <p>Points are computed only on done matches.</p>
-                                <field name="match_mode_id" />
-                                <button
-                                    name="recompute_matches_points"
-                                    type="object"
-                                    string="Recompute points"
-                                />
+                            <group name="rules">
+                                <group name="team_rules" string="Team rules">
+                                    <field name="min_components" />
+                                    <field name="max_components" />
+                                    <field name="min_components_female" />
+                                    <field name="min_components_male" />
+                                    <button
+                                        name="action_check_rules"
+                                        class="btn-info"
+                                        colspan="2"
+                                        type="object"
+                                        string="Check"
+                                    />
+                                </group>
+                                <group name="match_rules" string="Match rules">
+                                    <field name="match_mode_id" />
+                                    <button
+                                        name="recompute_matches_points"
+                                        class="btn-info"
+                                        colspan="2"
+                                        type="object"
+                                        string="Recompute points"
+                                    />
+                                    <p
+                                        class="text-muted"
+                                        colspan="2"
+                                    >Points are computed only on done matches.</p>
+                                </group>
                             </group>
                         </page>
                         <page name="teams" string="Teams">
                             <group>
-                                <button
-                                    name="generate_view_teams"
-                                    type="object"
-                                    string="Generate teams"
-                                />
-                                <field name="team_count_estimated" />
+                                <group>
+                                    <button
+                                        name="generate_view_teams"
+                                        class="btn-warning"
+                                        type="object"
+                                        string="Generate teams"
+                                        colspan="2"
+                                    />
+                                    <field name="team_count_estimated" />
+                                </group>
                             </group>
                         </page>
                         <page name="matches" string="Matches">
                             <group>
-                                <field
-                                    name="match_warm_up_duration"
-                                    widget="float_time"
-                                />
-                                <field name="match_duration" widget="float_time" />
-                                <field name="match_teams_nbr" />
-                                <field name="match_count_estimated" />
-                                <field
-                                    name="court_ids"
-                                    domain="[('event_id', '=', event_id)]"
-                                    context="{'default_event_id': event_id, 'default_time_availability_start': start_datetime, 'default_time_availability_end': end_datetime,}"
-                                />
-                                <field name="randomize_matches_generation" />
-                                <field name="reset_matches_before_generation" />
-                                <button
-                                    name="generate_view_matches"
-                                    type="object"
-                                    string="Generate matches"
-                                />
+                                <group colspan="2">
+                                    <field
+                                        name="match_warm_up_duration"
+                                        widget="float_time"
+                                    />
+                                    <field name="match_duration" widget="float_time" />
+                                    <field name="match_teams_nbr" />
+                                    <field name="match_count_estimated" />
+                                    <field
+                                        name="court_ids"
+                                        domain="[('event_id', '=', event_id)]"
+                                        context="{'default_event_id': event_id, 'default_time_availability_start': start_datetime, 'default_time_availability_end': end_datetime,}"
+                                    />
+                                    <field name="randomize_matches_generation" />
+                                    <field name="reset_matches_before_generation" />
+                                    <button
+                                        name="generate_view_matches"
+                                        class="btn-warning"
+                                        colspan="2"
+                                        type="object"
+                                        string="Generate matches"
+                                    />
+                                </group>
                             </group>
                         </page>
                         <page name="inheritance" string="Inheritance">
                             <group>
-                                <field name="parent_id" />
-                                <field name="child_ids" />
+                                <group colspan="2">
+                                    <field name="parent_id" />
+                                    <field name="child_ids" />
+                                </group>
                             </group>
                         </page>
                         <page name="notes" string="Notes">
