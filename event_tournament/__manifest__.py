@@ -19,6 +19,7 @@
         "data/event_tournament_match_mode_data.xml",
         "templates/report_matches_schedule.xml",
         "templates/report_matches_schedule_component.xml",
+        "templates/report_matches_schedule_team.xml",
         "templates/report_matches_schedule_tournament.xml",
         "views/event_event_view.xml",
         "views/event_registration_view.xml",
