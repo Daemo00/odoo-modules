@@ -1,0 +1,108 @@
+<!-- Copyright 2023 Simone Rubino <daemo00@gmail.com> -->
+<!-- License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <!-- Common templates -->
+    <template id="report_check_in_document_component_teams">
+        <h1>
+            Teams by Component
+        </h1>
+        <table class="table table-bordered table-striped table-sm">
+            <thead>
+                <th>Component</th>
+                <th>Teams</th>
+                <th>Notes</th>
+            </thead>
+            <tbody>
+                <tr t-foreach="components.sorted(key='name')" t-as="component">
+                    <td>
+                        <span t-field="component.name" />
+                    </td>
+                    <td>
+                        <p
+                            t-foreach="component.tournament_team_ids.sorted(key='name')"
+                            t-as="team"
+                            class="m-0"
+                        >
+                            <span t-field="team.name" />,
+                            <span t-field="team.tournament_id.name" />
+                        </p>
+                    </td>
+                    <td />
+                </tr>
+            </tbody>
+        </table>
+    </template>
+    <template id="report_check_in_document_team_components">
+        <h1>
+            Components by Team
+        </h1>
+        <table class="table table-bordered table-striped table-sm">
+            <thead>
+                <th>Team</th>
+                <th>Components</th>
+                <th>Notes</th>
+            </thead>
+            <tbody>
+                <tr t-foreach="teams.sorted(key='name')" t-as="team">
+                    <td>
+                        <span t-field="team.name" />,
+                        <span t-field="team.tournament_id.name" />
+                    </td>
+                    <td>
+                        <p
+                            class="m-0"
+                            t-foreach="team.component_ids.sorted(key='name')"
+                            t-as="component"
+                            t-field="component.name"
+                        />
+                    </td>
+                    <td />
+                </tr>
+            </tbody>
+        </table>
+    </template>
+    <!-- Tournament templates and actions -->
+    <template id="report_check_in_tournament_document">
+        <t t-call="event_tournament.report_check_in_document_team_components">
+            <t t-set="teams" t-value="tournaments.team_ids" />
+        </t>
+
+        <t t-call="event_tournament.report_check_in_document_component_teams">
+            <t t-set="components" t-value="tournaments.component_ids" />
+        </t>
+    </template>
+    <template id="report_check_in_tournament">
+        <t t-call="web.html_container">
+            <t t-call="web.internal_layout">
+                <t t-call="event_tournament.report_check_in_tournament_document">
+                    <t t-set="tournaments" t-value="docs" />
+                </t>
+            </t>
+        </t>
+    </template>
+    <record id="report_check_in_tournament_action" model="ir.actions.report">
+        <field name="report_name">event_tournament.report_check_in_tournament</field>
+        <field name="model">event.tournament</field>
+        <field name="name">Check in</field>
+        <field name="binding_model_id" ref="event_tournament.model_event_tournament" />
+        <field name="binding_type">report</field>
+    </record>
+    <!-- Event templates and actions -->
+    <template id="report_check_in_event">
+        <t t-set="events" t-value="docs" />
+        <t t-call="web.html_container">
+            <t t-call="web.internal_layout">
+                <t t-call="event_tournament.report_check_in_tournament_document">
+                    <t t-set="tournaments" t-value="events.tournament_ids" />
+                </t>
+            </t>
+        </t>
+    </template>
+    <record id="report_check_in_action" model="ir.actions.report">
+        <field name="report_name">event_tournament.report_check_in_event</field>
+        <field name="model">event.event</field>
+        <field name="name">Tournament Check in</field>
+        <field name="binding_model_id" ref="event.model_event_event" />
+        <field name="binding_type">report</field>
+    </record>
+</odoo>
