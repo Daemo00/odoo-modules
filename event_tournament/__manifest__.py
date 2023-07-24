@@ -17,6 +17,7 @@
     "data": [
         "security/ir.model.access.csv",
         "data/event_tournament_match_mode_data.xml",
+        "templates/report_check_in.xml",
         "templates/report_matches_schedule.xml",
         "templates/report_matches_schedule_component.xml",
         "templates/report_matches_schedule_team.xml",
