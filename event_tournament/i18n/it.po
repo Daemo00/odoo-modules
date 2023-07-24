@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-29 17:53+0000\n"
-"PO-Revision-Date: 2022-10-29 17:53+0000\n"
+"POT-Creation-Date: 2023-07-24 20:18+0000\n"
+"PO-Revision-Date: 2023-07-24 20:18+0000\n"
 "Last-Translator: Simone Rubino\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -16,6 +16,7 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: event_tournament
+#. odoo-python
 #: code:addons/event_tournament/models/event_tournament_court.py:0
 #: code:addons/event_tournament/models/event_tournament_team.py:0
 #, python-format
@@ -40,6 +41,7 @@ msgstr ""
 " di inizio\"/>"
 
 #. module: event_tournament
+#. odoo-python
 #: code:addons/event_tournament/models/event_tournament_match.py:0
 #, python-format
 msgid "A good match needs at least 2 teams"
@@ -81,7 +83,13 @@ msgid "Check"
 msgstr "Controlla"
 
 #. module: event_tournament
+#: model:ir.actions.report,name:event_tournament.report_check_in_tournament_action
+msgid "Check in"
+msgstr "Registrazione"
+
+#. module: event_tournament
 #: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match__component_ids
+#: model_terms:ir.ui.view,arch_db:event_tournament.report_check_in_document_component_teams
 msgid "Component"
 msgstr "Componente"
 
@@ -95,8 +103,14 @@ msgstr "Numero componenti"
 #: model:ir.model.fields,field_description:event_tournament.field_event_tournament__component_ids
 #: model:ir.model.fields,field_description:event_tournament.field_event_tournament_team__component_ids
 #: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_view_form
+#: model_terms:ir.ui.view,arch_db:event_tournament.report_check_in_document_team_components
 msgid "Components"
 msgstr "Componenti"
+
+#. module: event_tournament
+#: model_terms:ir.ui.view,arch_db:event_tournament.report_check_in_document_team_components
+msgid "Components by Team"
+msgstr "Componenti per squadra"
 
 #. module: event_tournament
 #: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match__court_id
@@ -111,6 +125,7 @@ msgid "Court for tournaments"
 msgstr "Campo per tornei"
 
 #. module: event_tournament
+#. odoo-python
 #: code:addons/event_tournament/models/event_tournament_match.py:0
 #, python-format
 msgid ""
@@ -237,6 +252,7 @@ msgid "File Name"
 msgstr "Nome file"
 
 #. module: event_tournament
+#. odoo-python
 #: code:addons/event_tournament/wizards/import_csv_bv4w.py:0
 #, python-format
 msgid "Found multiple registrations with name {name}"
@@ -337,6 +353,7 @@ msgid "Last Updated on"
 msgstr "Ultimo aggiornamento il"
 
 #. module: event_tournament
+#. odoo-python
 #: code:addons/event_tournament/models/event_tournament.py:0
 #, python-format
 msgid "Last match could not be scheduled due to:\n"
@@ -392,12 +409,14 @@ msgid "Match warm-up duration"
 msgstr "Tempo di riscaldamento per la partita"
 
 #. module: event_tournament
+#. odoo-python
 #: code:addons/event_tournament/models/event_tournament_match.py:0
 #, python-format
 msgid "Match {match_name} already done."
 msgstr "La partita {match_name} è già completata."
 
 #. module: event_tournament
+#. odoo-python
 #: code:addons/event_tournament/models/event_tournament_match.py:0
 #, python-format
 msgid ""
@@ -408,6 +427,7 @@ msgstr ""
 "il componente {comp_name} sta già giocando nella partita {cont_match_name}."
 
 #. module: event_tournament
+#. odoo-python
 #: code:addons/event_tournament/models/event_tournament_match.py:0
 #, python-format
 msgid ""
@@ -418,6 +438,7 @@ msgstr ""
 "Il campo {court_name} non è disponibile per il torneo {tourn_name}."
 
 #. module: event_tournament
+#. odoo-python
 #: code:addons/event_tournament/models/event_tournament_match_mode.py:0
 #, python-format
 msgid ""
@@ -428,6 +449,7 @@ msgstr ""
 "il risultato {sets_won} - {sets_lost} non è atteso per i match in modalità {match_mode}."
 
 #. module: event_tournament
+#. odoo-python
 #: code:addons/event_tournament/models/event_tournament_match.py:0
 #, python-format
 msgid ""
@@ -438,6 +460,7 @@ msgstr ""
 "Le squadre sono in diversi tornei."
 
 #. module: event_tournament
+#. odoo-python
 #: code:addons/event_tournament/models/event_tournament_match.py:0
 #, python-format
 msgid ""
@@ -448,6 +471,7 @@ msgstr ""
 "squadre non presenti nel torneo {tourn_name}"
 
 #. module: event_tournament
+#. odoo-python
 #: code:addons/event_tournament/models/event_tournament_match.py:0
 #, python-format
 msgid ""
@@ -458,6 +482,7 @@ msgstr ""
 "le squadre {team_name} e {other_team_name} hanno componenti in comune ({common_components_names})."
 
 #. module: event_tournament
+#. odoo-python
 #: code:addons/event_tournament/models/event_tournament_match.py:0
 #, python-format
 msgid ""
@@ -468,6 +493,7 @@ msgstr ""
 "il torneo finisce alle {tournament_end} ma la partita finisce alle {match_end}."
 
 #. module: event_tournament
+#. odoo-python
 #: code:addons/event_tournament/models/event_tournament_match.py:0
 #, python-format
 msgid ""
@@ -478,6 +504,7 @@ msgstr ""
 "il torneo inizia alle {tournament_start} ma la partita inizia alle {match_start}."
 
 #. module: event_tournament
+#. odoo-python
 #: code:addons/event_tournament/models/event_tournament_match.py:0
 #, python-format
 msgid ""
@@ -488,6 +515,7 @@ msgstr ""
 "il campo {court_name} è disponibile dalle {court_start} ma la partita inizia alle {match_start}."
 
 #. module: event_tournament
+#. odoo-python
 #: code:addons/event_tournament/models/event_tournament_match.py:0
 #, python-format
 msgid ""
@@ -498,6 +526,7 @@ msgstr ""
 "il campo {court_name} è disponibile fino alle {court_end} ma la partita finisce alle {match_end}."
 
 #. module: event_tournament
+#. odoo-python
 #: code:addons/event_tournament/models/event_tournament_match.py:0
 #, python-format
 msgid ""
@@ -508,6 +537,7 @@ msgstr ""
 "la squadra vincitrice {team_name} non ha partecipato."
 
 #. module: event_tournament
+#. odoo-python
 #: code:addons/event_tournament/models/event_tournament_match.py:0
 #, python-format
 msgid ""
@@ -539,6 +569,7 @@ msgstr "Punti da partite"
 #. module: event_tournament
 #: model:ir.actions.report,name:event_tournament.matches_schedule_component_action
 #: model:ir.actions.report,name:event_tournament.matches_schedule_match_action
+#: model:ir.actions.report,name:event_tournament.matches_schedule_team_action
 #: model:ir.actions.report,name:event_tournament.matches_schedule_tournament_action
 msgid "Matches schedule"
 msgstr "Calendario partite"
@@ -602,12 +633,14 @@ msgid "Name"
 msgstr "Nome"
 
 #. module: event_tournament
+#. odoo-python
 #: code:addons/event_tournament/wizards/import_csv_bv4w.py:0
 #, python-format
 msgid "No tournament found with name equal to '{csv_tourn_name}'"
 msgstr "Nessun torneo trovato con nome uguale a '{csv_tourn_name}'"
 
 #. module: event_tournament
+#. odoo-python
 #: code:addons/event_tournament/models/event_tournament_match.py:0
 #, python-format
 msgid "No-one won a set in {match_name}."
@@ -617,6 +650,8 @@ msgstr "Nessuno ha vinto un set nella partita {match_name}."
 #: model:ir.model.fields,field_description:event_tournament.field_event_tournament__notes
 #: model:ir.model.fields,field_description:event_tournament.field_event_tournament_team__notes
 #: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_view_form
+#: model_terms:ir.ui.view,arch_db:event_tournament.report_check_in_document_component_teams
+#: model_terms:ir.ui.view,arch_db:event_tournament.report_check_in_document_team_components
 msgid "Notes"
 msgstr "Note"
 
@@ -741,6 +776,7 @@ msgid "Scheduled start"
 msgstr "Inizio previsto"
 
 #. module: event_tournament
+#. odoo-python
 #: code:addons/event_tournament/models/event_tournament.py:0
 #, python-format
 msgid "Scheduling impossibru for a match between "
@@ -811,10 +847,12 @@ msgid "Sub tournaments"
 msgstr "Sotto-tornei"
 
 #. module: event_tournament
+#. odoo-python
 #: code:addons/event_tournament/models/event_tournament.py:0
 #: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match__team_ids
 #: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match_line__team_id
 #: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_team_view_form
+#: model_terms:ir.ui.view,arch_db:event_tournament.report_check_in_document_team_components
 #, python-format
 msgid "Team"
 msgstr "Squadra"
@@ -825,6 +863,7 @@ msgid "Team rules"
 msgstr "Regole per squadre"
 
 #. module: event_tournament
+#. odoo-python
 #: code:addons/event_tournament/models/event_tournament_team.py:0
 #, python-format
 msgid ""
@@ -835,6 +874,7 @@ msgstr ""
 "i componenti derivano da diversi eventi."
 
 #. module: event_tournament
+#. odoo-python
 #: code:addons/event_tournament/models/event_tournament_team.py:0
 #, python-format
 msgid ""
@@ -849,6 +889,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:event_tournament.field_event_tournament__team_ids
 #: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match__line_ids
 #: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_view_form
+#: model_terms:ir.ui.view,arch_db:event_tournament.report_check_in_document_component_teams
 msgid "Teams"
 msgstr "Squadre"
 
@@ -865,6 +906,11 @@ msgid ""
 msgstr ""
 "Le squadre sono generate casualmente dai partecipanti dell'evento.\n"
 "Ogni squadra ha il numero di componenti minimo permesso dalle regole del torneo."
+
+#. module: event_tournament
+#: model_terms:ir.ui.view,arch_db:event_tournament.report_check_in_document_component_teams
+msgid "Teams by Component"
+msgstr "Squadre per componente"
 
 #. module: event_tournament
 #: model:ir.model.fields,field_description:event_tournament.field_event_tournament__team_count
@@ -967,6 +1013,7 @@ msgid "Tournament teams"
 msgstr "Squadre torneo"
 
 #. module: event_tournament
+#. odoo-python
 #: code:addons/event_tournament/models/event_tournament_team.py:0
 #, python-format
 msgid ""
@@ -977,6 +1024,7 @@ msgstr ""
 "il componente {comp_name} è già nella squadra {other_team_name}."
 
 #. module: event_tournament
+#. odoo-python
 #: code:addons/event_tournament/models/event_tournament_team.py:0
 #, python-format
 msgid ""
@@ -987,6 +1035,7 @@ msgstr ""
 "il torneo {tourn_name} richiede un minimo di donne (o uomini) in squadra ma non tutti i componenti della squadra hanno genere."
 
 #. module: event_tournament
+#. odoo-python
 #: code:addons/event_tournament/models/event_tournament_team.py:0
 #, python-format
 msgid ""
@@ -997,6 +1046,7 @@ msgstr ""
 "il torneo {tourn_name} richiede almeno {min_comp} componenti per squadra."
 
 #. module: event_tournament
+#. odoo-python
 #: code:addons/event_tournament/models/event_tournament_team.py:0
 #, python-format
 msgid ""
@@ -1007,6 +1057,7 @@ msgstr ""
 "il torneo {tourn_name} richiede almeno {min_female_comp} componenti donna per squadra."
 
 #. module: event_tournament
+#. odoo-python
 #: code:addons/event_tournament/models/event_tournament_team.py:0
 #, python-format
 msgid ""
@@ -1017,6 +1068,7 @@ msgstr ""
 "il torneo {tourn_name} richiede almeno {min_male_comp} componenti uomo per squadra."
 
 #. module: event_tournament
+#. odoo-python
 #: code:addons/event_tournament/models/event_tournament_team.py:0
 #, python-format
 msgid ""
@@ -1027,6 +1079,7 @@ msgstr ""
 "il torneo {tourn_name} richiede al massimo {max_comp} componenti per squadra."
 
 #. module: event_tournament
+#. odoo-python
 #: code:addons/event_tournament/models/event_tournament.py:0
 #, python-format
 msgid ""
@@ -1037,6 +1090,7 @@ msgstr ""
 "Una partita dovrebbe avere una durata."
 
 #. module: event_tournament
+#. odoo-python
 #: code:addons/event_tournament/models/event_tournament.py:0
 #, python-format
 msgid ""
@@ -1047,6 +1101,7 @@ msgstr ""
 "per la generazione delle partite è richiesta almeno una squadra per partita ."
 
 #. module: event_tournament
+#. odoo-python
 #: code:addons/event_tournament/models/event_tournament.py:0
 #, python-format
 msgid ""
@@ -1057,6 +1112,7 @@ msgstr ""
 "per la generazione delle partite è richiesto almeno un campo."
 
 #. module: event_tournament
+#. odoo-python
 #: code:addons/event_tournament/models/event_tournament.py:0
 #, python-format
 msgid ""
@@ -1067,6 +1123,7 @@ msgstr ""
 "per la generazione delle partite è richiesto un orario di fine."
 
 #. module: event_tournament
+#. odoo-python
 #: code:addons/event_tournament/models/event_tournament.py:0
 #, python-format
 msgid ""
@@ -1077,6 +1134,7 @@ msgstr ""
 "per la generazione delle partite è richiesto l'orario di inizio."
 
 #. module: event_tournament
+#. odoo-python
 #: code:addons/event_tournament/models/event_tournament.py:0
 #, python-format
 msgid ""
@@ -1096,6 +1154,11 @@ msgid "Tournaments"
 msgstr "Tornei"
 
 #. module: event_tournament
+#: model:ir.actions.report,name:event_tournament.report_check_in_action
+msgid "Tournaments Check in"
+msgstr "Registrazione tornei"
+
+#. module: event_tournament
 #: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_team_view_form
 msgid "Values computed on done matches"
 msgstr "Valori calcolati sulle partite completate"
@@ -1107,6 +1170,7 @@ msgstr "Vincitore"
 
 #. module: event_tournament
 #: model_terms:ir.ui.view,arch_db:event_tournament.matches_schedule_component_document
+#: model_terms:ir.ui.view,arch_db:event_tournament.matches_schedule_team_document
 #: model_terms:ir.ui.view,arch_db:event_tournament.matches_schedule_tournament_document
 msgid "matches"
 msgstr "partite"
