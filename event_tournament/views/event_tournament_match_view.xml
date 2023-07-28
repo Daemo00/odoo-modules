@@ -118,7 +118,32 @@
                 color="court_id"
             >
                 <field name="display_name" />
+                <field name="court_id" filters="True" />
             </calendar>
+        </field>
+    </record>
+    <record id="event_tournament_match_view_timeline" model="ir.ui.view">
+        <field name="name">event.tournament.match timeline view</field>
+        <field name="model">event.tournament.match</field>
+        <field name="arch" type="xml">
+            <timeline
+                date_start="time_scheduled_start"
+                date_stop="time_scheduled_end"
+                string="Matches"
+                default_group_by="court_id"
+                event_open_popup="true"
+            >
+                <field name="team_ids" />
+                <templates>
+                    <t t-name="timeline-item">
+                        <div
+                            style="display:flex;justify-content:center;align-items:center;height: 80px; white-space: break-spaces;"
+                        >
+                            <p t-esc="record.display_name" />
+                        </div>
+                    </t>
+                </templates>
+            </timeline>
         </field>
     </record>
     <record id="event_tournament_match_view_search" model="ir.ui.view">
@@ -141,7 +166,7 @@
     <record id="event_tournament_match_action" model="ir.actions.act_window">
         <field name="name">Tournament matches</field>
         <field name="res_model">event.tournament.match</field>
-        <field name="view_mode">kanban,calendar,tree,form</field>
+        <field name="view_mode">kanban,timeline,calendar,tree,form</field>
     </record>
     <menuitem
         id="event_tournament_match_menu"

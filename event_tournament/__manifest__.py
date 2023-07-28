@@ -8,7 +8,12 @@
     "license": "AGPL-3",
     "author": "Simone Rubino",
     "website": "https://github.com/Daemo00/odoo-modules/tree/16.0/event_tournament",
-    "depends": ["event", "partner_contact_birthdate", "partner_contact_gender"],
+    "depends": [
+        "event",
+        "partner_contact_birthdate",
+        "partner_contact_gender",
+        "web_timeline",
+    ],
     "external_dependencies": {
         "python": [
             "more_itertools",
