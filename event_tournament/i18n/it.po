@@ -443,10 +443,10 @@ msgstr ""
 #, python-format
 msgid ""
 "Match {match_name} not valid:\n"
-"Result {sets_won} - {sets_lost} not expected for match mode {match_mode}."
+"Result {won_sets} - {lost_sets} not expected for match mode {match_mode}."
 msgstr ""
 "Partite {match_name} non valida:\n"
-"il risultato {sets_won} - {sets_lost} non è atteso per i match in modalità {match_mode}."
+"il risultato {won_sets} - {lost_sets} non è atteso per i match in modalità {match_mode}."
 
 #. module: event_tournament
 #. odoo-python
@@ -676,13 +676,13 @@ msgid "Parent tournament"
 msgstr "Torneo genitore"
 
 #. module: event_tournament
-#: model:ir.model.fields,field_description:event_tournament.field_event_registration__points_done
-#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_team__points_done
+#: model:ir.model.fields,field_description:event_tournament.field_event_registration__done_points
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_team__done_points
 msgid "Points Done"
 msgstr "Punti fatti"
 
 #. module: event_tournament
-#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match_mode_result__points_lose
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match_mode_result__lose_points
 msgid "Points Lose"
 msgstr "Punti sconfitta"
 
@@ -698,13 +698,13 @@ msgid "Points Ratio"
 msgstr "Quoziente punti"
 
 #. module: event_tournament
-#: model:ir.model.fields,field_description:event_tournament.field_event_registration__points_taken
-#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_team__points_taken
+#: model:ir.model.fields,field_description:event_tournament.field_event_registration__taken_points
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_team__taken_points
 msgid "Points Taken"
 msgstr "Punti subiti"
 
 #. module: event_tournament
-#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match_mode_result__points_win
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match_mode_result__win_points
 msgid "Points Win"
 msgstr "Punti vittoria"
 
@@ -814,14 +814,14 @@ msgid "Set 5"
 msgstr ""
 
 #. module: event_tournament
-#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match_mode_result__sets_lost
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match_mode_result__lost_sets
 msgid "Sets Lost"
 msgstr "Set persi"
 
 #. module: event_tournament
-#: model:ir.model.fields,field_description:event_tournament.field_event_registration__sets_won
-#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match_mode_result__sets_won
-#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_team__sets_won
+#: model:ir.model.fields,field_description:event_tournament.field_event_registration__won_sets
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_match_mode_result__won_sets
+#: model:ir.model.fields,field_description:event_tournament.field_event_tournament_team__won_sets
 msgid "Sets Won"
 msgstr "Set vinti"
 

@@ -18,10 +18,10 @@ class EventRegistration(models.Model):
         compute="_compute_teams_number",
         store=True,
     )
-    points_done = fields.Float(compute="_compute_teams_points", store=True)
-    points_taken = fields.Float(compute="_compute_teams_points", store=True)
+    done_points = fields.Float(compute="_compute_teams_points", store=True)
+    taken_points = fields.Float(compute="_compute_teams_points", store=True)
     points_ratio = fields.Float(compute="_compute_teams_points", store=True)
-    sets_won = fields.Integer(compute="_compute_teams_points", store=True)
+    won_sets = fields.Integer(compute="_compute_teams_points", store=True)
     matches_points = fields.Integer(compute="_compute_teams_points", store=True)
     matches_done = fields.Integer(compute="_compute_teams_points", store=True)
     tournament_ids = fields.Many2many(
@@ -66,22 +66,22 @@ class EventRegistration(models.Model):
             )
 
     @api.depends(
-        "tournament_team_ids.points_done",
-        "tournament_team_ids.points_taken",
+        "tournament_team_ids.done_points",
+        "tournament_team_ids.taken_points",
         "tournament_team_ids.points_ratio",
-        "tournament_team_ids.sets_won",
+        "tournament_team_ids.won_sets",
         "tournament_team_ids.matches_points",
         "tournament_team_ids.match_ids.state",
     )
     def _compute_teams_points(self):
         for registration in self:
             teams = registration.tournament_team_ids
-            registration.points_done = sum(team.points_done for team in teams)
-            registration.points_taken = sum(team.points_taken for team in teams)
-            registration.points_ratio = registration.points_done / (
-                registration.points_taken or 1
+            registration.done_points = sum(team.done_points for team in teams)
+            registration.taken_points = sum(team.taken_points for team in teams)
+            registration.points_ratio = registration.done_points / (
+                registration.taken_points or 1
             )
-            registration.sets_won = sum(team.sets_won for team in teams)
+            registration.won_sets = sum(team.won_sets for team in teams)
             registration.matches_points = sum(team.matches_points for team in teams)
 
             matches = teams.match_ids.filtered(lambda m: m.state == "done")

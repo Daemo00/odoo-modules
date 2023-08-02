@@ -10,15 +10,15 @@
             name="result_ids"
             eval="[
             (0, 0, {
-                'sets_won': 2,
-                'sets_lost': 0,
-                'points_win': 3,
-                'points_lose': 0}),
+                'won_sets': 2,
+                'lost_sets': 0,
+                'win_points': 3,
+                'lose_points': 0}),
             (0, 0, {
-                'sets_won': 2,
-                'sets_lost': 1,
-                'points_win': 2,
-                'points_lose': 1})]"
+                'won_sets': 2,
+                'lost_sets': 1,
+                'win_points': 2,
+                'lose_points': 1})]"
         />
     </record>
     <record
@@ -30,20 +30,20 @@
             name="result_ids"
             eval="[
             (0, 0, {
-                'sets_won': 3,
-                'sets_lost': 0,
-                'points_win': 3,
-                'points_lose': 0}),
+                'won_sets': 3,
+                'lost_sets': 0,
+                'win_points': 3,
+                'lose_points': 0}),
             (0, 0, {
-                'sets_won': 3,
-                'sets_lost': 1,
-                'points_win': 3,
-                'points_lose': 0}),
+                'won_sets': 3,
+                'lost_sets': 1,
+                'win_points': 3,
+                'lose_points': 0}),
             (0, 0, {
-                'sets_won': 3,
-                'sets_lost': 2,
-                'points_win': 2,
-                'points_lose': 1})]"
+                'won_sets': 3,
+                'lost_sets': 2,
+                'win_points': 2,
+                'lose_points': 1})]"
         />
     </record>
 </odoo>
