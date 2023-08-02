@@ -11,7 +11,7 @@ class EventTournamentTeam(models.Model):
     _name = "event.tournament.team"
     _description = "Tournament team"
     _rec_name = "name"
-    _order = "matches_points desc, sets_won desc, points_ratio desc, sequence"
+    _order = "matches_points desc, won_sets desc, points_ratio desc, sequence"
 
     sequence = fields.Integer()
     event_id = fields.Many2one(related="tournament_id.event_id", readonly=True)
@@ -39,9 +39,10 @@ class EventTournamentTeam(models.Model):
     points_ratio = fields.Float(
         compute="_compute_matches_points", store=True, digits=(16, 5)
     )
-    points_done = fields.Float(compute="_compute_matches_points", store=True)
-    points_taken = fields.Float(compute="_compute_matches_points", store=True)
-    sets_won = fields.Integer(compute="_compute_matches_points", store=True)
+    done_points = fields.Float(compute="_compute_matches_points", store=True)
+    taken_points = fields.Float(compute="_compute_matches_points", store=True)
+    won_sets = fields.Integer(compute="_compute_matches_points", store=True)
+    lost_sets = fields.Integer(compute="_compute_matches_points", store=True)
     matches_points = fields.Integer(compute="_compute_matches_points", store=True)
     notes = fields.Text()
 
@@ -222,37 +223,39 @@ class EventTournamentTeam(models.Model):
                         )
 
     @api.depends(
-        lambda m: (
-            "match_ids",
-            "match_ids.state",
-            "match_ids.match_mode_id",
-            "match_ids.match_mode_id.result_ids",
-        )
-        + tuple("match_ids.line_ids.set_" + str(n) for n in range(1, 6))
+        "match_ids",
+        "match_ids.state",
+        "match_ids.match_mode_id",
+        "match_ids.match_mode_id.result_ids",
+        "match_ids.set_ids.result_ids.score",
     )
     def _compute_matches_points(self):
         for team in self:
-            sets_lost = 0
-            sets_won = 0
-            points_done = 0
-            points_taken = 0
+            lost_sets = 0
+            won_sets = 0
+            done_points = 0
+            taken_points = 0
             tournament_points = 0
             done_matches = team.match_ids.filtered(lambda m: m.state == "done")
             for match in done_matches:
                 for match_team, sets_info in match.get_sets_info().items():
                     if team != match_team:
                         continue
-                    sets_lost += sets_info[0]
-                    sets_won += sets_info[1]
-                    points_done += sets_info[2]
-                    points_taken += sets_info[3]
+                    lost_sets += sets_info["lost_sets"]
+                    won_sets += sets_info["won_sets"]
+                    done_points += sets_info["done_points"]
+                    taken_points += sets_info["taken_points"]
                 if match.match_mode_id:
                     tournament_points += match.match_mode_id.get_points(match)[team]
 
-            team.sets_won = sets_won
-            team.points_done = points_done
-            team.points_taken = points_taken
-            team.points_ratio = points_done / (points_taken or 1)
+            team.won_sets = won_sets
+            team.lost_sets = lost_sets
+            team.done_points = done_points
+            team.taken_points = taken_points
+            # Points ratio of a team that takes 0 points should be higher
+            # than the points ratio of a team that takes 1 point.
+            # Let's say ten times higher.
+            team.points_ratio = done_points / (taken_points or 0.1)
             team.matches_points = tournament_points
 
     def button_compute_matches_points(self):

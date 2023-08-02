@@ -15,10 +15,10 @@
             <group name="attendee" position="after">
                 <group name="tournament_team" string="Tournament">
                     <field name="tournament_team_ids" widget="many2many_tags" />
-                    <field name="points_done" />
-                    <field name="points_taken" />
+                    <field name="done_points" />
+                    <field name="taken_points" />
                     <field name="points_ratio" />
-                    <field name="sets_won" />
+                    <field name="won_sets" />
                     <field name="matches_points" />
                 </group>
             </group>

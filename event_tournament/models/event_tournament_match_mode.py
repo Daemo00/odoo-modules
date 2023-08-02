@@ -1,5 +1,6 @@
 #  Copyright 2019 Simone Rubino <daemo00@gmail.com>
 #  License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+
 from collections import Counter
 
 from odoo import _, fields, models
@@ -11,10 +12,10 @@ class EventTournamentMatchModeLine(models.Model):
     _description = "Match mode result"
 
     mode_id = fields.Many2one(comodel_name="event.tournament.match.mode")
-    sets_won = fields.Integer()
-    sets_lost = fields.Integer()
-    points_win = fields.Integer()
-    points_lose = fields.Integer()
+    won_sets = fields.Integer()
+    lost_sets = fields.Integer()
+    win_points = fields.Integer()
+    lose_points = fields.Integer()
 
 
 class EventTournamentMatchMode(models.Model):
@@ -35,24 +36,28 @@ class EventTournamentMatchMode(models.Model):
         self.ensure_one()
         tournament_points = Counter(match.team_ids)
         for team, sets_info in match.get_sets_info().items():
-            sets_lost, sets_won, points_done, points_taken = sets_info
+            won_lost_sets = (won_sets, lost_sets) = (
+                sets_info["won_sets"],
+                sets_info["lost_sets"],
+            )
+
             for res in self.result_ids:
-                if res.sets_won == sets_won and res.sets_lost == sets_lost:
-                    tournament_points[team] = res.points_win
+                if won_lost_sets == (res.won_sets, res.lost_sets):
+                    tournament_points[team] = res.win_points
                     break
-                if res.sets_won == sets_lost and res.sets_lost == sets_won:
-                    tournament_points[team] = res.points_lose
+                if won_lost_sets == (res.lost_sets, res.won_sets):
+                    tournament_points[team] = res.lose_points
                     break
             else:
                 raise UserError(
                     _(
                         "Match {match_name} not valid:\n"
-                        "Result {sets_won} - {sets_lost} not expected "
+                        "Result {won_sets} - {lost_sets} not expected "
                         "for match mode {match_mode}."
                     ).format(
                         match_name=match.display_name,
-                        sets_won=sets_won,
-                        sets_lost=sets_lost,
+                        won_sets=won_sets,
+                        lost_sets=lost_sets,
                         match_mode=self.display_name,
                     )
                 )
