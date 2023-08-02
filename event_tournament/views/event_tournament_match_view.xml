@@ -27,20 +27,25 @@
                         <field name="court_id" />
                         <field name="time_scheduled_start" />
                         <field name="time_scheduled_end" />
-                        <field name="line_ids" context="{'default_match_id': id}">
-                            <tree editable="bottom">
-                                <field
-                                    name="team_id"
-                                    domain="[('tournament_id', '=', parent.tournament_id)]"
-                                />
-                                <field name="set_1" />
-                                <field name="set_2" />
-                                <field name="set_3" />
-                                <field name="set_4" />
-                                <field name="set_5" />
+                        <field name="team_ids" widget="many2many_tags" />
+                        <field
+                            name="set_ids"
+                            widget="many2many_tags"
+                            context="{'default_match_id': id}"
+                        />
+                        <field
+                            name="result_ids"
+                            widget="x2many_2d_matrix"
+                            field_x_axis="team_id"
+                            field_y_axis="set_id"
+                            field_value="score"
+                        >
+                            <tree>
+                                <field name="set_id" />
+                                <field name="team_id" />
+                                <field name="score" />
                             </tree>
                         </field>
-                        <field name="team_ids" invisible="True" />
                         <field name="winner_team_id" />
                         <field name="time_done" />
                     </group>
@@ -102,7 +107,7 @@
                 <field name="tournament_id" />
                 <field name="court_id" />
                 <field name="time_scheduled_start" />
-                <field name="line_ids" widget="many2many_tags" />
+                <field name="set_ids" widget="many2many_tags" />
                 <field name="winner_team_id" />
                 <field name="state" />
             </tree>

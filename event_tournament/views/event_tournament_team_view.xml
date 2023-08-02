@@ -42,10 +42,11 @@
                                 class="text-muted"
                             >Values computed on done matches</p>
                             <field name="matches_points" />
-                            <field name="sets_won" />
+                            <field name="won_sets" />
+                            <field name="lost_sets" />
                             <field name="points_ratio" />
-                            <field name="points_done" />
-                            <field name="points_taken" />
+                            <field name="done_points" />
+                            <field name="taken_points" />
                             <button
                                 name="button_compute_matches_points"
                                 class="btn-info"
@@ -103,7 +104,7 @@
                 <field name="tournament_id" />
                 <field name="name" />
                 <field name="matches_points" />
-                <field name="sets_won" />
+                <field name="won_sets" />
                 <field name="points_ratio" />
                 <field name="component_ids" widget="many2many_tags" />
             </tree>

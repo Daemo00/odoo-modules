@@ -4,7 +4,7 @@ from collections import Counter
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
-from odoo.fields import first
+from odoo.fields import Command, first
 from odoo.osv import expression
 
 
@@ -28,17 +28,20 @@ class EventTournamentMatch(models.Model):
         required=True,
         states={"done": [("readonly", True)]},
     )
-    line_ids = fields.One2many(
-        comodel_name="event.tournament.match.line",
+    set_ids = fields.One2many(
+        comodel_name="event.tournament.match.set",
         inverse_name="match_id",
-        string="Teams",
+        string="Sets",
         states={"done": [("readonly", True)]},
     )
+    result_ids = fields.One2many(
+        comodel_name="event.tournament.match.set.result",
+        inverse_name="match_id",
+        states={"done": [("readonly", True)]},
+    )
+
     team_ids = fields.Many2many(
         comodel_name="event.tournament.team",
-        compute="_compute_teams",
-        inverse="_inverse_teams",
-        store=True,
         states={"done": [("readonly", True)]},
     )
     component_ids = fields.Many2many(
@@ -73,21 +76,6 @@ class EventTournamentMatch(models.Model):
     def onchange_tournament(self):
         event_domain = [("event_id", "=", self.tournament_id.event_id.id)]
         return {"domain": {"court_id": event_domain}}
-
-    @api.depends("line_ids.team_id")
-    def _compute_teams(self):
-        for match in self:
-            match.team_ids = match.line_ids.mapped("team_id")
-
-    def _inverse_teams(self):
-        for match in self:
-            team_lines = match.line_ids.mapped("team_id")
-            lines_vals = [
-                {"match_id": match.id, "team_id": team.id}
-                for team in match.team_ids
-                if team not in team_lines
-            ]
-            match.line_ids.create(lines_vals)
 
     @api.depends("team_ids.component_ids")
     def _compute_components(self):
@@ -340,17 +328,19 @@ class EventTournamentMatch(models.Model):
                 )
             )
         sets_info = self.get_sets_info()
-        sets_won_dict = {team: sets_info[team][1] for team in sets_info.keys()}
-        max_sets_won = max(sets_won_dict.values())
-        if not max_sets_won:
+        team_won_sets_dict = {
+            team: sets_info[team]["won_sets"] for team in sets_info.keys()
+        }
+        max_won_sets = max(team_won_sets_dict.values())
+        if not max_won_sets:
             raise UserError(
                 _("No-one won a set in {match_name}.").format(
                     match_name=self.display_name
                 )
             )
         winner_teams = self.winner_team_id.browse()
-        for team, sets_won in sets_won_dict.items():
-            if sets_won == max_sets_won:
+        for team, won_sets in team_won_sets_dict.items():
+            if won_sets == max_won_sets:
                 winner_teams |= team
         win_vals = {"time_done": fields.Datetime.now(), "state": "done"}
 
@@ -364,7 +354,7 @@ class EventTournamentMatch(models.Model):
     def name_get(self):
         res = []
         for match in self:
-            teams = match.line_ids.mapped("team_id")
+            teams = match.team_ids
             teams_names = teams.mapped("name")
             match_name = " vs ".join(teams_names)
             res.append((match.id, match_name))
@@ -378,67 +368,146 @@ class EventTournamentMatch(models.Model):
             (sets lost, sets won, points done, points taken)
         """
         self.ensure_one()
-        set_fields = ["set_" + str(n) for n in range(1, 6)]
-        sets_lost = Counter()
-        sets_won = Counter()
-        points_done = Counter()
-        points_taken = Counter()
-        for set_field in set_fields:
-            set_points = {}
-            for line in self.line_ids:
-                set_points[line.team_id] = getattr(line, set_field)
-            if not sum(set_points.values()):
+        lost_sets = Counter()
+        won_sets = Counter()
+        done_points = Counter()
+        taken_points = Counter()
+        for set_ in self.set_ids:
+            team_points_dict = {}
+            for result in set_.result_ids:
+                team_points_dict[result.team_id] = result.score
+            points_list = team_points_dict.values()
+            if not sum(points_list):
                 # Set hasn't been played
                 continue
-            max_set_points = max(set_points.values())
-            all_set_points = sum(set_points.values())
-            for team, set_points_done in set_points.items():
-                points_done[team] += set_points_done
-                points_taken[team] += all_set_points - set_points_done
 
-            set_winners = filter(lambda tp: tp[1] == max_set_points, set_points.items())
-            set_winners = list(dict(set_winners).keys())
-            if len(set_winners) > 1:
+            max_set_points = max(points_list)
+            all_set_points = sum(points_list)
+            for team, set_done_points in team_points_dict.items():
+                done_points[team] += set_done_points
+                taken_points[team] += all_set_points - set_done_points
+
+            winner_teams_list = filter(
+                lambda tp: tp[1] == max_set_points, team_points_dict.items()
+            )
+            winner_teams_list = list(dict(winner_teams_list).keys())
+            if len(winner_teams_list) > 1:
                 raise UserError(
                     _(
-                        "Match {match_name}, {set_string}:\n" "Ties are not allowed."
+                        "Match {match_name}, Set {set_string}:\n"
+                        "Ties are not allowed."
                     ).format(
                         match_name=self.display_name,
-                        set_string=self.line_ids._fields[set_field]._description_string(
-                            self.env
-                        ),
+                        set_string=set_.display_name,
                     )
                 )
-            set_winner = set_winners[0]
+            winner_team = winner_teams_list[0]
             for team in self.team_ids:
-                if team == set_winner:
-                    sets_won[team] += 1
+                if team == winner_team:
+                    won_sets[team] += 1
                 else:
-                    sets_lost[team] += 1
+                    lost_sets[team] += 1
         return {
-            team: (
-                sets_lost[team],
-                sets_won[team],
-                points_done[team],
-                points_taken[team],
-            )
+            team: {
+                "lost_sets": lost_sets[team],
+                "won_sets": won_sets[team],
+                "done_points": done_points[team],
+                "taken_points": taken_points[team],
+            }
             for team in self.team_ids
         }
 
 
-class EventTournamentMatchLine(models.Model):
-    _name = "event.tournament.match.line"
-    _description = "Tournament match line"
-    _rec_name = "team_id"
+class EventTournamentMatchSet(models.Model):
+    _name = "event.tournament.match.set"
+    _description = "Set of a Tournament match"
+    _rec_name = "name"
 
+    name = fields.Char()
     match_id = fields.Many2one(
         comodel_name="event.tournament.match", required=True, ondelete="cascade"
     )
-    team_id = fields.Many2one(
-        comodel_name="event.tournament.team", required=True, ondelete="restrict"
+    match_team_ids = fields.Many2many(
+        related="match_id.team_ids",
+        relation="event_tournament_set_team_rel",
+        column1="set_id",
+        column2="team_id",
+        readonly=True,
+        store=True,
     )
-    set_1 = fields.Integer()
-    set_2 = fields.Integer()
-    set_3 = fields.Integer()
-    set_4 = fields.Integer()
-    set_5 = fields.Integer()
+    result_ids = fields.One2many(
+        comodel_name="event.tournament.match.set.result",
+        inverse_name="set_id",
+        readonly=False,
+    )
+
+    @api.model
+    def _get_default_result_ids(self, match):
+        match_teams = match.team_ids
+        new_results = [
+            Command.create(
+                {
+                    "team_id": team.id,
+                }
+            )
+            for team in match_teams
+        ]
+        return new_results
+
+    @api.model
+    def default_get(self, fields_list):
+        # The match is in the context, but it is not really missing
+        fields_list.append("match_id")
+        defaults = super().default_get(fields_list)
+        if "result_ids" in fields_list:
+            match_id = defaults.get("match_id")
+            match = self.match_id.browse(match_id)
+            new_results = self._get_default_result_ids(match)
+            defaults["result_ids"] = new_results
+
+        return defaults
+
+
+class EventTournamentMatchSetResult(models.Model):
+    _name = "event.tournament.match.set.result"
+    _description = "Result of a Set of a Tournament match"
+
+    match_id = fields.Many2one(
+        related="set_id.match_id",
+    )
+    set_id = fields.Many2one(
+        comodel_name="event.tournament.match.set", required=True, ondelete="cascade"
+    )
+    set_team_ids = fields.Many2many(
+        related="set_id.match_team_ids",
+        relation="event_tournament_result_team_rel",
+        column1="result_id",
+        column2="team_id",
+        readonly=True,
+        store=True,
+    )
+    team_id = fields.Many2one(
+        comodel_name="event.tournament.team",
+        required=True,
+        ondelete="restrict",
+        domain="[('id', 'in', set_team_ids)]",
+    )
+    score = fields.Integer()
+
+    _sql_constraints = [
+        (
+            "unique_set_team",
+            "UNIQUE(team_id, set_id)",
+            "A team can only have one score in each set.",
+        ),
+    ]
+
+    def name_get(self):
+        names = [
+            (
+                result.id,
+                f"{result.team_id.name}: {result.score}",
+            )
+            for result in self
+        ]
+        return names

@@ -136,14 +136,14 @@ class TestEventTournamentTeam(TestCommon):
             "event_tournament.event_tournament_match_mode_beach_volley"
         )
         winner = teams[1]
-        self.assertEqual(winner.sets_won, 0)
+        self.assertEqual(winner.won_sets, 0)
         self.assertEqual(winner.points_ratio, 0)
         self.assertEqual(winner.matches_points, 0)
         match.action_done()
-        self.assertEqual(winner.sets_won, 2)
+        self.assertEqual(winner.won_sets, 2)
         self.assertEqual(winner.matches_points, 2)
         self.assertAlmostEqual(
-            winner.points_ratio, winner.points_done / winner.points_taken, 5
+            winner.points_ratio, winner.done_points / winner.taken_points, 5
         )
 
     def test_action_view_matches(self):

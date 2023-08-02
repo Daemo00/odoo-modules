@@ -13,6 +13,7 @@
         "partner_contact_birthdate",
         "partner_contact_gender",
         "web_timeline",
+        "web_widget_x2many_2d_matrix",
     ],
     "external_dependencies": {
         "python": [
