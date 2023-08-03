@@ -1,4 +1,4 @@
-#  Copyright 2020 Simone Rubino <daemo00@gmail.com>
+#  Copyright 2020 ~ 2023 Simone Rubino <daemo00@gmail.com>
 #  License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 import psycopg2
 
