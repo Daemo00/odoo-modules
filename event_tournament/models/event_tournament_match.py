@@ -1,10 +1,10 @@
 #  Copyright 2020 ~ 2023 Simone Rubino <daemo00@gmail.com>
 #  License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
-from collections import Counter
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 from odoo.fields import Command, first
+from odoo.models import NewId
 from odoo.osv import expression
 
 
@@ -32,6 +32,7 @@ class EventTournamentMatch(models.Model):
         comodel_name="event.tournament.match.set",
         inverse_name="match_id",
         string="Sets",
+        domain="[" "('match_id', '=', id)," "]",
         states={"done": [("readonly", True)]},
     )
     result_ids = fields.One2many(
@@ -42,6 +43,7 @@ class EventTournamentMatch(models.Model):
 
     team_ids = fields.Many2many(
         comodel_name="event.tournament.team",
+        domain="[('tournament_id', '=', tournament_id)]",
         states={"done": [("readonly", True)]},
     )
     component_ids = fields.Many2many(
@@ -50,10 +52,16 @@ class EventTournamentMatch(models.Model):
         store=True,
         states={"done": [("readonly", True)]},
     )
-    winner_team_id = fields.Many2one(
+    winner_team_ids = fields.Many2many(
         comodel_name="event.tournament.team",
-        string="Winner",
+        relation="event_tournament_match_winner_team_rel",
+        column1="match_id",
+        column2="team_id",
+        string="Winners",
         states={"done": [("readonly", True)]},
+        compute="_compute_winner_team_ids",
+        store=True,
+        help="Computed only on done matches.",
     )
     state = fields.Selection(
         selection=[("draft", "Draft"), ("done", "Done")], default="draft"
@@ -70,6 +78,12 @@ class EventTournamentMatch(models.Model):
                 ("readonly", True),
             ],
         },
+    )
+    stats_ids = fields.One2many(
+        comodel_name="event.tournament.match.team_stats",
+        inverse_name="match_id",
+        compute="_compute_stats_ids",
+        store=True,
     )
 
     @api.onchange("tournament_id")
@@ -299,25 +313,39 @@ class EventTournamentMatch(models.Model):
                     )
                 )
 
-    @api.constrains("winner_team_id", "team_ids")
-    def _constrain_winner(self):
+    @api.constrains("winner_team_ids", "team_ids")
+    def _constrain_winners(self):
         for match in self:
-            if not match.winner_team_id:
+            if not match.winner_team_ids:
                 continue
-            if match.winner_team_id not in match.team_ids:
-                raise ValidationError(
-                    _(
-                        "Match {match_name} not valid:\n"
-                        "winner team {team_name} is not participating."
-                    ).format(
-                        match_name=match.display_name,
-                        team_name=match.winner_team_id.display_name,
+            match_teams = match.team_ids
+            for winner in match.winner_team_ids:
+                if winner not in match_teams:
+                    raise ValidationError(
+                        _(
+                            "Match {match_name} not valid:\n"
+                            "winner team {team_name} is not participating."
+                        ).format(
+                            match_name=match.display_name,
+                            team_name=winner.display_name,
+                        )
                     )
-                )
+
+    @api.depends(
+        "state",
+    )
+    def _compute_winner_team_ids(self):
+        for match in self:
+            if match.state == "done":
+                match_mode = match.match_mode_id
+                winner_teams = match_mode.get_match_winners(match)
+            else:
+                winner_teams = self.env["event.tournament.team"].browse()
+            match.winner_team_ids = winner_teams
 
     def action_draft(self):
         self.ensure_one()
-        self.update({"winner_team_id": False, "time_done": False, "state": "draft"})
+        self.update({"time_done": False, "state": "draft"})
 
     def action_done(self):
         self.ensure_one()
@@ -327,29 +355,21 @@ class EventTournamentMatch(models.Model):
                     match_name=self.display_name
                 )
             )
-        sets_info = self.get_sets_info()
-        team_won_sets_dict = {
-            team: sets_info[team]["won_sets"] for team in sets_info.keys()
-        }
-        max_won_sets = max(team_won_sets_dict.values())
-        if not max_won_sets:
+        self.update(
+            {
+                "time_done": fields.Datetime.now(),
+                "state": "done",
+            }
+        )
+
+        winner_teams = self.winner_team_ids
+        if not winner_teams:
             raise UserError(
-                _("No-one won a set in {match_name}.").format(
+                _("No-one won the match {match_name}.").format(
                     match_name=self.display_name
                 )
             )
-        winner_teams = self.winner_team_id.browse()
-        for team, won_sets in team_won_sets_dict.items():
-            if won_sets == max_won_sets:
-                winner_teams |= team
-        win_vals = {"time_done": fields.Datetime.now(), "state": "done"}
-
-        winner_id = False
-        if len(winner_teams) == 1:
-            winner_id = winner_teams.id
-        win_vals.update({"winner_team_id": winner_id})
-
-        return self.update(win_vals)
+        return True
 
     def name_get(self):
         res = []
@@ -360,62 +380,170 @@ class EventTournamentMatch(models.Model):
             res.append((match.id, match_name))
         return res
 
-    def get_sets_info(self):
-        """
-        Get the sets won by each team and their points done/taken.
+    @api.depends(
+        "team_ids",
+    )
+    def _compute_stats_ids(self):
+        stats_model = self.env["event.tournament.match.team_stats"]
+        for match in self:
+            if not isinstance(match.id, NewId):
+                stats = stats_model.create_from_matches(match)
+            else:
+                stats = stats_model.browse()
+            match.stats_ids = stats
 
-        :return: A dictionary mapping involved teams to a tuple
-            (sets lost, sets won, points done, points taken)
-        """
-        self.ensure_one()
-        lost_sets = Counter()
-        won_sets = Counter()
-        done_points = Counter()
-        taken_points = Counter()
-        for set_ in self.set_ids:
-            team_points_dict = {}
-            for result in set_.result_ids:
-                team_points_dict[result.team_id] = result.score
-            points_list = team_points_dict.values()
-            if not sum(points_list):
-                # Set hasn't been played
-                continue
 
-            max_set_points = max(points_list)
-            all_set_points = sum(points_list)
-            for team, set_done_points in team_points_dict.items():
-                done_points[team] += set_done_points
-                taken_points[team] += all_set_points - set_done_points
+class EventTournamentMatchTeamStats(models.Model):
+    _name = "event.tournament.match.team_stats"
+    _description = "Team stats for a match"
 
-            winner_teams_list = filter(
-                lambda tp: tp[1] == max_set_points, team_points_dict.items()
-            )
-            winner_teams_list = list(dict(winner_teams_list).keys())
-            if len(winner_teams_list) > 1:
-                raise UserError(
-                    _(
-                        "Match {match_name}, Set {set_string}:\n"
-                        "Ties are not allowed."
-                    ).format(
-                        match_name=self.display_name,
-                        set_string=set_.display_name,
-                    )
-                )
-            winner_team = winner_teams_list[0]
-            for team in self.team_ids:
-                if team == winner_team:
-                    won_sets[team] += 1
+    match_id = fields.Many2one(
+        comodel_name="event.tournament.match",
+        ondelete="cascade",
+        required=True,
+    )
+    team_id = fields.Many2one(
+        comodel_name="event.tournament.team",
+        ondelete="cascade",
+        required=True,
+    )
+
+    lost_set_ids = fields.Many2many(
+        comodel_name="event.tournament.match.set",
+        relation="event_tournament_match_team_stats_lost_set_rel",
+        string="Lost sets",
+        compute="_compute_stats",
+        store=True,
+    )
+    lost_sets_count = fields.Integer(
+        compute="_compute_stats",
+        store=True,
+    )
+
+    won_set_ids = fields.Many2many(
+        comodel_name="event.tournament.match.set",
+        relation="event_tournament_match_team_stats_won_set_rel",
+        string="Won sets",
+        compute="_compute_stats",
+        store=True,
+    )
+    won_sets_count = fields.Integer(
+        compute="_compute_stats",
+        store=True,
+    )
+
+    done_points = fields.Integer(
+        compute="_compute_stats",
+        store=True,
+    )
+    taken_points = fields.Integer(
+        compute="_compute_stats",
+        store=True,
+    )
+
+    sets_ratio = fields.Float(compute="_compute_sets_ratio", store=True, digits=(16, 5))
+    points_ratio = fields.Float(
+        compute="_compute_points_ratio", store=True, digits=(16, 5)
+    )
+
+    tournament_points = fields.Integer(
+        compute="_compute_tournament_points",
+        help="Only computed for done matches.",
+        store=True,
+    )
+
+    @api.model
+    def create_from_matches(self, matches):
+        stats = self.create(
+            [
+                {
+                    "match_id": match.id,
+                    "team_id": team.id,
+                }
+                for match in matches
+                for team in match.team_ids
+            ]
+        )
+        return stats
+
+    @api.depends(
+        "match_id.set_ids.result_ids.score",
+    )
+    def _compute_stats(self):
+        for stat in self:
+            match = stat.match_id
+            team = stat.team_id
+
+            sets = match.set_ids
+            lost_sets = won_sets = sets.browse()
+            done_points = taken_points = 0
+            for set_ in sets:
+                results = set_.result_ids
+                team_results = results.filtered(lambda result: result.team_id == team)
+                other_teams_results = results - team_results
+                set_done_points = sum(team_results.mapped("score"))
+                set_taken_points = sum(other_teams_results.mapped("score"))
+                if set_done_points > set_taken_points:
+                    won_sets |= set_
                 else:
-                    lost_sets[team] += 1
-        return {
-            team: {
-                "lost_sets": lost_sets[team],
-                "won_sets": won_sets[team],
-                "done_points": done_points[team],
-                "taken_points": taken_points[team],
-            }
-            for team in self.team_ids
-        }
+                    lost_sets |= set_
+                done_points += set_done_points
+                taken_points += set_taken_points
+
+            stat.won_set_ids = won_sets
+            stat.won_sets_count = len(won_sets)
+            stat.lost_set_ids = lost_sets
+            stat.lost_sets_count = len(lost_sets)
+            stat.done_points = done_points
+            stat.taken_points = taken_points
+
+    @api.depends(
+        "match_id.state",
+    )
+    def _compute_tournament_points(self):
+        for stat in self:
+            match = stat.match_id
+            tournament_points = 0
+            if match.state == "done":
+                team = stat.team_id
+                match_mode = match.match_mode_id
+                if match_mode:
+                    match_points = match_mode.get_points(match)
+                    tournament_points = match_points.get(team, 0)
+
+            stat.tournament_points = tournament_points
+
+    @api.model
+    def calculate_ratio(self, won, lost):
+        return won / (lost or 0.1)
+
+    def get_points_ratio(self):
+        done_points = sum(self.mapped("done_points"))
+        taken_points = sum(self.mapped("taken_points"))
+        points_ratio = self.calculate_ratio(done_points, taken_points)
+        return points_ratio
+
+    def get_sets_ratio(self):
+        won_sets_count = sum(self.mapped("won_sets_count"))
+        lost_sets_count = sum(self.mapped("lost_sets_count"))
+        sets_ratio = self.calculate_ratio(won_sets_count, lost_sets_count)
+        return sets_ratio
+
+    @api.depends(
+        "done_points",
+        "taken_points",
+    )
+    def _compute_points_ratio(self):
+        for stat in self:
+            stat.points_ratio = stat.get_points_ratio()
+
+    @api.depends(
+        "lost_sets_count",
+        "won_sets_count",
+    )
+    def _compute_sets_ratio(self):
+        for stat in self:
+            stat.sets_ratio = stat.get_sets_ratio()
 
 
 class EventTournamentMatchSet(models.Model):
@@ -440,6 +568,28 @@ class EventTournamentMatchSet(models.Model):
         inverse_name="set_id",
         readonly=False,
     )
+    winner_team_ids = fields.Many2many(
+        comodel_name="event.tournament.team",
+        relation="event_tournament_set_winner_team_rel",
+        column1="set_id",
+        column2="team_id",
+        compute="_compute_winner_team_ids",
+        store=True,
+        help="Only computed on done matches.",
+    )
+
+    @api.depends(
+        "match_id.state",
+    )
+    def _compute_winner_team_ids(self):
+        for set_ in self:
+            match = set_.match_id
+            if match.state == "done":
+                match_mode = match.match_mode_id
+                winner_teams = match_mode.get_set_winners(set_)
+            else:
+                winner_teams = self.env["event.tournament.team"].browse()
+            set_.winner_team_ids = winner_teams
 
     @api.model
     def _get_default_result_ids(self, match):
@@ -472,6 +622,15 @@ class EventTournamentMatchSetResult(models.Model):
     _name = "event.tournament.match.set.result"
     _description = "Result of a Set of a Tournament match"
 
+    tournament_id = fields.Many2one(
+        related="match_id.tournament_id",
+    )
+    court_id = fields.Many2one(
+        related="match_id.court_id",
+    )
+    match_mode_id = fields.Many2one(
+        related="match_id.match_mode_id",
+    )
     match_id = fields.Many2one(
         related="set_id.match_id",
     )
@@ -485,6 +644,7 @@ class EventTournamentMatchSetResult(models.Model):
         column2="team_id",
         readonly=True,
         store=True,
+        string="Match Teams",
     )
     team_id = fields.Many2one(
         comodel_name="event.tournament.team",

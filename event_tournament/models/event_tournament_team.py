@@ -11,7 +11,7 @@ class EventTournamentTeam(models.Model):
     _name = "event.tournament.team"
     _description = "Tournament team"
     _rec_name = "name"
-    _order = "matches_points desc, won_sets desc, points_ratio desc, sequence"
+    _order = "tournament_points desc, points_ratio desc, sequence"
 
     sequence = fields.Integer()
     event_id = fields.Many2one(related="tournament_id.event_id", readonly=True)
@@ -36,15 +36,52 @@ class EventTournamentTeam(models.Model):
     match_count = fields.Integer(
         compute="_compute_match_count",
     )
-    points_ratio = fields.Float(
-        compute="_compute_matches_points", store=True, digits=(16, 5)
+    done_points = fields.Integer(compute="_compute_stats", store=True)
+    taken_points = fields.Integer(compute="_compute_stats", store=True)
+    won_set_ids = fields.Many2many(
+        comodel_name="event.tournament.match.set",
+        compute="_compute_stats",
+        relation="event_tournament_team_won_set_rel",
+        column1="team_id",
+        column2="set_id",
+        store=True,
     )
-    done_points = fields.Float(compute="_compute_matches_points", store=True)
-    taken_points = fields.Float(compute="_compute_matches_points", store=True)
-    won_sets = fields.Integer(compute="_compute_matches_points", store=True)
-    lost_sets = fields.Integer(compute="_compute_matches_points", store=True)
-    matches_points = fields.Integer(compute="_compute_matches_points", store=True)
+    won_sets_count = fields.Integer(compute="_compute_stats", store=True)
+    lost_set_ids = fields.Many2many(
+        comodel_name="event.tournament.match.set",
+        compute="_compute_stats",
+        relation="event_tournament_team_lost_set_rel",
+        column1="team_id",
+        column2="set_id",
+        store=True,
+    )
+    lost_sets_count = fields.Integer(compute="_compute_stats", store=True)
+    tournament_points = fields.Integer(compute="_compute_stats", store=True)
     notes = fields.Text()
+    stats_ids = fields.One2many(
+        comodel_name="event.tournament.match.team_stats",
+        inverse_name="team_id",
+    )
+    sets_ratio = fields.Float(compute="_compute_sets_ratio", store=True, digits=(16, 5))
+    points_ratio = fields.Float(
+        compute="_compute_points_ratio", store=True, digits=(16, 5)
+    )
+
+    @api.depends(
+        "stats_ids.done_points",
+        "stats_ids.taken_points",
+    )
+    def _compute_points_ratio(self):
+        for team in self:
+            team.points_ratio = team.stats_ids.get_points_ratio()
+
+    @api.depends(
+        "stats_ids.lost_sets_count",
+        "stats_ids.won_sets_count",
+    )
+    def _compute_sets_ratio(self):
+        for team in self:
+            team.sets_ratio = team.stats_ids.get_sets_ratio()
 
     _sql_constraints = [
         (
@@ -223,41 +260,21 @@ class EventTournamentTeam(models.Model):
                         )
 
     @api.depends(
-        "match_ids",
-        "match_ids.state",
-        "match_ids.match_mode_id",
-        "match_ids.match_mode_id.result_ids",
-        "match_ids.set_ids.result_ids.score",
+        "stats_ids.done_points",
+        "stats_ids.taken_points",
+        "stats_ids.won_set_ids",
+        "stats_ids.won_sets_count",
+        "stats_ids.lost_set_ids",
+        "stats_ids.lost_sets_count",
+        "stats_ids.tournament_points",
     )
-    def _compute_matches_points(self):
+    def _compute_stats(self):
         for team in self:
-            lost_sets = 0
-            won_sets = 0
-            done_points = 0
-            taken_points = 0
-            tournament_points = 0
-            done_matches = team.match_ids.filtered(lambda m: m.state == "done")
-            for match in done_matches:
-                for match_team, sets_info in match.get_sets_info().items():
-                    if team != match_team:
-                        continue
-                    lost_sets += sets_info["lost_sets"]
-                    won_sets += sets_info["won_sets"]
-                    done_points += sets_info["done_points"]
-                    taken_points += sets_info["taken_points"]
-                if match.match_mode_id:
-                    tournament_points += match.match_mode_id.get_points(match)[team]
-
-            team.won_sets = won_sets
-            team.lost_sets = lost_sets
-            team.done_points = done_points
-            team.taken_points = taken_points
-            # Points ratio of a team that takes 0 points should be higher
-            # than the points ratio of a team that takes 1 point.
-            # Let's say ten times higher.
-            team.points_ratio = done_points / (taken_points or 0.1)
-            team.matches_points = tournament_points
-
-    def button_compute_matches_points(self):
-        """Public method (callable from UI) for computing match's points."""
-        self._compute_matches_points()
+            stats = team.stats_ids
+            team.done_points = sum(stats.mapped("done_points"))
+            team.taken_points = sum(stats.mapped("taken_points"))
+            team.won_set_ids = stats.won_set_ids
+            team.won_sets_count = sum(stats.mapped("won_sets_count"))
+            team.lost_set_ids = stats.lost_set_ids
+            team.lost_sets_count = sum(stats.mapped("lost_sets_count"))
+            team.tournament_points = sum(stats.mapped("tournament_points"))

@@ -41,19 +41,13 @@
                                 colspan="2"
                                 class="text-muted"
                             >Values computed on done matches</p>
-                            <field name="matches_points" />
-                            <field name="won_sets" />
-                            <field name="lost_sets" />
-                            <field name="points_ratio" />
+                            <field name="tournament_points" />
+                            <field name="won_sets_count" />
+                            <field name="lost_sets_count" />
+                            <field name="sets_ratio" />
                             <field name="done_points" />
                             <field name="taken_points" />
-                            <button
-                                name="button_compute_matches_points"
-                                class="btn-info"
-                                colspan="2"
-                                type="object"
-                                string="Recompute points"
-                            />
+                            <field name="points_ratio" />
                         </group>
                     </group>
                     <group>
@@ -103,8 +97,7 @@
                 <field name="event_id" />
                 <field name="tournament_id" />
                 <field name="name" />
-                <field name="matches_points" />
-                <field name="won_sets" />
+                <field name="tournament_points" />
                 <field name="points_ratio" />
                 <field name="component_ids" widget="many2many_tags" />
             </tree>
@@ -141,4 +134,20 @@
         parent="event_tournament_root_menu"
         action="event_tournament_team_action"
     />
+    <record id="event_tournament_match_team_stats_view_tree" model="ir.ui.view">
+        <field name="name">event.tournament.team.team_stats tree view</field>
+        <field name="model">event.tournament.match.team_stats</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="team_id" />
+                <field name="tournament_points" />
+                <field name="won_sets_count" />
+                <field name="lost_sets_count" />
+                <field name="sets_ratio" />
+                <field name="done_points" />
+                <field name="taken_points" />
+                <field name="points_ratio" />
+            </tree>
+        </field>
+    </record>
 </odoo>
