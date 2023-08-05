@@ -14,8 +14,12 @@ class EventTournamentMatchModeLine(models.Model):
     mode_id = fields.Many2one(comodel_name="event.tournament.match.mode")
     won_sets = fields.Integer()
     lost_sets = fields.Integer()
-    win_points = fields.Integer()
-    lose_points = fields.Integer()
+    win_points = fields.Integer(
+        help="Points awarded to the teams that wins the match.",
+    )
+    lose_points = fields.Integer(
+        help="Points awarded to the teams that do not win the match.",
+    )
 
 
 class EventTournamentMatchMode(models.Model):
@@ -35,10 +39,12 @@ class EventTournamentMatchMode(models.Model):
         """
         self.ensure_one()
         tournament_points = Counter(match.team_ids)
-        for team, sets_info in match.get_sets_info().items():
+        stats = match.stats_ids
+        for stat in stats:
+            team = stat.team_id
             won_lost_sets = (won_sets, lost_sets) = (
-                sets_info["won_sets"],
-                sets_info["lost_sets"],
+                stat.won_sets_count,
+                stat.lost_sets_count,
             )
 
             for res in self.result_ids:
@@ -62,3 +68,29 @@ class EventTournamentMatchMode(models.Model):
                     )
                 )
         return tournament_points
+
+    def get_set_winners(self, set_):
+        winner_teams = self.env["event.tournament.team"].browse()
+
+        for team in set_.match_team_ids:
+            results = set_.result_ids
+            team_results = results.filtered(lambda result: result.team_id == team)
+            other_teams_results = results - team_results
+            set_done_points = sum(team_results.mapped("score"))
+            set_taken_points = sum(other_teams_results.mapped("score"))
+            if set_done_points > set_taken_points:
+                winner_teams |= team
+        return winner_teams
+
+    def get_match_winners(self, match):
+        winner_teams = self.env["event.tournament.team"].browse()
+        max_won_sets = 0
+        for stat in match.stats_ids:
+            team = stat.team_id
+            won_sets_count = stat.won_sets_count
+            if won_sets_count == max_won_sets:
+                winner_teams |= team
+            elif won_sets_count > max_won_sets:
+                winner_teams = team
+                max_won_sets = won_sets_count
+        return winner_teams

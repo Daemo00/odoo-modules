@@ -14,18 +14,50 @@ class EventRegistration(models.Model):
         column1="team_id",
         column2="component_id",
     )
+    tournament_match_ids = fields.Many2many(
+        comodel_name="event.tournament.match",
+        related="tournament_team_ids.match_ids",
+        string="Matches",
+        relation="event_tournament_match_component_rel",
+        column1="match_id",
+        column2="component_id",
+    )
     teams_number = fields.Integer(
         compute="_compute_teams_number",
         store=True,
     )
-    done_points = fields.Float(compute="_compute_teams_points", store=True)
-    taken_points = fields.Float(compute="_compute_teams_points", store=True)
-    points_ratio = fields.Float(compute="_compute_teams_points", store=True)
-    won_sets = fields.Integer(compute="_compute_teams_points", store=True)
-    matches_points = fields.Integer(compute="_compute_teams_points", store=True)
-    matches_done = fields.Integer(compute="_compute_teams_points", store=True)
     tournament_ids = fields.Many2many(
         comodel_name="event.tournament", compute="_compute_tournaments", store=True
+    )
+    tournament_stats_ids = fields.Many2many(
+        comodel_name="event.tournament.match.team_stats",
+        compute="_compute_tournament_stats_ids",
+        store=True,
+    )
+    done_points = fields.Integer(compute="_compute_tournament_stats_ids", store=True)
+    taken_points = fields.Integer(compute="_compute_tournament_stats_ids", store=True)
+    won_set_ids = fields.Many2many(
+        comodel_name="event.tournament.match.set",
+        compute="_compute_tournament_stats_ids",
+        relation="event_tournament_registration_won_set_rel",
+        column1="registration_id",
+        column2="set_id",
+        store=True,
+    )
+    won_sets_count = fields.Integer(compute="_compute_tournament_stats_ids", store=True)
+    lost_set_ids = fields.Many2many(
+        comodel_name="event.tournament.match.set",
+        compute="_compute_tournament_stats_ids",
+        relation="event_tournament_registration_lost_set_rel",
+        column1="registration_id",
+        column2="set_id",
+        store=True,
+    )
+    lost_sets_count = fields.Integer(
+        compute="_compute_tournament_stats_ids", store=True
+    )
+    tournament_points = fields.Integer(
+        compute="_compute_tournament_stats_ids", store=True
     )
     birthdate_date = fields.Date(string="Birthdate")
     gender = fields.Selection(
@@ -38,6 +70,30 @@ class EventRegistration(models.Model):
         readonly=True,
         default=lambda self: fields.Datetime.now(),
     )
+    sets_ratio = fields.Float(compute="_compute_sets_ratio", store=True, digits=(16, 5))
+    points_ratio = fields.Float(
+        compute="_compute_points_ratio", store=True, digits=(16, 5)
+    )
+
+    @api.depends(
+        "tournament_stats_ids.done_points",
+        "tournament_stats_ids.taken_points",
+    )
+    def _compute_points_ratio(self):
+        for registration in self:
+            registration.points_ratio = (
+                registration.tournament_team_ids.stats_ids.get_points_ratio()
+            )
+
+    @api.depends(
+        "tournament_stats_ids.lost_sets_count",
+        "tournament_stats_ids.won_sets_count",
+    )
+    def _compute_sets_ratio(self):
+        for registration in self:
+            registration.sets_ratio = (
+                registration.tournament_team_ids.stats_ids.get_sets_ratio()
+            )
 
     @api.depends(
         "tournament_team_ids",
@@ -66,23 +122,22 @@ class EventRegistration(models.Model):
             )
 
     @api.depends(
-        "tournament_team_ids.done_points",
-        "tournament_team_ids.taken_points",
-        "tournament_team_ids.points_ratio",
-        "tournament_team_ids.won_sets",
-        "tournament_team_ids.matches_points",
-        "tournament_team_ids.match_ids.state",
+        "tournament_match_ids.state",
     )
-    def _compute_teams_points(self):
+    def _compute_tournament_stats_ids(self):
         for registration in self:
             teams = registration.tournament_team_ids
-            registration.done_points = sum(team.done_points for team in teams)
-            registration.taken_points = sum(team.taken_points for team in teams)
-            registration.points_ratio = registration.done_points / (
-                registration.taken_points or 1
-            )
-            registration.won_sets = sum(team.won_sets for team in teams)
-            registration.matches_points = sum(team.matches_points for team in teams)
+            stats = teams.stats_ids
+            registration.tournament_stats_ids = stats
 
-            matches = teams.match_ids.filtered(lambda m: m.state == "done")
-            registration.matches_done = len(matches)
+            registration.done_points = sum(stats.mapped("done_points"))
+            registration.taken_points = sum(stats.mapped("taken_points"))
+            registration.won_set_ids = stats.won_set_ids
+            registration.won_sets_count = sum(stats.mapped("won_sets_count"))
+            registration.lost_set_ids = stats.lost_set_ids
+            registration.lost_sets_count = sum(stats.mapped("lost_sets_count"))
+            registration.tournament_points = sum(stats.mapped("tournament_points"))
+
+    def button_compute_tournament_stats_ids(self):
+        """Public method (callable from UI) for computing match's points."""
+        self._compute_tournament_stats_ids()
