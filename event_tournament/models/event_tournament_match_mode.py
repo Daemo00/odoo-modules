@@ -3,7 +3,7 @@
 
 from collections import Counter
 
-from odoo import _, fields, models
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
 
@@ -30,6 +30,31 @@ class EventTournamentMatchMode(models.Model):
     result_ids = fields.One2many(
         comodel_name="event.tournament.match.mode.result", inverse_name="mode_id"
     )
+    win_set_points = fields.Integer(
+        string="Points for winning a set",
+    )
+    win_tie_break_points = fields.Integer(
+        string="Points for winning the tie break",
+    )
+    win_set_break_points = fields.Integer(
+        string="Break for winning a set",
+    )
+    tie_break_number = fields.Integer(
+        compute="_compute_tie_break_number",
+        store=True,
+        readonly=False,
+    )
+
+    @api.depends(
+        "result_ids.won_sets",
+        "result_ids.lost_sets",
+    )
+    def _compute_tie_break_number(self):
+        for mode in self:
+            results = mode.result_ids
+            max_played_sets = max(r.won_sets + r.lost_sets for r in results)
+            tie_break_set_number = int(max_played_sets / 2) + 1
+            mode.tie_break_number = tie_break_set_number
 
     def get_points(self, match):
         """
@@ -70,16 +95,65 @@ class EventTournamentMatchMode(models.Model):
         return tournament_points
 
     def get_set_winners(self, set_):
-        winner_teams = self.env["event.tournament.team"].browse()
-
+        # Might be substituted by something like set.team_stats
+        team_points_dict = {}
         for team in set_.match_team_ids:
             results = set_.result_ids
             team_results = results.filtered(lambda result: result.team_id == team)
-            other_teams_results = results - team_results
-            set_done_points = sum(team_results.mapped("score"))
-            set_taken_points = sum(other_teams_results.mapped("score"))
-            if set_done_points > set_taken_points:
-                winner_teams |= team
+            team_points = sum(team_results.mapped("score"))
+            team_points_dict[team] = team_points
+
+        points = sorted(team_points_dict.values())
+        max_points = points[-1]
+        other_points = sorted([score for score in points if score != max_points])
+        if not other_points:
+            raise UserError(
+                _(
+                    "Set %(set)s not valid:\n" "Ties are not allowed",
+                    set=set_.display_name,
+                )
+            )
+        second_max_points = other_points[-1]
+
+        win_set_points = (
+            self.win_set_points if not set_.is_tie_break else self.win_tie_break_points
+        )
+        win_break_points = self.win_set_break_points
+        if max_points < win_set_points:
+            raise UserError(
+                _(
+                    "Set %(set)s not valid:\n"
+                    "At least one team must reach %(win_set_points)d",
+                    set=set_.display_name,
+                    win_set_points=win_set_points,
+                )
+            )
+        else:
+            break_points = max_points - second_max_points
+            if (
+                # 25 - 24 is not valid for volleyball
+                max_points == win_set_points
+                and break_points < win_break_points
+            ) or (
+                # 33 - 30 is not valid for volleyball
+                max_points > win_set_points
+                and break_points != win_break_points
+            ):
+                raise UserError(
+                    _(
+                        "Set %(set)s not valid:\n"
+                        "There must be exactly %(win_break_points)d points "
+                        "between the winner and the second team.",
+                        set=set_.display_name,
+                        win_break_points=win_break_points,
+                    )
+                )
+
+        winner_teams = filter(
+            lambda t: team_points_dict[t] == max_points, team_points_dict.keys()
+        )
+        winner_teams_ids = [t.id for t in winner_teams]
+        winner_teams = self.env["event.tournament.team"].browse(winner_teams_ids)
         return winner_teams
 
     def get_match_winners(self, match):
