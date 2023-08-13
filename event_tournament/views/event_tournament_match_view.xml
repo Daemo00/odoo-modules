@@ -23,6 +23,7 @@
                 </header>
                 <sheet>
                     <group>
+                        <field name="event_id" />
                         <field name="tournament_id" />
                         <field name="court_id" />
                         <field name="time_scheduled_start" />
