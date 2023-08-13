@@ -36,6 +36,9 @@ class EventTournamentMatch(models.Model):
     set_ids = fields.One2many(
         comodel_name="event.tournament.match.set",
         inverse_name="match_id",
+        compute="_compute_set_ids",
+        store=True,
+        readonly=False,
         string="Sets",
         domain="[('match_id', '=', id)]",
         states={"done": [("readonly", True)]},
@@ -392,6 +395,27 @@ class EventTournamentMatch(models.Model):
                 stats = stats_model.browse()
             match.stats_ids = stats
 
+    @api.depends(
+        "match_mode_id.tie_break_number",
+    )
+    def _compute_set_ids(self):
+        for match in self:
+            mode = match.match_mode_id
+            tie_break_number = mode.tie_break_number
+            if tie_break_number:
+                sets_command = [
+                    Command.create(
+                        {
+                            # + 1 for naming them 1, 2 instead of 0, 1
+                            "name": str(s + 1),
+                        }
+                    )
+                    for s in range(tie_break_number + 1)
+                ]
+            else:
+                sets_command = []
+            match.set_ids = sets_command
+
 
 class EventTournamentMatchTeamStats(models.Model):
     _name = "event.tournament.match.team_stats"
@@ -412,11 +436,11 @@ class EventTournamentMatchTeamStats(models.Model):
         comodel_name="event.tournament.match.set",
         relation="event_tournament_match_team_stats_lost_set_rel",
         string="Lost sets",
-        compute="_compute_stats",
+        compute="_compute_sets",
         store=True,
     )
     lost_sets_count = fields.Integer(
-        compute="_compute_stats",
+        compute="_compute_sets",
         store=True,
     )
 
@@ -424,20 +448,20 @@ class EventTournamentMatchTeamStats(models.Model):
         comodel_name="event.tournament.match.set",
         relation="event_tournament_match_team_stats_won_set_rel",
         string="Won sets",
-        compute="_compute_stats",
+        compute="_compute_sets",
         store=True,
     )
     won_sets_count = fields.Integer(
-        compute="_compute_stats",
+        compute="_compute_sets",
         store=True,
     )
 
     done_points = fields.Integer(
-        compute="_compute_stats",
+        compute="_compute_points",
         store=True,
     )
     taken_points = fields.Integer(
-        compute="_compute_stats",
+        compute="_compute_points",
         store=True,
     )
 
@@ -469,33 +493,20 @@ class EventTournamentMatchTeamStats(models.Model):
     @api.depends(
         "match_id.set_ids.result_ids.score",
     )
-    def _compute_stats(self):
+    def _compute_points(self):
         for stat in self:
-            match = stat.match_id
             team = stat.team_id
+            match = stat.match_id
 
             sets = match.set_ids
-            lost_sets = won_sets = sets.browse()
-            done_points = taken_points = 0
-            for set_ in sets:
-                results = set_.result_ids
-                team_results = results.filtered(lambda result: result.team_id == team)
-                other_teams_results = results - team_results
-                set_done_points = sum(team_results.mapped("score"))
-                set_taken_points = sum(other_teams_results.mapped("score"))
-                if set_done_points > set_taken_points:
-                    won_sets |= set_
-                else:
-                    lost_sets |= set_
-                done_points += set_done_points
-                taken_points += set_taken_points
+            results = sets.result_ids
+            match_points = sum(results.mapped("score"))
 
-            stat.won_set_ids = won_sets
-            stat.won_sets_count = len(won_sets)
-            stat.lost_set_ids = lost_sets
-            stat.lost_sets_count = len(lost_sets)
-            stat.done_points = done_points
-            stat.taken_points = taken_points
+            team_results = results.filtered(lambda result: result.team_id == team)
+            team_points = sum(team_results.mapped("score"))
+
+            stat.done_points = team_points
+            stat.taken_points = match_points - team_points
 
     @api.depends(
         "match_id.state",
@@ -512,6 +523,30 @@ class EventTournamentMatchTeamStats(models.Model):
                     tournament_points = match_points.get(team, 0)
 
             stat.tournament_points = tournament_points
+
+    @api.depends(
+        "match_id.state",
+    )
+    def _compute_sets(self):
+        set_model = self.env["event.tournament.match.set"]
+        for stat in self:
+            match = stat.match_id
+            team = stat.team_id
+
+            lost_sets = won_sets = set_model.browse()
+            if match.state == "done":
+                sets = match.set_ids
+                for set_ in sets:
+                    set_winners = set_.winner_team_ids
+                    if team in set_winners:
+                        won_sets |= set_
+                    else:
+                        lost_sets |= set_
+
+            stat.won_set_ids = won_sets
+            stat.won_sets_count = len(won_sets)
+            stat.lost_set_ids = lost_sets
+            stat.lost_sets_count = len(lost_sets)
 
     @api.model
     def calculate_ratio(self, won, lost):
@@ -551,7 +586,9 @@ class EventTournamentMatchSet(models.Model):
     _description = "Set of a Tournament match"
     _rec_name = "name"
 
-    name = fields.Char()
+    name = fields.Char(
+        required=True,
+    )
     match_id = fields.Many2one(
         comodel_name="event.tournament.match", required=True, ondelete="cascade"
     )
@@ -566,6 +603,8 @@ class EventTournamentMatchSet(models.Model):
     result_ids = fields.One2many(
         comodel_name="event.tournament.match.set.result",
         inverse_name="set_id",
+        compute="_compute_result_ids",
+        store=True,
         readonly=False,
     )
     winner_team_ids = fields.Many2many(
@@ -577,6 +616,24 @@ class EventTournamentMatchSet(models.Model):
         store=True,
         help="Only computed on done matches.",
     )
+    is_tie_break = fields.Boolean(
+        compute="_compute_is_tie_break",
+        store=True,
+    )
+
+    @api.depends(
+        "match_id.match_mode_id.tie_break_number",
+    )
+    def _compute_is_tie_break(self):
+        for set_ in self:
+            match = set_.match_id
+            match_mode = match.match_mode_id
+            tie_break_number = match_mode.tie_break_number
+            sets = match.set_ids
+            is_tie_break = (
+                len(sets) >= tie_break_number and sets[tie_break_number] == set_
+            )
+            set_.is_tie_break = is_tie_break
 
     @api.depends(
         "match_id.state",
@@ -591,31 +648,41 @@ class EventTournamentMatchSet(models.Model):
                 winner_teams = self.env["event.tournament.team"].browse()
             set_.winner_team_ids = winner_teams
 
-    @api.model
-    def _get_default_result_ids(self, match):
-        match_teams = match.team_ids
-        new_results = [
-            Command.create(
-                {
-                    "team_id": team.id,
-                }
+    @api.depends(
+        "match_id.team_ids",
+    )
+    def _compute_result_ids(self):
+        for set_ in self:
+            match = set_.match_id
+            needing_result_teams = match.team_ids
+            existing_results = set_.result_ids
+            results_command = []
+            if existing_results:
+                for existing_result in existing_results:
+                    team = existing_result.team_id
+                    if team not in match.team_ids:
+                        # Otherwise when a team is removed from the match,
+                        # the result cannot be deleted
+                        # (tries to empty its set_id before deleting it)
+                        if not isinstance(match.id, NewId):
+                            # A team has been removed: remove its results
+                            results_command.append(
+                                Command.delete(existing_result.id),
+                            )
+                    else:
+                        needing_result_teams -= team
+
+            results_command.extend(
+                [
+                    Command.create(
+                        {
+                            "team_id": team.id,
+                        }
+                    )
+                    for team in needing_result_teams
+                ]
             )
-            for team in match_teams
-        ]
-        return new_results
-
-    @api.model
-    def default_get(self, fields_list):
-        # The match is in the context, but it is not really missing
-        fields_list.append("match_id")
-        defaults = super().default_get(fields_list)
-        if "result_ids" in fields_list:
-            match_id = defaults.get("match_id")
-            match = self.match_id.browse(match_id)
-            new_results = self._get_default_result_ids(match)
-            defaults["result_ids"] = new_results
-
-        return defaults
+            set_.result_ids = results_command
 
 
 class EventTournamentMatchSetResult(models.Model):
