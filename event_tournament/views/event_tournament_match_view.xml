@@ -25,6 +25,7 @@
                     <group>
                         <field name="event_id" />
                         <field name="tournament_id" />
+                        <field name="match_mode_id" invisible="True" />
                         <field name="court_id" />
                         <field name="time_scheduled_start" />
                         <field name="time_scheduled_end" />
@@ -33,7 +34,11 @@
                             name="set_ids"
                             widget="many2many_tags"
                             context="{'default_match_id': id}"
-                        />
+                        >
+                            <tree>
+                                <field name="name" />
+                            </tree>
+                        </field>
                         <field
                             name="result_ids"
                             widget="x2many_2d_matrix"

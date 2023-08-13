@@ -20,6 +20,9 @@
                 'win_points': 2,
                 'lose_points': 1})]"
         />
+        <field name="win_set_points">21</field>
+        <field name="win_tie_break_points">15</field>
+        <field name="win_set_break_points">2</field>
     </record>
     <record
         id="event_tournament_match_mode_indoor_volley"
@@ -45,5 +48,8 @@
                 'win_points': 2,
                 'lose_points': 1})]"
         />
+        <field name="win_set_points">25</field>
+        <field name="win_tie_break_points">15</field>
+        <field name="win_set_break_points">2</field>
     </record>
 </odoo>
