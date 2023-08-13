@@ -17,6 +17,10 @@
                                 <field name="lose_points" />
                             </tree>
                         </field>
+                        <field name="win_set_break_points" />
+                        <field name="win_set_points" />
+                        <field name="win_tie_break_points" />
+                        <field name="tie_break_number" />
                     </group>
                 </sheet>
             </form>
