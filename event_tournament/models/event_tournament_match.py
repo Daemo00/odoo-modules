@@ -13,6 +13,10 @@ class EventTournamentMatch(models.Model):
     _description = "Tournament match"
     _order = "time_scheduled_start"
 
+    event_id = fields.Many2one(
+        related="tournament_id.event_id",
+    )
+
     tournament_id = fields.Many2one(
         comodel_name="event.tournament",
         string="Tournament",
@@ -26,13 +30,14 @@ class EventTournamentMatch(models.Model):
         comodel_name="event.tournament.court",
         string="Court",
         required=True,
+        domain="[('event_id', '=', event_id)]",
         states={"done": [("readonly", True)]},
     )
     set_ids = fields.One2many(
         comodel_name="event.tournament.match.set",
         inverse_name="match_id",
         string="Sets",
-        domain="[" "('match_id', '=', id)," "]",
+        domain="[('match_id', '=', id)]",
         states={"done": [("readonly", True)]},
     )
     result_ids = fields.One2many(
@@ -85,11 +90,6 @@ class EventTournamentMatch(models.Model):
         compute="_compute_stats_ids",
         store=True,
     )
-
-    @api.onchange("tournament_id")
-    def onchange_tournament(self):
-        event_domain = [("event_id", "=", self.tournament_id.event_id.id)]
-        return {"domain": {"court_id": event_domain}}
 
     @api.depends("team_ids.component_ids")
     def _compute_components(self):
