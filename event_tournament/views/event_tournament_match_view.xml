@@ -29,7 +29,11 @@
                         <field name="court_id" />
                         <field name="time_scheduled_start" />
                         <field name="time_scheduled_end" />
-                        <field name="team_ids" widget="many2many_tags" />
+                        <field
+                            name="team_ids"
+                            widget="many2many_tags"
+                            options="{'open': True,}"
+                        />
                         <field
                             name="set_ids"
                             widget="many2many_tags"
@@ -60,7 +64,11 @@
                             ],
                         }"
                     >
-                        <field name="winner_team_ids" widget="many2many_tags" />
+                        <field
+                            name="winner_team_ids"
+                            widget="many2many_tags"
+                            options="{'open': True,}"
+                        />
                         <field name="time_done" />
                         <field name="stats_ids" />
                     </group>
