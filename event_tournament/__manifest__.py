@@ -14,6 +14,7 @@
         "partner_contact_gender",
         "web_timeline",
         "web_widget_x2many_2d_matrix",
+        "web_m2x_options",
     ],
     "external_dependencies": {
         "python": [
