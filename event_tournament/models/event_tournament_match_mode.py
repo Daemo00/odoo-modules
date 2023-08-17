@@ -63,108 +63,117 @@ class EventTournamentMatchMode(models.Model):
         :return: A dictionary mapping teams to how many points they obtained
         """
         self.ensure_one()
-        tournament_points = Counter(match.team_ids)
-        stats = match.stats_ids
-        for stat in stats:
-            team = stat.team_id
-            won_lost_sets = (won_sets, lost_sets) = (
-                stat.won_sets_count,
-                stat.lost_sets_count,
-            )
-
-            for res in self.result_ids:
-                if won_lost_sets == (res.won_sets, res.lost_sets):
-                    tournament_points[team] = res.win_points
-                    break
-                if won_lost_sets == (res.lost_sets, res.won_sets):
-                    tournament_points[team] = res.lose_points
-                    break
-            else:
-                raise UserError(
-                    _(
-                        "Match {match_name} not valid:\n"
-                        "Result {won_sets} - {lost_sets} not expected "
-                        "for match mode {match_mode}."
-                    ).format(
-                        match_name=match.display_name,
-                        won_sets=won_sets,
-                        lost_sets=lost_sets,
-                        match_mode=self.display_name,
-                    )
+        if match.state == "done":
+            tournament_points = Counter(match.team_ids)
+            stats = match.stats_ids
+            for stat in stats:
+                team = stat.team_id
+                won_lost_sets = (won_sets, lost_sets) = (
+                    stat.won_sets_count,
+                    stat.lost_sets_count,
                 )
+
+                for res in self.result_ids:
+                    if won_lost_sets == (res.won_sets, res.lost_sets):
+                        tournament_points[team] = res.win_points
+                        break
+                    if won_lost_sets == (res.lost_sets, res.won_sets):
+                        tournament_points[team] = res.lose_points
+                        break
+                else:
+                    raise UserError(
+                        _(
+                            "Match {match_name} not valid:\n"
+                            "Result {won_sets} - {lost_sets} not expected "
+                            "for match mode {match_mode}."
+                        ).format(
+                            match_name=match.display_name,
+                            won_sets=won_sets,
+                            lost_sets=lost_sets,
+                            match_mode=self.display_name,
+                        )
+                    )
+        else:
+            tournament_points = 0
         return tournament_points
 
     def get_set_winners(self, set_):
-        # Might be substituted by something like set.team_stats
-        team_points_dict = {}
-        for team in set_.match_team_ids:
-            results = set_.result_ids
-            team_results = results.filtered(lambda result: result.team_id == team)
-            team_points = sum(team_results.mapped("score"))
-            team_points_dict[team] = team_points
+        self.ensure_one()
+        match = set_.match_id
+        if match.state == "done":
+            # Might be substituted by something like set.team_stats
+            team_points_dict = {
+                result.team_id: result.score for result in set_.result_ids
+            }
 
-        points = sorted(team_points_dict.values())
-        max_points = points[-1]
-        other_points = sorted([score for score in points if score != max_points])
-        if not other_points:
-            raise UserError(
-                _(
-                    "Set %(set)s not valid:\n" "Ties are not allowed",
-                    set=set_.display_name,
+            points = sorted(team_points_dict.values())
+            max_points = points[-1]
+            other_points = sorted([score for score in points if score != max_points])
+            if not other_points:
+                raise UserError(
+                    _(
+                        "Set %(set)s not valid:\n" "Ties are not allowed",
+                        set=set_.display_name,
+                    )
                 )
-            )
-        second_max_points = other_points[-1]
+            second_max_points = other_points[-1]
 
-        win_set_points = (
-            self.win_set_points if not set_.is_tie_break else self.win_tie_break_points
-        )
-        win_break_points = self.win_set_break_points
-        if max_points < win_set_points:
-            raise UserError(
-                _(
-                    "Set %(set)s not valid:\n"
-                    "At least one team must reach %(win_set_points)d",
-                    set=set_.display_name,
-                    win_set_points=win_set_points,
-                )
+            win_set_points = (
+                self.win_set_points
+                if not set_.is_tie_break
+                else self.win_tie_break_points
             )
-        else:
-            break_points = max_points - second_max_points
-            if (
-                # 25 - 24 is not valid for volleyball
-                max_points == win_set_points
-                and break_points < win_break_points
-            ) or (
-                # 33 - 30 is not valid for volleyball
-                max_points > win_set_points
-                and break_points != win_break_points
-            ):
+            win_break_points = self.win_set_break_points
+            if max_points < win_set_points:
                 raise UserError(
                     _(
                         "Set %(set)s not valid:\n"
-                        "There must be exactly %(win_break_points)d points "
-                        "between the winner and the second team.",
+                        "At least one team must reach %(win_set_points)d",
                         set=set_.display_name,
-                        win_break_points=win_break_points,
+                        win_set_points=win_set_points,
                     )
                 )
+            else:
+                break_points = max_points - second_max_points
+                if (
+                    # 25 - 24 is not valid for volleyball
+                    max_points == win_set_points
+                    and break_points < win_break_points
+                ) or (
+                    # 33 - 30 is not valid for volleyball
+                    max_points > win_set_points
+                    and break_points != win_break_points
+                ):
+                    raise UserError(
+                        _(
+                            "Set %(set)s not valid:\n"
+                            "There must be exactly %(win_break_points)d points "
+                            "between the winner and the second team.",
+                            set=set_.display_name,
+                            win_break_points=win_break_points,
+                        )
+                    )
 
-        winner_teams = filter(
-            lambda t: team_points_dict[t] == max_points, team_points_dict.keys()
-        )
-        winner_teams_ids = [t.id for t in winner_teams]
-        winner_teams = self.env["event.tournament.team"].browse(winner_teams_ids)
+            winner_teams = filter(
+                lambda t: team_points_dict[t] == max_points, team_points_dict.keys()
+            )
+            winner_teams_ids = [t.id for t in winner_teams]
+            winner_teams = self.env["event.tournament.team"].browse(winner_teams_ids)
+        else:
+            winner_teams = self.env["event.tournament.team"].browse()
         return winner_teams
 
     def get_match_winners(self, match):
+        self.ensure_one()
         winner_teams = self.env["event.tournament.team"].browse()
-        max_won_sets = 0
-        for stat in match.stats_ids:
-            team = stat.team_id
-            won_sets_count = stat.won_sets_count
-            if won_sets_count == max_won_sets:
-                winner_teams |= team
-            elif won_sets_count > max_won_sets:
-                winner_teams = team
-                max_won_sets = won_sets_count
+        if match.state == "done":
+            max_won_sets = 0
+            for stat in match.stats_ids:
+                team = stat.team_id
+                won_sets_count = stat.won_sets_count
+                if won_sets_count == max_won_sets:
+                    winner_teams |= team
+                elif won_sets_count > max_won_sets:
+                    winner_teams = team
+                    max_won_sets = won_sets_count
         return winner_teams

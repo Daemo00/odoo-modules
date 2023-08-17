@@ -271,10 +271,23 @@ class EventTournamentTeam(models.Model):
     def _compute_stats(self):
         for team in self:
             stats = team.stats_ids
-            team.done_points = sum(stats.mapped("done_points"))
-            team.taken_points = sum(stats.mapped("taken_points"))
+            if stats:
+                done_points = sum(stats.mapped("done_points"))
+                taken_points = sum(stats.mapped("taken_points"))
+                won_sets_count = sum(stats.mapped("won_sets_count"))
+                lost_sets_count = sum(stats.mapped("lost_sets_count"))
+                tournament_points = sum(stats.mapped("tournament_points"))
+            else:
+                done_points = 0
+                taken_points = 0
+                won_sets_count = 0
+                lost_sets_count = 0
+                tournament_points = 0
+
+            team.done_points = done_points
+            team.taken_points = taken_points
             team.won_set_ids = stats.won_set_ids
-            team.won_sets_count = sum(stats.mapped("won_sets_count"))
+            team.won_sets_count = won_sets_count
             team.lost_set_ids = stats.lost_set_ids
-            team.lost_sets_count = sum(stats.mapped("lost_sets_count"))
-            team.tournament_points = sum(stats.mapped("tournament_points"))
+            team.lost_sets_count = lost_sets_count
+            team.tournament_points = tournament_points
