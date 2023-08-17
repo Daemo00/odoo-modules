@@ -94,7 +94,7 @@ class EventTournamentMatchMode(models.Model):
                         )
                     )
         else:
-            tournament_points = 0
+            tournament_points = {}
         return tournament_points
 
     def get_set_winners(self, set_):

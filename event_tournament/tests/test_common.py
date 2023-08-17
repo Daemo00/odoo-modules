@@ -175,7 +175,7 @@ class TestCommon(TransactionCase):
     def get_match_lines_1_2(self, teams):
         # 10-21, 21-18, 8-15
         set_1_values = {
-            "name": "1",
+            "name": "test set 1",
             "result_ids": [
                 Command.create(
                     {
@@ -192,7 +192,7 @@ class TestCommon(TransactionCase):
             ],
         }
         set_2_values = {
-            "name": "2",
+            "name": "test set 2",
             "result_ids": [
                 Command.create(
                     {
@@ -209,7 +209,7 @@ class TestCommon(TransactionCase):
             ],
         }
         set_3_values = {
-            "name": "3",
+            "name": "test set 3",
             "result_ids": [
                 Command.create(
                     {
