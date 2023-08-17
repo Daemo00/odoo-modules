@@ -93,7 +93,7 @@
         <field name="name">event.tournament.team tree view</field>
         <field name="model">event.tournament.team</field>
         <field name="arch" type="xml">
-            <tree>
+            <tree default_order="tournament_points desc, points_ratio desc, sequence">
                 <field name="event_id" />
                 <field name="tournament_id" />
                 <field name="name" />

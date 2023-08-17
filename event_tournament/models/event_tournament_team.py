@@ -11,7 +11,6 @@ class EventTournamentTeam(models.Model):
     _name = "event.tournament.team"
     _description = "Tournament team"
     _rec_name = "name"
-    _order = "tournament_points desc, points_ratio desc, sequence"
 
     sequence = fields.Integer()
     event_id = fields.Many2one(related="tournament_id.event_id", readonly=True)

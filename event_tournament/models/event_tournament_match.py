@@ -397,21 +397,26 @@ class EventTournamentMatch(models.Model):
     )
     def _compute_set_ids(self):
         for match in self:
-            mode = match.match_mode_id
-            tie_break_number = mode.tie_break_number
-            if tie_break_number:
-                sets_command = [
-                    Command.create(
-                        {
-                            # + 1 for naming them 1, 2 instead of 0, 1
-                            "name": str(s + 1),
-                        }
-                    )
-                    for s in range(tie_break_number + 1)
-                ]
+            existing_sets = match.set_ids
+            if not existing_sets:
+                mode = match.match_mode_id
+                tie_break_number = mode.tie_break_number
+                if tie_break_number:
+                    sets_command = [
+                        Command.create(
+                            {
+                                # + 1 for naming them 1, 2 instead of 0, 1
+                                "name": str(s + 1),
+                            }
+                        )
+                        for s in range(tie_break_number + 1)
+                    ]
+                else:
+                    sets_command = []
+                sets = sets_command
             else:
-                sets_command = []
-            match.set_ids = sets_command
+                sets = existing_sets
+            match.set_ids = sets
 
 
 class EventTournamentMatchTeamStats(models.Model):
@@ -637,7 +642,7 @@ class EventTournamentMatchSet(models.Model):
             tie_break_number = match_mode.tie_break_number
             sets = match.set_ids
             is_tie_break = (
-                len(sets) >= tie_break_number and sets[tie_break_number] == set_
+                len(sets) > tie_break_number and sets[tie_break_number] == set_
             )
             set_.is_tie_break = is_tie_break
 
