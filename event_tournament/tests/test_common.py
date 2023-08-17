@@ -1,6 +1,7 @@
 #  Copyright 2019 ~ 2023 Simone Rubino <daemo00@gmail.com>
 #  License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
-from odoo.fields import first
+
+from odoo.fields import Command, first
 from odoo.tests import TransactionCase, date
 
 EVENT_NBR = 2
@@ -106,6 +107,9 @@ class TestCommon(TransactionCase):
         tournament = self.tournament_model.create(
             {
                 "event_id": event.id,
+                "match_mode_id": self.ref(
+                    "event_tournament.event_tournament_match_mode_beach_volley"
+                ),
                 "court_ids": courts.ids,
                 "name": "event {event_index}, "
                 "tournament {tournament_index}".format(
@@ -169,20 +173,65 @@ class TestCommon(TransactionCase):
         return match
 
     def get_match_lines_1_2(self, teams):
-        line_1_values = {
-            "team_id": teams[0].id,
-            "set_1": 10,
-            "set_3": 21,
-            "set_4": 8,
+        # 10-21, 21-18, 8-15
+        set_1_values = {
+            "name": "1",
+            "result_ids": [
+                Command.create(
+                    {
+                        "team_id": teams[0].id,
+                        "score": 10,
+                    }
+                ),
+                Command.create(
+                    {
+                        "team_id": teams[1].id,
+                        "score": 21,
+                    }
+                ),
+            ],
         }
-        line_2_values = {
-            "team_id": teams[1].id,
-            "set_1": 21,
-            "set_3": 18,
-            "set_4": 15,
+        set_2_values = {
+            "name": "2",
+            "result_ids": [
+                Command.create(
+                    {
+                        "team_id": teams[0].id,
+                        "score": 21,
+                    }
+                ),
+                Command.create(
+                    {
+                        "team_id": teams[1].id,
+                        "score": 18,
+                    }
+                ),
+            ],
+        }
+        set_3_values = {
+            "name": "3",
+            "result_ids": [
+                Command.create(
+                    {
+                        "team_id": teams[0].id,
+                        "score": 8,
+                    }
+                ),
+                Command.create(
+                    {
+                        "team_id": teams[1].id,
+                        "score": 15,
+                    }
+                ),
+            ],
         }
         return {
-            "line_ids": [(0, 0, line_1_values), (0, 0, line_2_values)],
+            "set_ids": [
+                Command.clear(),
+                Command.create(set_1_values),
+                Command.create(set_2_values),
+                Command.create(set_3_values),
+            ],
         }
 
     def get_match_1_1(self, teams):
@@ -200,9 +249,45 @@ class TestCommon(TransactionCase):
         return match
 
     def get_match_lines_1_1(self, teams):
+        # 10-21, 21-18
+        set_1_values = {
+            "name": "1",
+            "result_ids": [
+                Command.create(
+                    {
+                        "team_id": teams[0].id,
+                        "score": 10,
+                    }
+                ),
+                Command.create(
+                    {
+                        "team_id": teams[1].id,
+                        "score": 21,
+                    }
+                ),
+            ],
+        }
+        set_2_values = {
+            "name": "2",
+            "result_ids": [
+                Command.create(
+                    {
+                        "team_id": teams[0].id,
+                        "score": 21,
+                    }
+                ),
+                Command.create(
+                    {
+                        "team_id": teams[1].id,
+                        "score": 18,
+                    }
+                ),
+            ],
+        }
         return {
-            "line_ids": [
-                (0, 0, {"team_id": teams[0].id, "set_1": 10, "set_3": 21}),
-                (0, 0, {"team_id": teams[1].id, "set_1": 21, "set_3": 18}),
+            "set_ids": [
+                Command.clear(),
+                Command.create(set_1_values),
+                Command.create(set_2_values),
             ],
         }
