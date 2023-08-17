@@ -123,6 +123,13 @@ class EventRegistration(models.Model):
 
     @api.depends(
         "tournament_match_ids.state",
+        "tournament_team_ids.stats_ids.done_points",
+        "tournament_team_ids.stats_ids.taken_points",
+        "tournament_team_ids.stats_ids.won_set_ids",
+        "tournament_team_ids.stats_ids.won_sets_count",
+        "tournament_team_ids.stats_ids.lost_set_ids",
+        "tournament_team_ids.stats_ids.lost_sets_count",
+        "tournament_team_ids.stats_ids.tournament_points",
     )
     def _compute_tournament_stats_ids(self):
         for registration in self:
@@ -130,13 +137,26 @@ class EventRegistration(models.Model):
             stats = teams.stats_ids
             registration.tournament_stats_ids = stats
 
-            registration.done_points = sum(stats.mapped("done_points"))
-            registration.taken_points = sum(stats.mapped("taken_points"))
+            if stats:
+                done_points = sum(stats.mapped("done_points"))
+                taken_points = sum(stats.mapped("taken_points"))
+                won_sets_count = sum(stats.mapped("won_sets_count"))
+                lost_sets_count = sum(stats.mapped("lost_sets_count"))
+                tournament_points = sum(stats.mapped("tournament_points"))
+            else:
+                done_points = 0
+                taken_points = 0
+                won_sets_count = 0
+                lost_sets_count = 0
+                tournament_points = 0
+
+            registration.done_points = done_points
+            registration.taken_points = taken_points
             registration.won_set_ids = stats.won_set_ids
-            registration.won_sets_count = sum(stats.mapped("won_sets_count"))
+            registration.won_sets_count = won_sets_count
             registration.lost_set_ids = stats.lost_set_ids
-            registration.lost_sets_count = sum(stats.mapped("lost_sets_count"))
-            registration.tournament_points = sum(stats.mapped("tournament_points"))
+            registration.lost_sets_count = lost_sets_count
+            registration.tournament_points = tournament_points
 
     def button_compute_tournament_stats_ids(self):
         """Public method (callable from UI) for computing match's points."""
