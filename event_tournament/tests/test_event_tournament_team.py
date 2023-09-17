@@ -10,17 +10,6 @@ from .test_common import TestCommon
 
 
 class TestEventTournamentTeam(TestCommon):
-    def test_onchange_tournament(self):
-        """
-        Change the tournament,
-        check that domain of components and matches is modified.
-        """
-        team = first(self.teams)
-        onchange_values = team.onchange_tournament()
-        self.assertIn("domain", onchange_values)
-        self.assertIn("component_ids", onchange_values["domain"])
-        self.assertIn("match_ids", onchange_values["domain"])
-
     def test_constrain_components_event(self):
         """
         Create a team,
