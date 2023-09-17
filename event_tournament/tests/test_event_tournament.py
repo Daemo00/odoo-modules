@@ -5,7 +5,7 @@ from datetime import timedelta
 
 from odoo import fields
 from odoo.exceptions import UserError, ValidationError
-from odoo.fields import first
+from odoo.fields import Command, first
 
 from .test_common import COMPONENT_NBR, TEAM_NBR, TestCommon
 
@@ -317,3 +317,30 @@ class TestEventTournament(TestCommon):
         self.assertEqual(len(teams), tournament.team_count_estimated)
         # Check everyone is in a team
         self.assertEqual(components, teams.component_ids)
+
+    def test_share_components(self):
+        """Components can only be shared among teams if Share Components is True."""
+        # Arrange: the tournament can share components
+        tournament = first(self.tournaments)
+        team = first(tournament.team_ids)
+        other_team = tournament.team_ids - team
+        component = first(team.component_ids)
+        # pre-condition
+        self.assertFalse(tournament.share_components)
+        self.assertNotEqual(team, other_team)
+
+        # Assert
+        with self.assertRaises(ValidationError) as ve, self.env.cr.savepoint():
+            other_team.component_ids = [Command.link(component.id)]
+        exc_message = ve.exception.args[0]
+        self.assertIn("is already in team", exc_message)
+
+        # Arrange: the tournament cannot share components
+        tournament.share_components = True
+
+        # Act
+        other_team.component_ids = [Command.link(component.id)]
+
+        # Assert
+        common_component = team.component_ids & other_team.component_ids
+        self.assertEqual(common_component, component)

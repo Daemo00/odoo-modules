@@ -97,6 +97,7 @@
                         <page name="rules" string="Rules">
                             <group name="rules">
                                 <group name="team_rules" string="Team rules">
+                                    <field name="share_components" />
                                     <field name="min_components" />
                                     <field name="max_components" />
                                     <field name="min_components_female" />
