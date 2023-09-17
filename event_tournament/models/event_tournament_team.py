@@ -28,9 +28,13 @@ class EventTournamentTeam(models.Model):
         relation="event_tournament_team_component_rel",
         column1="component_id",
         column2="team_id",
+        domain="[" "('event_id', '=', event_id)," "]",
     )
     match_ids = fields.Many2many(
-        comodel_name="event.tournament.match", string="Matches", copy=False
+        comodel_name="event.tournament.match",
+        string="Matches",
+        copy=False,
+        domain="[" "('tournament_id', '=', tournament_id)," "]",
     )
     match_count = fields.Integer(
         compute="_compute_match_count",
@@ -97,17 +101,6 @@ class EventTournamentTeam(models.Model):
         default.setdefault("name", _("%s (copy)") % (self.name or ""))
         return super().copy(default=default)
 
-    @api.onchange("tournament_id")
-    def onchange_tournament(self):
-        components_domain = [
-            ("event_id", "=", self.event_id.id),
-            ("tournament_ids", "not in", self.tournament_id.id),
-        ]
-        matches_domain = [("tournament_id", "=", self.tournament_id.id)]
-        return {
-            "domain": {"component_ids": components_domain, "match_ids": matches_domain}
-        }
-
     @api.depends("match_ids")
     def _compute_match_count(self):
         for team in self:
@@ -163,22 +156,23 @@ class EventTournamentTeam(models.Model):
         for team in self:
             components = team.component_ids
             tournament = team.tournament_id
-            for other_team in tournament.team_ids - team:
-                for component in components:
-                    if component in other_team.component_ids:
-                        raise ValidationError(
-                            _(
-                                "Tournament {tourn_name}, "
-                                "team {team_name} not valid:\n"
-                                "component {comp_name} is already in "
-                                "team {other_team_name}."
-                            ).format(
-                                tourn_name=tournament.display_name,
-                                team_name=team.display_name,
-                                comp_name=component.display_name,
-                                other_team_name=other_team.display_name,
+            if not tournament.share_components:
+                for other_team in tournament.team_ids - team:
+                    for component in components:
+                        if component in other_team.component_ids:
+                            raise ValidationError(
+                                _(
+                                    "Tournament {tourn_name}, "
+                                    "team {team_name} not valid:\n"
+                                    "component {comp_name} is already in "
+                                    "team {other_team_name}."
+                                ).format(
+                                    tourn_name=tournament.display_name,
+                                    team_name=team.display_name,
+                                    comp_name=component.display_name,
+                                    other_team_name=other_team.display_name,
+                                )
                             )
-                        )
             if (
                 tournament.min_components
                 and len(components) < tournament.min_components
