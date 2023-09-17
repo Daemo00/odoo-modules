@@ -185,4 +185,4 @@ class TestEventTournamentTeam(TestCommon):
         with self.assertRaises(ValidationError) as ve:
             team.copy()
         exception_msg = ve.exception.args[0]
-        self.assertIn("at least 1 component", exception_msg)
+        self.assertIn("at least 2 components", exception_msg)
