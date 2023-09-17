@@ -1,5 +1,6 @@
 #  Copyright 2019 ~ 2023 Simone Rubino <daemo00@gmail.com>
 #  License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+from odoo import Command
 from odoo.exceptions import UserError
 
 from .test_common import TestCommon
@@ -35,3 +36,32 @@ class TestEventTournamentMatchMode(TestCommon):
         for team in teams:
             self.assertIn(team.name, ue.exception.args[0])
         self.assertIn(bv_mode.name, ue.exception.args[0])
+
+    def test_empty_sets(self):
+        teams = self.teams[:2]
+        match = self.get_match_1_1(teams)
+        match.set_ids = [
+            Command.create(
+                {
+                    "name": "empty",
+                    "result_ids": [
+                        Command.create(
+                            {
+                                "team_id": teams[0].id,
+                                "score": 0,
+                            }
+                        ),
+                        Command.create(
+                            {
+                                "team_id": teams[1].id,
+                                "score": 0,
+                            }
+                        ),
+                    ],
+                }
+            ),
+        ]
+        with self.assertRaises(UserError) as ue:
+            match.action_done()
+        exc_message = ue.exception.args[0]
+        self.assertIn("No-one won", exc_message)
