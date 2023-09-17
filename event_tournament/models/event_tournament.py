@@ -63,6 +63,7 @@ class EventTournament(models.Model):
         selection=[("draft", "Draft"), ("started", "Started"), ("done", "Done")],
         default="draft",
     )
+    share_components = fields.Boolean()
     min_components = fields.Integer(
         string="Minimum components",
         help="Minimum number of components for a team",
