@@ -280,6 +280,12 @@ class TestEventTournament(TestCommon):
         self.assertEqual(len(teams), tournament.team_count_estimated)
         # Check everyone is in a team
         self.assertEqual(components, teams.component_ids)
+        # Check that teams names contain their components names
+        team = first(teams)
+        team_components = team.component_ids
+        self.assertTrue(team_components)
+        for component in team_components:
+            self.assertIn(component.name, team.name)
 
     def test_generate_mixed_teams(self):
         """
