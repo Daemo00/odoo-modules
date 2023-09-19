@@ -478,7 +478,7 @@ class EventTournament(models.Model):
             )
 
         teams_values = []
-        for team_index, component_tuple in enumerate(components_tuples):
+        for component_tuple in components_tuples:
             if any(
                 component_id == components_fill_value
                 for component_id in component_tuple
@@ -493,7 +493,11 @@ class EventTournament(models.Model):
                 continue
             team_values = {
                 "tournament_id": self.id,
-                "name": _("Team") + str(team_index),
+                "name": " & ".join(
+                    self.env["event.registration"]
+                    .browse(component_tuple)
+                    .mapped("name")
+                ),
                 "component_ids": [(6, 0, component_tuple)],
             }
             teams_values.append(team_values)
