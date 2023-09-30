@@ -15,7 +15,7 @@ class TestEventTournamentMatchMode(TestCommon):
         teams = self.teams[:2]
         match = self.get_match_1_2(teams)
         bv_mode = self.env.ref(
-            "event_tournament." "event_tournament_match_mode_beach_volley"
+            "event_tournament.event_tournament_match_mode_beach_volley"
         )
         match.action_done()
         self.assertDictEqual({teams[0]: 1, teams[1]: 2}, bv_mode.get_points(match))
@@ -65,3 +65,10 @@ class TestEventTournamentMatchMode(TestCommon):
             match.action_done()
         exc_message = ue.exception.args[0]
         self.assertIn("It has not been played", exc_message)
+
+    def test_bv_tie_break_number(self):
+        """The tie-break set in beach volley is the 3rd."""
+        bv_mode = self.env.ref(
+            "event_tournament.event_tournament_match_mode_beach_volley"
+        )
+        self.assertEqual(bv_mode.tie_break_number, 3)

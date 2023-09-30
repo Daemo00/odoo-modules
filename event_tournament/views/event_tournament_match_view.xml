@@ -16,6 +16,7 @@
                     <button
                         name="action_done"
                         string="Done"
+                        data-hotkey="d"
                         type="object"
                         states="draft"
                     />
