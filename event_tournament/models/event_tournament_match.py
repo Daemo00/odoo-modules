@@ -61,14 +61,11 @@ class EventTournamentMatch(models.Model):
         store=True,
         states={"done": [("readonly", True)]},
     )
-    winner_team_ids = fields.Many2many(
+    winner_team_id = fields.Many2one(
         comodel_name="event.tournament.team",
-        relation="event_tournament_match_winner_team_rel",
-        column1="match_id",
-        column2="team_id",
-        string="Winners",
+        string="Winner",
         states={"done": [("readonly", True)]},
-        compute="_compute_winner_team_ids",
+        compute="_compute_winner_team_id",
         store=True,
         help="Computed only on done matches.",
     )
@@ -315,37 +312,37 @@ class EventTournamentMatch(models.Model):
                     )
                 )
 
-    @api.constrains("winner_team_ids", "team_ids")
-    def _constrain_winners(self):
+    @api.constrains("winner_team_id", "team_ids")
+    def _constrain_winner(self):
         for match in self:
-            if not match.winner_team_ids:
+            winner = match.winner_team_id
+            if not winner:
                 continue
             match_teams = match.team_ids
-            for winner in match.winner_team_ids:
-                if winner not in match_teams:
-                    raise ValidationError(
-                        _(
-                            "Match {match_name} not valid:\n"
-                            "winner team {team_name} is not participating."
-                        ).format(
-                            match_name=match.display_name,
-                            team_name=winner.display_name,
-                        )
+            if winner not in match_teams:
+                raise ValidationError(
+                    _(
+                        "Match {match_name} not valid:\n"
+                        "winner team {team_name} is not participating."
+                    ).format(
+                        match_name=match.display_name,
+                        team_name=winner.display_name,
                     )
+                )
 
     @api.depends(
         "state",
         "stats_ids.team_id",
         "stats_ids.won_sets_count",
     )
-    def _compute_winner_team_ids(self):
+    def _compute_winner_team_id(self):
         for match in self:
             if match.state == "done":
                 match_mode = match.match_mode_id
-                winner_teams = match_mode.get_match_winners(match)
+                winner_teams = match_mode.get_match_winner(match)
             else:
                 winner_teams = self.env["event.tournament.team"].browse()
-            match.winner_team_ids = winner_teams
+            match.winner_team_id = winner_teams
 
     def action_draft(self):
         self.ensure_one()
@@ -366,7 +363,7 @@ class EventTournamentMatch(models.Model):
             }
         )
 
-        winner_teams = self.winner_team_ids
+        winner_teams = self.winner_team_id
         if not winner_teams:
             raise UserError(
                 _("No-one won the match {match_name}.").format(
@@ -536,7 +533,7 @@ class EventTournamentMatchTeamStats(models.Model):
     @api.depends(
         "match_id.state",
         "team_id",
-        "match_id.set_ids.winner_team_ids",
+        "match_id.set_ids.winner_team_id",
     )
     def _compute_sets(self):
         set_model = self.env["event.tournament.match.set"]
@@ -548,7 +545,7 @@ class EventTournamentMatchTeamStats(models.Model):
             if match.state == "done":
                 sets = match.set_ids
                 for set_ in sets:
-                    set_winners = set_.winner_team_ids
+                    set_winners = set_.winner_team_id
                     if team in set_winners:
                         won_sets |= set_
                     else:
@@ -618,12 +615,12 @@ class EventTournamentMatchSet(models.Model):
         store=True,
         readonly=False,
     )
-    winner_team_ids = fields.Many2many(
+    winner_team_id = fields.Many2many(
         comodel_name="event.tournament.team",
         relation="event_tournament_set_winner_team_rel",
         column1="set_id",
         column2="team_id",
-        compute="_compute_winner_team_ids",
+        compute="_compute_winner_team_id",
         store=True,
         help="Only computed on done matches.",
     )
@@ -655,15 +652,15 @@ class EventTournamentMatchSet(models.Model):
         "result_ids.score",
         "match_team_ids",
     )
-    def _compute_winner_team_ids(self):
+    def _compute_winner_team_id(self):
         for set_ in self:
             match = set_.match_id
             if match.state == "done":
                 match_mode = match.match_mode_id
-                winner_teams = match_mode.get_set_winners(set_)
+                winner_team = match_mode.get_set_winner(set_)
             else:
-                winner_teams = self.env["event.tournament.team"].browse()
-            set_.winner_team_ids = winner_teams
+                winner_team = self.env["event.tournament.team"].browse()
+            set_.winner_team_id = winner_team
 
     @api.depends(
         "match_id.team_ids",
