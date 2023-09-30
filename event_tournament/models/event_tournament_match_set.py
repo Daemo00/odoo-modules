@@ -56,7 +56,7 @@ class EventTournamentMatchSet(models.Model):
             tie_break_number = match_mode.tie_break_number
             sets = match.set_ids
             is_tie_break = (
-                len(sets) > tie_break_number and sets[tie_break_number] == set_
+                len(sets) >= tie_break_number and sets[tie_break_number - 1] == set_
             )
             set_.is_tie_break = is_tie_break
 

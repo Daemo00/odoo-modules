@@ -40,6 +40,7 @@ class EventTournamentMatchMode(models.Model):
         string="Break for winning a set",
     )
     tie_break_number = fields.Integer(
+        string="Tie break set number",
         compute="_compute_tie_break_number",
         store=True,
         readonly=False,
@@ -53,8 +54,7 @@ class EventTournamentMatchMode(models.Model):
         for mode in self:
             results = mode.result_ids
             max_played_sets = max(r.won_sets + r.lost_sets for r in results)
-            tie_break_set_number = int(max_played_sets / 2) + 1
-            mode.tie_break_number = tie_break_set_number
+            mode.tie_break_number = max_played_sets
 
     def get_points(self, match):
         """
