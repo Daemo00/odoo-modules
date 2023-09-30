@@ -291,3 +291,61 @@ class TestCommon(TransactionCase):
                 Command.create(set_2_values),
             ],
         }
+
+    def get_match_2_0(self, teams):
+        tournament = first(self.tournaments)
+        court = first(self.courts)
+        tournament.update({"court_ids": court.ids})
+        teams.update({"tournament_id": tournament.id})
+        match_values = {
+            "tournament_id": tournament.id,
+            "court_id": court.id,
+            "team_ids": teams.ids,
+        }
+        match_values.update(self.get_match_lines_2_0(teams))
+        match = self.match_model.create(match_values)
+        return match
+
+    def get_match_lines_2_0(self, teams):
+        # 21-10, 21-18
+        set_1_values = {
+            "name": "1",
+            "result_ids": [
+                Command.create(
+                    {
+                        "team_id": teams[0].id,
+                        "score": 21,
+                    }
+                ),
+                Command.create(
+                    {
+                        "team_id": teams[1].id,
+                        "score": 10,
+                    }
+                ),
+            ],
+        }
+        set_2_values = {
+            "name": "2",
+            "result_ids": [
+                Command.create(
+                    {
+                        "team_id": teams[0].id,
+                        "score": 21,
+                    }
+                ),
+                Command.create(
+                    {
+                        "team_id": teams[1].id,
+                        "score": 18,
+                    }
+                ),
+            ],
+        }
+        return {
+            "set_ids": [
+                Command.clear(),
+                Command.create(set_1_values),
+                Command.create(set_2_values),
+            ],
+        }
