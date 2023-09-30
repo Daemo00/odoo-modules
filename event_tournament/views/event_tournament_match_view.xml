@@ -95,6 +95,12 @@
                                         />
                                         <field name="display_name" />
                                     </strong>
+                                    <div class="text-success">
+                                        <field
+                                            name="winner_team_id"
+                                            class="fa fa-trophy"
+                                        />
+                                    </div>
                                     <div class="text-muted">
                                         <field name="tournament_id" />
                                     </div>
@@ -180,6 +186,7 @@
                 <field name="team_ids" />
                 <field name="component_ids" />
                 <filter string="Court" name="court" context="{'group_by':'court_id'}" />
+                <filter string="Done" name="done" domain="[('state', '=', 'done')]" />
                 <filter
                     string="Tournament"
                     name="tournament"
