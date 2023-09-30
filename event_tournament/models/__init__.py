@@ -6,4 +6,7 @@ from . import event_tournament
 from . import event_tournament_court
 from . import event_tournament_match
 from . import event_tournament_match_mode
+from . import event_tournament_match_set
+from . import event_tournament_match_set_result
+from . import event_tournament_match_team_stats
 from . import event_tournament_team
