@@ -83,10 +83,9 @@ class EventTournamentMatchMode(models.Model):
                 else:
                     raise UserError(
                         _(
-                            "Match {match_name} not valid:\n"
-                            "Result {won_sets} - {lost_sets} not expected "
-                            "for match mode {match_mode}."
-                        ).format(
+                            "Match %(match_name)s not valid:\n"
+                            "Result %(won_sets)d - %(lost_sets)d not expected "
+                            "for match mode %(match_mode)s.",
                             match_name=match.display_name,
                             won_sets=won_sets,
                             lost_sets=lost_sets,
