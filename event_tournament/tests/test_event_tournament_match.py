@@ -54,7 +54,7 @@ class TestEventTournamentMatch(TestCommon):
         teams = self.teams[:2]
         match = self.get_match_1_2(teams)
         match.action_done()
-        self.assertTrue(match.winner_team_ids == teams[1])
+        self.assertTrue(match.winner_team_id == teams[1])
         with self.assertRaises(UserError) as ue, self.env.cr.savepoint():
             match.action_done()
         self.assertIn(match.display_name, ue.exception.args[0])
@@ -73,4 +73,4 @@ class TestEventTournamentMatch(TestCommon):
         exc_message = ue.exception.args[0]
         self.assertIn(match.match_mode_id.display_name, exc_message)
         self.assertIn("1 - 1 not expected", exc_message)
-        self.assertFalse(match.winner_team_ids)
+        self.assertFalse(match.winner_team_id)
