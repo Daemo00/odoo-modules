@@ -64,4 +64,4 @@ class TestEventTournamentMatchMode(TestCommon):
         with self.assertRaises(UserError) as ue:
             match.action_done()
         exc_message = ue.exception.args[0]
-        self.assertIn("No-one won", exc_message)
+        self.assertIn("It has not been played", exc_message)
