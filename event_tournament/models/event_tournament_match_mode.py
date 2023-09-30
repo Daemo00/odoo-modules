@@ -99,63 +99,57 @@ class EventTournamentMatchMode(models.Model):
     def constrain_done_set_points(self, set_):
         points = sorted(set_.mapped("result_ids.score"), reverse=True)
         max_points, second_max_points, *other_points = points
-        if max_points == 0:
-            raise ValidationError(
-                _(
-                    "Set %(set)s not valid:\n" "It has not been played",
-                    set=set_.display_name,
+        if max_points > 0:
+            if max_points == second_max_points:
+                raise ValidationError(
+                    _(
+                        "Set %(set)s not valid:\n" "Ties are not allowed",
+                        set=set_.display_name,
+                    )
                 )
-            )
-        elif max_points == second_max_points:
-            raise ValidationError(
-                _(
-                    "Set %(set)s not valid:\n" "Ties are not allowed",
-                    set=set_.display_name,
-                )
-            )
 
-        if set_.is_tie_break:
-            to_win_points = self.win_tie_break_points
-        else:
-            to_win_points = self.win_set_points
+            if set_.is_tie_break:
+                to_win_points = self.win_tie_break_points
+            else:
+                to_win_points = self.win_set_points
 
-        win_break_points = self.win_set_break_points
-        if max_points < to_win_points:
-            raise ValidationError(
-                _(
-                    "Set %(set)s not valid:\n"
-                    "At least one team must reach %(to_win_points)d"
-                    " but the most point done is %(max_points)d",
-                    set=set_.display_name,
-                    to_win_points=to_win_points,
-                    max_points=max_points,
-                )
-            )
-        else:
-            break_points = max_points - second_max_points
-            if (
-                # 25 - 24 is not valid for volleyball
-                # 25 - 22 is valid for volleyball
-                max_points == to_win_points
-                and break_points < win_break_points
-            ) or (
-                # 33 - 30 is not valid for volleyball
-                # 33 - 31 is valid for volleyball
-                max_points > to_win_points
-                and break_points != win_break_points
-            ):
+            win_break_points = self.win_set_break_points
+            if max_points < to_win_points:
                 raise ValidationError(
                     _(
                         "Set %(set)s not valid:\n"
-                        "There must be exactly %(win_break_points)d points"
-                        " between but the winner did %(max_points)d"
-                        " and the second team did %(second_max_points)d",
+                        "At least one team must reach %(to_win_points)d"
+                        " but the most point done is %(max_points)d",
                         set=set_.display_name,
-                        win_break_points=win_break_points,
+                        to_win_points=to_win_points,
                         max_points=max_points,
-                        second_max_points=second_max_points,
                     )
                 )
+            else:
+                break_points = max_points - second_max_points
+                if (
+                    # 25 - 24 is not valid for volleyball
+                    # 25 - 22 is valid for volleyball
+                    max_points == to_win_points
+                    and break_points < win_break_points
+                ) or (
+                    # 33 - 30 is not valid for volleyball
+                    # 33 - 31 is valid for volleyball
+                    max_points > to_win_points
+                    and break_points != win_break_points
+                ):
+                    raise ValidationError(
+                        _(
+                            "Set %(set)s not valid:\n"
+                            "There must be exactly %(win_break_points)d points"
+                            " between but the winner did %(max_points)d"
+                            " and the second team did %(second_max_points)d",
+                            set=set_.display_name,
+                            win_break_points=win_break_points,
+                            max_points=max_points,
+                            second_max_points=second_max_points,
+                        )
+                    )
 
     def _get_team_points_winner(self, team_to_points):
         max_points = max(team_to_points.values())

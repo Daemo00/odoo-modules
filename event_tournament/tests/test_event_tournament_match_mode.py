@@ -38,8 +38,9 @@ class TestEventTournamentMatchMode(TestCommon):
         self.assertIn(bv_mode.name, ue.exception.args[0])
 
     def test_empty_sets(self):
+        """Matches can contain sets having 0-0"""
         teams = self.teams[:2]
-        match = self.get_match_1_1(teams)
+        match = self.get_match_2_0(teams)
         match.set_ids = [
             Command.create(
                 {
@@ -61,10 +62,8 @@ class TestEventTournamentMatchMode(TestCommon):
                 }
             ),
         ]
-        with self.assertRaises(UserError) as ue:
-            match.action_done()
-        exc_message = ue.exception.args[0]
-        self.assertIn("It has not been played", exc_message)
+        match.action_done()
+        self.assertEqual(match.winner_team_id, teams[0])
 
     def test_bv_tie_break_number(self):
         """The tie-break set in beach volley is the 3rd."""

@@ -131,8 +131,10 @@ class EventTournamentMatchTeamStats(models.Model):
 
             lost_sets = won_sets = set_model.browse()
             if match.state == "done":
-                sets = match.set_ids
-                for set_ in sets:
+                played_sets = match.set_ids.filtered(
+                    lambda s: sum(s.result_ids.mapped("score"), 0)
+                )
+                for set_ in played_sets:
                     set_winner = set_.winner_team_id
                     if team == set_winner:
                         won_sets |= set_
