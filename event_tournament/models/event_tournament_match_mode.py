@@ -115,10 +115,12 @@ class EventTournamentMatchMode(models.Model):
             break_points = max_points - second_max_points
             if (
                 # 25 - 24 is not valid for volleyball
+                # 25 - 22 is valid for volleyball
                 max_points == win_set_points
                 and break_points < win_break_points
             ) or (
                 # 33 - 30 is not valid for volleyball
+                # 33 - 31 is valid for volleyball
                 max_points > win_set_points
                 and break_points != win_break_points
             ):
@@ -132,7 +134,23 @@ class EventTournamentMatchMode(models.Model):
                     )
                 )
 
-    def get_set_winners(self, set_):
+    def _get_team_points_winner(self, team_to_points):
+        max_points = max(team_to_points.values())
+        winner_teams = filter(
+            lambda t: team_to_points[t] == max_points,
+            team_to_points.keys(),
+        )
+
+        team_model = self.env["event.tournament.team"]
+        winner_teams = team_model.browse(t.id for t in winner_teams)
+        if len(winner_teams) > 1:
+            # Only one winner or no winners
+            winner_team = team_model.browse()
+        else:
+            winner_team = winner_teams
+        return winner_team
+
+    def get_set_winner(self, set_):
         self.ensure_one()
         match = set_.match_id
         if match.state == "done":
@@ -145,7 +163,7 @@ class EventTournamentMatchMode(models.Model):
             max_points = points[-1]
             if max_points == 0:
                 # Set has not been played
-                winner_teams = self.env["event.tournament.team"].browse()
+                winner_team = self.env["event.tournament.team"].browse()
             else:
                 other_points = sorted(
                     [score for score in points if score != max_points]
@@ -161,29 +179,18 @@ class EventTournamentMatchMode(models.Model):
 
                 self._check_set_win_points(set_, max_points, second_max_points)
 
-                winner_teams = filter(
-                    lambda t: team_points_dict[t] == max_points, team_points_dict.keys()
-                )
-                winner_teams_ids = [t.id for t in winner_teams]
-                winner_teams = self.env["event.tournament.team"].browse(
-                    winner_teams_ids
-                )
+            winner_team = self._get_team_points_winner(team_points_dict)
         else:
-            winner_teams = self.env["event.tournament.team"].browse()
-        return winner_teams
+            winner_team = self.env["event.tournament.team"].browse()
+        return winner_team
 
-    def get_match_winners(self, match):
+    def get_match_winner(self, match):
         self.ensure_one()
-        winner_teams = self.env["event.tournament.team"].browse()
         if match.state == "done":
-            max_won_sets = 0
-            for stat in match.stats_ids:
-                team = stat.team_id
-                won_sets_count = stat.won_sets_count
-                if won_sets_count == max_won_sets:
-                    winner_teams = self.env["event.tournament.team"].browse()
-                    break
-                elif won_sets_count > max_won_sets:
-                    winner_teams = team
-                    max_won_sets = won_sets_count
-        return winner_teams
+            team_to_won_sets_count = {
+                stat.team_id: stat.won_sets_count for stat in match.stats_ids
+            }
+            winner_team = self._get_team_points_winner(team_to_won_sets_count)
+        else:
+            winner_team = self.env["event.tournament.team"].browse()
+        return winner_team
