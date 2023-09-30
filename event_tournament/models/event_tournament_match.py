@@ -413,7 +413,7 @@ class EventTournamentMatch(models.Model):
                                 "name": str(s + 1),
                             }
                         )
-                        for s in range(tie_break_number + 1)
+                        for s in range(tie_break_number)
                     ]
                 else:
                     sets_command = []
