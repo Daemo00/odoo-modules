@@ -258,6 +258,14 @@ class EventTournamentMatch(models.Model):
                     )
                 )
 
+    @api.constrains("state")
+    def constrain_state(self):
+        done_matches = self.filtered(lambda m: m.state == "done")
+        for match in done_matches:
+            match_mode = match.match_mode_id
+            for set_ in match.set_ids:
+                match_mode.constrain_done_set_points(set_)
+
     @api.constrains("team_ids")
     def constrain_teams(self):
         for match in self:
@@ -313,7 +321,7 @@ class EventTournamentMatch(models.Model):
                 )
 
     @api.constrains("winner_team_id", "team_ids")
-    def _constrain_winner(self):
+    def constrain_winner(self):
         for match in self:
             winner = match.winner_team_id
             if not winner:
