@@ -4,7 +4,7 @@
 from collections import Counter
 
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 
 class EventTournamentMatchModeLine(models.Model):
@@ -97,18 +97,39 @@ class EventTournamentMatchMode(models.Model):
             tournament_points = {}
         return tournament_points
 
-    def _check_set_win_points(self, set_, max_points, second_max_points):
-        win_set_points = (
-            self.win_set_points if not set_.is_tie_break else self.win_tie_break_points
-        )
+    def constrain_done_set_points(self, set_):
+        points = sorted(set_.mapped("result_ids.score"), reverse=True)
+        max_points, second_max_points, *other_points = points
+        if max_points == 0:
+            raise ValidationError(
+                _(
+                    "Set %(set)s not valid:\n" "It has not been played",
+                    set=set_.display_name,
+                )
+            )
+        elif max_points == second_max_points:
+            raise ValidationError(
+                _(
+                    "Set %(set)s not valid:\n" "Ties are not allowed",
+                    set=set_.display_name,
+                )
+            )
+
+        if set_.is_tie_break:
+            to_win_points = self.win_tie_break_points
+        else:
+            to_win_points = self.win_set_points
+
         win_break_points = self.win_set_break_points
-        if max_points < win_set_points:
-            raise UserError(
+        if max_points < to_win_points:
+            raise ValidationError(
                 _(
                     "Set %(set)s not valid:\n"
-                    "At least one team must reach %(win_set_points)d",
+                    "At least one team must reach %(to_win_points)d"
+                    " but the most point done is %(max_points)d",
                     set=set_.display_name,
-                    win_set_points=win_set_points,
+                    to_win_points=to_win_points,
+                    max_points=max_points,
                 )
             )
         else:
@@ -116,21 +137,24 @@ class EventTournamentMatchMode(models.Model):
             if (
                 # 25 - 24 is not valid for volleyball
                 # 25 - 22 is valid for volleyball
-                max_points == win_set_points
+                max_points == to_win_points
                 and break_points < win_break_points
             ) or (
                 # 33 - 30 is not valid for volleyball
                 # 33 - 31 is valid for volleyball
-                max_points > win_set_points
+                max_points > to_win_points
                 and break_points != win_break_points
             ):
-                raise UserError(
+                raise ValidationError(
                     _(
                         "Set %(set)s not valid:\n"
-                        "There must be exactly %(win_break_points)d points "
-                        "between the winner and the second team.",
+                        "There must be exactly %(win_break_points)d points"
+                        " between but the winner did %(max_points)d"
+                        " and the second team did %(second_max_points)d",
                         set=set_.display_name,
                         win_break_points=win_break_points,
+                        max_points=max_points,
+                        second_max_points=second_max_points,
                     )
                 )
 
@@ -154,30 +178,9 @@ class EventTournamentMatchMode(models.Model):
         self.ensure_one()
         match = set_.match_id
         if match.state == "done":
-            # Might be substituted by something like set.team_stats
             team_points_dict = {
                 result.team_id: result.score for result in set_.result_ids
             }
-
-            points = sorted(team_points_dict.values())
-            max_points = points[-1]
-            if max_points == 0:
-                # Set has not been played
-                winner_team = self.env["event.tournament.team"].browse()
-            else:
-                other_points = sorted(
-                    [score for score in points if score != max_points]
-                )
-                if not other_points:
-                    raise UserError(
-                        _(
-                            "Set %(set)s not valid:\n" "Ties are not allowed",
-                            set=set_.display_name,
-                        )
-                    )
-                second_max_points = other_points[-1]
-
-                self._check_set_win_points(set_, max_points, second_max_points)
 
             winner_team = self._get_team_points_winner(team_points_dict)
         else:
