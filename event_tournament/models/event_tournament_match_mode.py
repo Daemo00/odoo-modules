@@ -15,7 +15,7 @@ class EventTournamentMatchModeLine(models.Model):
     won_sets = fields.Integer()
     lost_sets = fields.Integer()
     win_points = fields.Integer(
-        help="Points awarded to the teams that wins the match.",
+        help="Points awarded to the team that wins the match.",
     )
     lose_points = fields.Integer(
         help="Points awarded to the teams that do not win the match.",
@@ -142,7 +142,8 @@ class EventTournamentMatchMode(models.Model):
                         _(
                             "Set %(set)s not valid:\n"
                             "There must be exactly %(win_break_points)d points"
-                            " between but the winner did %(max_points)d"
+                            " between the teams,"
+                            " but the winner did %(max_points)d"
                             " and the second team did %(second_max_points)d",
                             set=set_.display_name,
                             win_break_points=win_break_points,

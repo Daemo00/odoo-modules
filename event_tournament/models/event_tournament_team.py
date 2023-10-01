@@ -48,6 +48,7 @@ class EventTournamentTeam(models.Model):
         column1="team_id",
         column2="set_id",
         store=True,
+        string="Won Sets",
     )
     won_sets_count = fields.Integer(compute="_compute_stats", store=True)
     lost_set_ids = fields.Many2many(
@@ -57,6 +58,7 @@ class EventTournamentTeam(models.Model):
         column1="team_id",
         column2="set_id",
         store=True,
+        string="Lost Sets",
     )
     lost_sets_count = fields.Integer(compute="_compute_stats", store=True)
     tournament_points = fields.Integer(compute="_compute_stats", store=True)

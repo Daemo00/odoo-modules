@@ -22,7 +22,7 @@ class EventTournamentMatchTeamStats(models.Model):
     lost_set_ids = fields.Many2many(
         comodel_name="event.tournament.match.set",
         relation="event_tournament_match_team_stats_lost_set_rel",
-        string="Lost sets",
+        string="Lost Sets",
         compute="_compute_sets",
         store=True,
     )
@@ -34,7 +34,7 @@ class EventTournamentMatchTeamStats(models.Model):
     won_set_ids = fields.Many2many(
         comodel_name="event.tournament.match.set",
         relation="event_tournament_match_team_stats_won_set_rel",
-        string="Won sets",
+        string="Won Sets",
         compute="_compute_sets",
         store=True,
     )
@@ -59,7 +59,7 @@ class EventTournamentMatchTeamStats(models.Model):
 
     tournament_points = fields.Integer(
         compute="_compute_tournament_points",
-        help="Only computed for done matches.",
+        help="Only computed on done matches.",
         store=True,
     )
 
