@@ -66,7 +66,7 @@ class EventTournamentMatch(models.Model):
         states={"done": [("readonly", True)]},
         compute="_compute_winner_team_id",
         store=True,
-        help="Computed only on done matches.",
+        help="Only computed on done matches.",
     )
     state = fields.Selection(
         selection=[("draft", "Draft"), ("done", "Done")], default="draft"

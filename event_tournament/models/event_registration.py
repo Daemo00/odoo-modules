@@ -43,6 +43,7 @@ class EventRegistration(models.Model):
         column1="registration_id",
         column2="set_id",
         store=True,
+        string="Won Sets",
     )
     won_sets_count = fields.Integer(compute="_compute_tournament_stats_ids", store=True)
     lost_set_ids = fields.Many2many(
@@ -52,6 +53,7 @@ class EventRegistration(models.Model):
         column1="registration_id",
         column2="set_id",
         store=True,
+        string="Lost Sets",
     )
     lost_sets_count = fields.Integer(
         compute="_compute_tournament_stats_ids", store=True
