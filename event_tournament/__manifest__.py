@@ -29,6 +29,7 @@
         "templates/report_matches_schedule_component.xml",
         "templates/report_matches_schedule_team.xml",
         "templates/report_matches_schedule_tournament.xml",
+        "views/root_menus.xml",
         "views/event_event_view.xml",
         "views/event_registration_view.xml",
         "views/event_tournament_view.xml",

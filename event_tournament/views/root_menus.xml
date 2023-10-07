@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright 2023 Simone Rubino <daemo00@gmail.com>
+  ~ License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+  -->
+<odoo>
+    <menuitem
+        id="event_tournament_root_menu"
+        name="Tournaments"
+        parent="event.event_main_menu"
+    />
+</odoo>

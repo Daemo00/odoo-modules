@@ -9,7 +9,6 @@ from odoo.models import NewId
 class EventTournamentMatchSet(models.Model):
     _name = "event.tournament.match.set"
     _description = "Set of a Tournament match"
-    _rec_name = "name"
 
     name = fields.Char(
         required=True,
@@ -114,3 +113,13 @@ class EventTournamentMatchSet(models.Model):
                 ]
             )
             set_.result_ids = results_command
+
+    def name_get(self):
+        return [
+            (
+                set_.id,
+                f"{set_.name}: "
+                + " - ".join(str(result.score) for result in set_.result_ids),
+            )
+            for set_ in self
+        ]
