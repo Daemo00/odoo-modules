@@ -1,11 +1,6 @@
 <!-- Copyright 2020 ~ 2023 Simone Rubino <daemo00@gmail.com> -->
 <!-- License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
 <odoo>
-    <menuitem
-        id="event_tournament_root_menu"
-        name="Tournaments"
-        parent="event.event_main_menu"
-    />
     <record id="event_tournament_view_form" model="ir.ui.view">
         <field name="name">event.tournament form view</field>
         <field name="model">event.tournament</field>
@@ -55,10 +50,12 @@
                             <field name="team_count" widget="statinfo" string="Teams" />
                         </button>
                         <button
-                            name="%(event_tournament.act_event_registration_from_tournament)d"
+                            name="%(event_tournament.event_tournament_component_action)d"
                             type="action"
                             class="oe_stat_button"
                             icon="fa-user"
+                            domain="[('tournament_ids', 'in', id)]"
+                            context="{'create': False}"
                         >
                             <field
                                 name="component_count"
@@ -68,30 +65,32 @@
                         </button>
                     </div>
                     <group>
-                        <field name="event_id" />
-                        <field name="name" />
-                        <label for="start_datetime" string="Date" />
-                        <div class="o_row">
-                            <field
-                                name="start_datetime"
-                                widget="daterange"
-                                nolabel="1"
-                                class="oe_inline"
-                                options="{'related_end_date': 'end_datetime'}"
-                            />
-                            <i
-                                class="fa fa-long-arrow-right mx-2"
-                                aria-label="Arrow icon"
-                                title="Arrow"
-                            />
-                            <field
-                                name="end_datetime"
-                                widget="daterange"
-                                nolabel="1"
-                                class="oe_inline"
-                                options="{'related_start_date': 'start_datetime'}"
-                            />
-                        </div>
+                        <group>
+                            <field name="event_id" />
+                            <field name="name" />
+                            <label for="start_datetime" string="Date" />
+                            <div class="o_row">
+                                <field
+                                    name="start_datetime"
+                                    widget="daterange"
+                                    nolabel="1"
+                                    class="oe_inline"
+                                    options="{'related_end_date': 'end_datetime'}"
+                                />
+                                <i
+                                    class="fa fa-long-arrow-right mx-2"
+                                    aria-label="Arrow icon"
+                                    title="Arrow"
+                                />
+                                <field
+                                    name="end_datetime"
+                                    widget="daterange"
+                                    nolabel="1"
+                                    class="oe_inline"
+                                    options="{'related_start_date': 'start_datetime'}"
+                                />
+                            </div>
+                        </group>
                     </group>
                     <notebook>
                         <page name="rules" string="Rules">
@@ -134,6 +133,7 @@
                                         class="btn-warning"
                                         type="object"
                                         string="Generate teams"
+                                        title="Generate teams from event participants"
                                         colspan="2"
                                     />
                                     <field name="team_count_estimated" />
