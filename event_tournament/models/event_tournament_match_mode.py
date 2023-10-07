@@ -53,7 +53,10 @@ class EventTournamentMatchMode(models.Model):
     def _compute_tie_break_number(self):
         for mode in self:
             results = mode.result_ids
-            max_played_sets = max(r.won_sets + r.lost_sets for r in results)
+            max_played_sets = max(
+                (r.won_sets + r.lost_sets for r in results),
+                default=0,
+            )
             mode.tie_break_number = max_played_sets
 
     def get_points(self, match):
