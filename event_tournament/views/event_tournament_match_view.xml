@@ -133,7 +133,12 @@
                 <field name="tournament_id" />
                 <field name="court_id" />
                 <field name="time_scheduled_start" />
-                <field name="set_ids" widget="many2many_tags" />
+                <field name="team_ids" widget="many2many_tags" />
+                <field
+                    name="set_ids"
+                    widget="many2many_tags"
+                    attrs="{'column_invisible': [('state', '!=', 'done')]}"
+                />
                 <field name="winner_team_id" />
                 <field name="state" />
             </tree>
