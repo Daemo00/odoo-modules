@@ -164,6 +164,32 @@ class TestEventTournament(TestCommon):
         self.assertNotIn(match, new_matches)
         self.assertIn(match, tournament.match_ids)
 
+    def test_generate_matches_share_components(self):
+        """
+        Create a tournament with shared components,
+        check that all the components play with each other.
+        """
+        tournament = first(self.tournaments)
+        tournament.share_components = True
+        tournament.start_datetime = fields.Datetime.now()
+        tournament.end_datetime = fields.Datetime.now() + timedelta(days=1)
+        tournament.court_ids = self.courts
+
+        # Limit the components otherwise number of teams/matches explodes
+        tournament.team_ids.unlink()
+        tournament.event_id.registration_ids[4:].unlink()
+        tournament.generate_teams()
+        tournament.generate_matches()
+        components = tournament.component_ids
+        for component in components:
+            teams = component.tournament_team_ids
+            team_mates = teams.component_ids - component
+            self.assertEqual(
+                team_mates,
+                components - component,
+                f"Component {component} has not played with all the other components",
+            )
+
     def test_action_draft(self):
         """
         Create a tournament,
