@@ -3,6 +3,8 @@
 import itertools
 import random
 from datetime import timedelta
+from functools import reduce
+from math import comb
 
 from more_itertools import grouper
 
@@ -154,16 +156,24 @@ class EventTournament(models.Model):
         for tournament in self:
             tournament.match_count_estimated = len(list(tournament.get_match_tuples()))
 
-    @api.depends("event_id.registration_ids", "min_components")
+    @api.depends(
+        "event_id.registration_ids",
+        "min_components",
+        "share_components",
+    )
     def _compute_team_count_estimated(self):
         for tournament in self:
             available_components_nbr = len(tournament.event_id.registration_ids)
             team_components_nbr = tournament.min_components
             if team_components_nbr:
-                teams_nbr = available_components_nbr // team_components_nbr
-                tournament.team_count_estimated = teams_nbr
+                if not tournament.share_components:
+                    teams_nbr = available_components_nbr // team_components_nbr
+                else:
+                    teams_nbr = comb(available_components_nbr, team_components_nbr)
             else:
-                tournament.team_count_estimated = 0
+                teams_nbr = 0
+
+            tournament.team_count_estimated = teams_nbr
 
     @api.depends("team_ids")
     def _compute_team_count(self):
@@ -305,6 +315,23 @@ class EventTournament(models.Model):
             return children
         return self + children.get_children(depth - 1)
 
+    def get_match_tuples_single(self):
+        self.ensure_one()
+        teams = self.team_ids
+        match_teams_nbr = self.match_teams_nbr
+        matches_teams = itertools.combinations(teams, match_teams_nbr)
+        if self.share_components:
+            matches_teams = (
+                match_teams
+                for match_teams in matches_teams
+                if not reduce(
+                    lambda team_1, team_2: team_1.component_ids & team_2.component_ids,
+                    match_teams,
+                )
+            )
+
+        return matches_teams
+
     def get_match_tuples(self):
         all_tournaments = self | self.get_children()
         all_tournaments_matches = dict.fromkeys(all_tournaments)
@@ -317,13 +344,12 @@ class EventTournament(models.Model):
                         "for matches generation."
                     ).format(tourn_name=tournament.display_name)
                 )
-            all_tournaments_matches[tournament] = itertools.combinations(
-                tournament.team_ids, tournament.match_teams_nbr
-            )
+            all_tournaments_matches[tournament] = tournament.get_match_tuples_single()
 
         matches_by_index = itertools.zip_longest(*all_tournaments_matches.values())
         flat_matches = itertools.chain.from_iterable(matches_by_index)
         matches_teams = list(filter(None, flat_matches))
+
         return matches_teams
 
     def get_max_min_start(self, match_duration):
@@ -473,9 +499,14 @@ class EventTournament(models.Model):
             components_tuples = [f + m for f, m in f_m_components_tuples]
         else:
             random.shuffle(components_ids)
-            components_tuples = grouper(
-                components_ids, self.min_components, fillvalue=components_fill_value
-            )
+            if not self.share_components:
+                components_tuples = grouper(
+                    components_ids, self.min_components, fillvalue=components_fill_value
+                )
+            else:
+                components_tuples = itertools.combinations(
+                    components_ids, self.min_components
+                )
 
         teams_values = []
         for component_tuple in components_tuples:
