@@ -145,7 +145,7 @@ class AccountLine(models.Model):
                 credit = amounts["credit_amount"]
                 debit = amounts["debit_amount"]
                 existing_partner_total = old_totals.filtered(
-                    lambda t: t.partner_id == partner
+                    lambda t, p=partner: t.partner_id == p
                 )
                 if not existing_partner_total:
                     # Create total if there is an amount for the partner
