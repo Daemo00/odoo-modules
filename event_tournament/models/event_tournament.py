@@ -539,3 +539,16 @@ class EventTournament(models.Model):
     def generate_view_teams(self):
         self.generate_teams()
         return self.action_view_teams()
+
+    def action_view_components(self):
+        components = self.component_ids
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Components"),
+            "res_model": components._name,
+            "view_mode": "tree,form",
+            "domain": [
+                ("id", "in", components.ids),
+            ],
+            "context": self.env.context,
+        }
