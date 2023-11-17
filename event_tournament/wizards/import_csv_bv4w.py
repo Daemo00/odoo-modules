@@ -69,12 +69,28 @@ def parse_team_line(values: list):
     res = {}
     common_fields = ["date_open", "email_cap", "email", "tournament", "team_name"]
     common_values = values[: len(common_fields)]
-    res.update(dict(zip(common_fields, common_values)))
+    res.update(
+        dict(
+            zip(
+                common_fields,
+                common_values,
+                strict=True,
+            )
+        )
+    )
     values = values[len(common_fields) :]
 
     common2_fields = ("notes", "rules", "score")
     common2_values = values[-len(common2_fields) :]
-    res.update(dict(zip(common2_fields, common2_values)))
+    res.update(
+        dict(
+            zip(
+                common2_fields,
+                common2_values,
+                strict=True,
+            )
+        )
+    )
     values = values[: -len(common2_fields)]
 
     values = list(filter(None, values))
@@ -85,7 +101,15 @@ def parse_team_line(values: list):
     players = []
     captain_fields = player_fields + ["mobile"]
     captain_values = values[: len(captain_fields)]
-    players.append(dict(zip(captain_fields, captain_values)))
+    players.append(
+        dict(
+            zip(
+                captain_fields,
+                captain_values,
+                strict=True,
+            )
+        )
+    )
     values = values[len(captain_fields) :]
 
     # Giocatore 3 in 4x4 has no 'fipav' field
@@ -95,7 +119,15 @@ def parse_team_line(values: list):
         if "is_fipav" in player_fields and player_index == 3:
             curr_player_fields.remove("is_fipav")
         player_values = values[: len(curr_player_fields)]
-        players.append(dict(zip(curr_player_fields, player_values)))
+        players.append(
+            dict(
+                zip(
+                    curr_player_fields,
+                    player_values,
+                    strict=True,
+                )
+            )
+        )
         values = values[len(curr_player_fields) :]
         player_index += 1
 
@@ -164,9 +196,11 @@ class ImportCSVBV4W(models.TransientModel):
             if "is_fipav" in parsed_player:
                 not_fipav = parsed_player["is_fipav"].lower() == "no"
                 player_values["is_fipav"] = not not_fipav
-            existing_registration = registrations.filtered(
-                lambda r: same_player(r, player_values)
-            )
+
+            def same_current_player(reg, pv=player_values):
+                return same_player(reg, pv)
+
+            existing_registration = registrations.filtered(same_current_player)
             if existing_registration:
                 if len(existing_registration) > 1:
                     raise UserError(

@@ -89,7 +89,7 @@ class EventTournamentMatchTeamStats(models.Model):
             results = sets.result_ids
             match_points = sum(results.mapped("score"))
 
-            team_results = results.filtered(lambda result: result.team_id == team)
+            team_results = results.filtered(lambda result, t=team: result.team_id == t)
             team_points = sum(team_results.mapped("score"))
 
             stat.done_points = team_points
