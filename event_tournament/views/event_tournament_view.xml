@@ -50,12 +50,10 @@
                             <field name="team_count" widget="statinfo" string="Teams" />
                         </button>
                         <button
-                            name="%(event_tournament.event_tournament_component_action)d"
-                            type="action"
+                            name="action_view_components"
+                            type="object"
                             class="oe_stat_button"
                             icon="fa-user"
-                            domain="[('tournament_ids', 'in', id)]"
-                            context="{'create': False}"
                         >
                             <field
                                 name="component_count"
