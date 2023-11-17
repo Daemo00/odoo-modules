@@ -285,11 +285,11 @@ class EventTournament(models.Model):
             # in the latest match are the first ones
             # (popped as late as possible)
 
-            def common_components(m):
-                c = self.env["event.registration"].browse()
-                for t in m:
-                    c |= t.component_ids
-                return not (c & match.component_ids)
+            def common_components(current_match, last_match=match):
+                components = self.env["event.registration"].browse()
+                for team in current_match:
+                    components |= team.component_ids
+                return not (components & last_match.component_ids)
 
             matches_teams.sort(key=common_components)
 
