@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-01 11:41+0000\n"
-"PO-Revision-Date: 2023-10-01 11:41+0000\n"
+"POT-Creation-Date: 2023-11-17 21:41+0000\n"
+"PO-Revision-Date: 2023-11-17 21:41+0000\n"
 "Last-Translator: Simone Rubino\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -109,11 +109,15 @@ msgid "Component Count"
 msgstr "Numero componenti"
 
 #. module: event_tournament
+#. odoo-python
+#: code:addons/event_tournament/models/event_tournament.py:0
 #: model:ir.actions.act_window,name:event_tournament.act_event_registration_from_tournament
 #: model:ir.model.fields,field_description:event_tournament.field_event_tournament__component_ids
 #: model:ir.model.fields,field_description:event_tournament.field_event_tournament_team__component_ids
+#: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_match_view_search
 #: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_view_form
 #: model_terms:ir.ui.view,arch_db:event_tournament.report_check_in_document_team_components
+#, python-format
 msgid "Components"
 msgstr "Componenti"
 
@@ -298,6 +302,11 @@ msgstr "Genera partite"
 #: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_view_form
 msgid "Generate teams"
 msgstr "Genera squadre"
+
+#. module: event_tournament
+#: model_terms:ir.ui.view,arch_db:event_tournament.event_tournament_view_form
+msgid "Generate teams from event participants"
+msgstr "Genera squadre dai partecipanti all'evento"
 
 #. module: event_tournament
 #: model:ir.model.fields,field_description:event_tournament.field_event_tournament__id
@@ -1077,6 +1086,12 @@ msgstr "Torneo"
 #: model:ir.actions.report,name:event_tournament.report_check_in_action
 msgid "Tournament Check in"
 msgstr "Registrazione tornei"
+
+#. module: event_tournament
+#: model:ir.actions.act_window,name:event_tournament.event_tournament_component_action
+#: model:ir.ui.menu,name:event_tournament.event_tournament_component_menu
+msgid "Tournament Components"
+msgstr "Partecipanti torneo"
 
 #. module: event_tournament
 #: model:ir.model.fields,field_description:event_tournament.field_event_registration__tournament_points
