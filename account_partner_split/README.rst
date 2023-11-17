@@ -43,12 +43,12 @@ Credits
 =======
 
 Authors
-~~~~~~~
+-------
 
 * Simone Rubino
 
 Maintainers
-~~~~~~~~~~~
+-----------
 
 This module is part of the `Daemo00/odoo-modules <https://github.com/Daemo00/odoo-modules/tree/16.0/account_partner_split>`_ project on GitHub.
 
