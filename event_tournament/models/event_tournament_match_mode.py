@@ -133,13 +133,11 @@ class EventTournamentMatchMode(models.Model):
                 if (
                     # 25 - 24 is not valid for volleyball
                     # 25 - 22 is valid for volleyball
-                    max_points == to_win_points
-                    and break_points < win_break_points
+                    max_points == to_win_points and break_points < win_break_points
                 ) or (
                     # 33 - 30 is not valid for volleyball
                     # 33 - 31 is valid for volleyball
-                    max_points > to_win_points
-                    and break_points != win_break_points
+                    max_points > to_win_points and break_points != win_break_points
                 ):
                     raise ValidationError(
                         _(
