@@ -1,0 +1,1 @@
+Split costs among partners.
