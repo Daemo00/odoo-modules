@@ -53,7 +53,7 @@ class Account(models.Model):
     )
     def _compute_total_amount(self):
         for account in self:
-            lines = account.line_ids.filtered(lambda l: not l.is_payment)
+            lines = account.line_ids.filtered(lambda line: not line.is_payment)
             if lines:
                 total_amounts_paid = lines.mapped("amount")
                 total_amount = sum(total_amounts_paid)
@@ -70,7 +70,9 @@ class Account(models.Model):
         line_totals = lines.total_partner_split_ids
         partners = line_totals.partner_id
         for partner in partners:
-            partner_totals = line_totals.filtered(lambda t: t.partner_id == partner)
+            partner_totals = line_totals.filtered(
+                lambda t, p=partner: t.partner_id == p
+            )
             partner_credits = partner_totals.mapped("credit_amount")
             if partner_credits:
                 partner_credit = sum(partner_credits)
