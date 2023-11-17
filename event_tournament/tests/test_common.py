@@ -56,15 +56,10 @@ class TestCommon(TransactionCase):
     ):
         return {
             "event_id": event.id,
-            "name": "event {event_index}, "
-            "tournament {tournament_index}, "
-            "team {team_index}, "
-            "component {component_index}".format(
-                event_index=event_index,
-                tournament_index=tournament_index,
-                team_index=team_index,
-                component_index=component_index,
-            ),
+            "name": f"event {event_index}, "
+            f"tournament {tournament_index}, "
+            f"team {team_index}, "
+            f"component {component_index}",
         }
 
     def create_team(
@@ -78,13 +73,9 @@ class TestCommon(TransactionCase):
         team = self.team_model.create(
             {
                 "tournament_id": tournament.id,
-                "name": "event {event_index}, "
-                "tournament {tournament_index}, "
-                "team {team_index}".format(
-                    event_index=event_index,
-                    tournament_index=tournament_index,
-                    team_index=team_index,
-                ),
+                "name": f"event {event_index}, "
+                f"tournament {tournament_index}, "
+                f"team {team_index}",
                 "component_ids": [
                     (
                         0,
@@ -111,10 +102,7 @@ class TestCommon(TransactionCase):
                     "event_tournament.event_tournament_match_mode_beach_volley"
                 ),
                 "court_ids": courts.ids,
-                "name": "event {event_index}, "
-                "tournament {tournament_index}".format(
-                    event_index=event_index, tournament_index=tournament_index
-                ),
+                "name": f"event {event_index}, " f"tournament {tournament_index}",
             }
         )
         return tournament
@@ -125,10 +113,7 @@ class TestCommon(TransactionCase):
             courts |= self.court_model.create(
                 {
                     "event_id": event.id,
-                    "name": "event {event_index}, "
-                    "court {court_index}".format(
-                        event_index=event_index, court_index=court_index
-                    ),
+                    "name": f"event {event_index}, " f"court {court_index}",
                 }
             )
         return courts
@@ -139,10 +124,7 @@ class TestCommon(TransactionCase):
             registrations |= self.component_model.create(
                 {
                     "event_id": event.id,
-                    "name": "event {event_index}, "
-                    "component {registration_index}".format(
-                        event_index=event_index, registration_index=registration_index
-                    ),
+                    "name": f"event {event_index}, " f"component {registration_index}",
                 }
             )
         return registrations
@@ -150,7 +132,7 @@ class TestCommon(TransactionCase):
     def create_event(self, event_index):
         event = self.event_model.create(
             {
-                "name": "event {event_index}".format(event_index=event_index),
+                "name": f"event {event_index}",
                 "date_begin": date(2000, 1, 1),
                 "date_end": date(2000, 1, 2),
             }
