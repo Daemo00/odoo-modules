@@ -3,7 +3,6 @@
 
 
 from odoo import Command, _, fields, models
-from odoo.tools import float_round
 
 
 class PartnerPayment(models.Model):
@@ -26,50 +25,80 @@ class PartnerPayment(models.Model):
     currency_id = fields.Many2one(
         comodel_name="res.currency",
         string="Currency",
+        required=True,
+        compute="_compute_currency_id",
+        precompute=True,
+        readonly=False,
+        store=True,
     )
-    split_account_id = fields.Many2one(
+    account_id = fields.Many2one(
         comodel_name="account_partner_split.account",
-        string="Split Account",
+        string="Account",
         ondelete="cascade",
+        required=True,
     )
+
+    _sql_constraints = [
+        (
+            "no_self_payment",
+            "CHECK(from_partner_id != to_partner_id)",
+            "From and To Partner must be different",
+        ),
+    ]
+
+    def _compute_currency_id(self):
+        company_currency = self.env.company.currency_id
+        for payment in self:
+            payment.currency_id = (
+                payment.account_id.currency_id
+                or payment.currency_id
+                or company_currency
+            )
+
+    def _prepare_account_line_values(self):
+        self.ensure_one()
+        from_partner = self.from_partner_id
+        to_partner = self.to_partner_id
+        amount = self.amount
+
+        payment_currency = self.currency_id
+        account_currency = self.account_id.currency_id
+        if payment_currency != account_currency:
+            amount = payment_currency._convert(
+                amount,
+                account_currency,
+                self.env.company,
+                fields.Date.today(),
+            )
+
+        return {
+            "name": _(
+                "%(from_partner)s gives %(amount)s to %(to_partner)s",
+                from_partner=from_partner.name,
+                amount=amount,
+                to_partner=to_partner.name,
+            ),
+            "currency_id": self.currency_id.id,
+            "partner_line_ids": [
+                Command.create(
+                    {
+                        "partner_id": from_partner.id,
+                        "amount": amount,
+                    }
+                ),
+                Command.create(
+                    {
+                        "partner_id": to_partner.id,
+                        "amount": -amount,
+                    }
+                ),
+            ],
+        }
 
     def generate_payment(self):
+        """Convert this payment to an account line."""
         self.ensure_one()
-        currency = self.currency_id
-        if currency:
-            rounding = currency.rounding
-        else:
-            rounding = 0.01
-
-        account = self.split_account_id
-        account.line_ids = [
-            Command.create(
-                {
-                    "name": _("{from_partner} gives {amount} to {to_partner}").format(
-                        from_partner=self.from_partner_id.display_name,
-                        amount=float_round(self.amount, precision_rounding=rounding),
-                        to_partner=self.to_partner_id.display_name,
-                    ),
-                    "is_payment": True,
-                    # Credit only on 'from'
-                    "paying_partner_split_ids": [
-                        Command.create(
-                            {
-                                "partner_id": self.from_partner_id.id,
-                                "amount": self.amount,
-                            }
-                        ),
-                    ],
-                    # Debit only on 'to'
-                    "partner_split_weight_ids": [
-                        Command.create(
-                            {
-                                "partner_id": self.to_partner_id.id,
-                                "weight": 1,
-                            }
-                        ),
-                    ],
-                }
-            ),
+        self.account_id.line_ids = [
+            Command.create(self._prepare_account_line_values()),
         ]
         self.unlink()

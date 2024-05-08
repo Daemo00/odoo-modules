@@ -15,7 +15,7 @@ class TestAccountPartnerSplit(TestCommon):
         partner_2 = self.partner_2
         partner_3 = self.partner_3
 
-        default_lines = night_out.partner_split_weight_ids
+        default_lines = night_out.partner_weight_ids
         default_partner_1 = default_lines.filtered_domain(
             [("partner_id", "=", partner_1.id)]
         )
@@ -51,9 +51,10 @@ class TestAccountPartnerSplit(TestCommon):
         more_drinks = self._add_expense(night_out, 40)
         self._add_payment(more_drinks, partner_1, 40)
 
-        self.assertEqual(night_out.total_amount, 0)
+        self.assertEqual(night_out.amount, 290)
+        self.assertEqual(night_out.paid_amount, 290)
 
-        totals = night_out.total_partner_split_ids
+        totals = night_out.total_partner_line_ids
         total_partner_1 = totals.filtered_domain(
             [("partner_id", "=", self.partner_1.id)]
         )
@@ -87,7 +88,7 @@ class TestAccountPartnerSplit(TestCommon):
         self.assertFalse(proposed_payments.exists())
 
         # Everything is paid for
-        self.assertFalse(sum(night_out.total_partner_split_ids.mapped("amount")))
+        self.assertFalse(sum(night_out.total_partner_line_ids.mapped("amount")))
 
     def test_house_expenses(self):
         """Simulate expenses in a household."""
@@ -97,7 +98,7 @@ class TestAccountPartnerSplit(TestCommon):
         partner_2 = self.partner_2
         partner_3 = self.partner_3
 
-        default_lines = house.partner_split_weight_ids
+        default_lines = house.partner_weight_ids
         default_partner_1 = default_lines.filtered_domain(
             [("partner_id", "=", partner_1.id)]
         )
@@ -131,9 +132,10 @@ class TestAccountPartnerSplit(TestCommon):
         expense_1 = self._add_expense(house, 100)
         self._assign_only_to(expense_1, partner_1)
 
-        self.assertEqual(house.total_amount, 2000 + 1500 - 800 - 100)
+        self.assertEqual(house.amount, 800 + 100)
+        self.assertEqual(house.paid_amount, 2000 + 1500)
 
-        totals = house.total_partner_split_ids
+        totals = house.total_partner_line_ids
         total_partner_1 = totals.filtered_domain(
             [("partner_id", "=", self.partner_1.id)]
         )
