@@ -6,23 +6,21 @@ from odoo.addons.account_partner_split.tests.common import TestCommon
 
 class TestAccountPartnerSplit(TestCommon):
     def test_account_split_default(self):
-        default_lines = self.split_account.partner_split_weight_ids
+        default_lines = self.split_account.partner_weight_ids
         self.assertEqual(default_lines[0].weight, 1)
 
     def test_account_split_one_expense(self):
         account = self.split_account
         self._add_expense(account, 100)
 
-        totals = account.total_partner_split_ids
+        totals = account.total_partner_line_ids
         total_partner_1 = totals.filtered_domain(
             [("partner_id", "=", self.partner_1.id)]
         )
         total_partner_2 = totals.filtered_domain(
             [("partner_id", "=", self.partner_2.id)]
         )
-        self.assertEqual(
-            total_partner_1.display_name, f"{self.partner_1.display_name} -25.0"
-        )
+        self.assertEqual(total_partner_1.display_name, f"{self.partner_1.name}: -25")
         self.assertEqual(total_partner_1.amount, total_partner_2.amount)
         self.assertEqual(total_partner_1.amount, -25)
         total_partner_3 = totals.filtered_domain(
@@ -35,9 +33,10 @@ class TestAccountPartnerSplit(TestCommon):
         line = self._add_expense(account, 100)
         self._add_payment(line, self.partner_1, 100)
 
-        self.assertEqual(account.total_amount, 0)
+        self.assertEqual(account.amount, 100)
+        self.assertEqual(account.paid_amount, 100)
 
-        totals = account.total_partner_split_ids
+        totals = account.total_partner_line_ids
         total_partner_1 = totals.filtered_domain(
             [("partner_id", "=", self.partner_1.id)]
         )
@@ -56,9 +55,10 @@ class TestAccountPartnerSplit(TestCommon):
         line = self._add_expense(account, 100)
         self._add_payment(line, self.partner_3, 75)
 
-        self.assertEqual(account.total_amount, -25)
+        self.assertEqual(account.amount, 100)
+        self.assertEqual(account.paid_amount, 75)
 
-        totals = account.total_partner_split_ids
+        totals = account.total_partner_line_ids
         total_partner_1 = totals.filtered_domain(
             [("partner_id", "=", self.partner_1.id)]
         )
@@ -77,9 +77,10 @@ class TestAccountPartnerSplit(TestCommon):
         line = self._add_expense(account, 100)
         self._add_payment(line, self.partner_3, 150)
 
-        self.assertEqual(account.total_amount, 50)
+        self.assertEqual(account.amount, 100)
+        self.assertEqual(account.paid_amount, 150)
 
-        totals = account.total_partner_split_ids
+        totals = account.total_partner_line_ids
         total_partner_1 = totals.filtered_domain(
             [("partner_id", "=", self.partner_1.id)]
         )
@@ -99,9 +100,10 @@ class TestAccountPartnerSplit(TestCommon):
         self._add_payment(line, self.partner_2, 20)
         self._add_payment(line, self.partner_3, 30)
 
-        self.assertEqual(account.total_amount, -50)
+        self.assertEqual(account.amount, 100)
+        self.assertEqual(account.paid_amount, 50)
 
-        totals = account.total_partner_split_ids
+        totals = account.total_partner_line_ids
         total_partner_1 = totals.filtered_domain(
             [("partner_id", "=", self.partner_1.id)]
         )
@@ -114,3 +116,9 @@ class TestAccountPartnerSplit(TestCommon):
             [("partner_id", "=", self.partner_3.id)]
         )
         self.assertEqual(total_partner_3.amount, -20)
+
+    def test_account_report_action(self):
+        account = self.split_account
+
+        report_action = account.action_view_report()
+        self.assertTrue(report_action["view_mode"].startswith("graph"))

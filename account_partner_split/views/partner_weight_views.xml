@@ -4,9 +4,9 @@
   ~ License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
   -->
 <odoo>
-    <record id="partner_split_view_form" model="ir.ui.view">
-        <field name="name">Split Partner form view</field>
-        <field name="model">account_partner_split.partner_split_weight</field>
+    <record id="partner_weight_view_form" model="ir.ui.view">
+        <field name="name">Partner weight form view</field>
+        <field name="model">account_partner_split.partner_weight</field>
         <field name="arch" type="xml">
             <form>
                 <sheet>
@@ -19,9 +19,9 @@
         </field>
     </record>
 
-    <record id="partner_split_view_kanban" model="ir.ui.view">
-        <field name="name">Split Partner kanban view</field>
-        <field name="model">account_partner_split.partner_split_weight</field>
+    <record id="partner_weight_view_kanban" model="ir.ui.view">
+        <field name="name">Partner weight kanban view</field>
+        <field name="model">account_partner_split.partner_weight</field>
         <field name="arch" type="xml">
             <kanban>
                 <templates>
@@ -59,9 +59,9 @@
         </field>
     </record>
 
-    <record id="partner_split_view_tree" model="ir.ui.view">
-        <field name="name">Split Partner tree view</field>
-        <field name="model">account_partner_split.partner_split_weight</field>
+    <record id="partner_weight_view_tree" model="ir.ui.view">
+        <field name="name">Partner weight tree view</field>
+        <field name="model">account_partner_split.partner_weight</field>
         <field name="arch" type="xml">
             <tree editable="top">
                 <field name="partner_id" />

@@ -19,11 +19,11 @@ class TestCommon(tests.TransactionCase):
 
         split_account_form = Form(cls.env["account_partner_split.account"])
         split_account_form.name = "Test account"
-        with split_account_form.partner_split_weight_ids.new() as default_split:
+        with split_account_form.partner_weight_ids.new() as default_split:
             default_split.partner_id = cls.partner_1
-        with split_account_form.partner_split_weight_ids.new() as default_split:
+        with split_account_form.partner_weight_ids.new() as default_split:
             default_split.partner_id = cls.partner_2
-        with split_account_form.partner_split_weight_ids.new() as default_split:
+        with split_account_form.partner_weight_ids.new() as default_split:
             default_split.partner_id = cls.partner_3
             default_split.weight = 2
         cls.split_account = split_account_form.save()
@@ -32,8 +32,8 @@ class TestCommon(tests.TransactionCase):
         """Expense shared among default partners."""
         account_form = Form(account)
         with account_form.line_ids.new() as line:
-            line.split_account_id = account
-            line.to_pay_amount = amount
+            line.account_id = account
+            line.amount = amount
         account = account_form.save()
         line = account.line_ids[-1]
         return line
@@ -41,7 +41,7 @@ class TestCommon(tests.TransactionCase):
     def _add_payment(self, line, partner, amount):
         """`partner` pays `amount` of `line`."""
         line_form = Form(line)
-        with line_form.paying_partner_split_ids.new() as payment:
+        with line_form.partner_line_ids.new() as payment:
             payment.partner_id = partner
             payment.amount = amount
         return line_form.save()
@@ -62,4 +62,4 @@ class TestCommon(tests.TransactionCase):
                     }
                 )
             )
-        line.partner_split_weight_ids = weights
+        line.partner_weight_ids = weights
