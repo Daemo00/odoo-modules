@@ -13,6 +13,7 @@
                     <group>
                         <field name="thousand_sep" />
                         <field name="cents_sep" />
+                        <field name="currency_id" />
                         <field name="file_name" invisible="True" />
                         <field name="file_data" filename="file_name" />
                     </group>

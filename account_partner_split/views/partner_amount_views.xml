@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  ~ Copyright 2022 Simone Rubino <daemo00@gmail.com>
+  ~ License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+  -->
+<odoo>
+    <record id="partner_amount_view_form" model="ir.ui.view">
+        <field name="name">Partner and amount form view</field>
+        <field name="model">account_partner_split.partner.amount</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="partner_id" />
+                        <field name="amount" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="partner_amount_view_kanban" model="ir.ui.view">
+        <field name="name">Partner and amount kanban view</field>
+        <field name="model">account_partner_split.partner.amount</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-1">
+                                    <a
+                                        t-if="widget.editable"
+                                        type="edit"
+                                        class="fa fa-edit"
+                                        title="Edit"
+                                    />
+                                </div>
+                                <div class="col-8">
+                                    <field name="partner_id" />
+                                </div>
+                                <div class="col-2">
+                                    <strong class="float-start">Paid: </strong>
+                                    <field class="float-end" name="amount" />
+                                </div>
+                                <div class="col-1">
+                                    <a
+                                        t-if="widget.editable"
+                                        type="delete"
+                                        class="fa fa-trash-o"
+                                        title="Delete"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="partner_amount_view_search" model="ir.ui.view">
+        <field name="name">Partner and amount search view</field>
+        <field name="model">account_partner_split.partner.amount</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="account_line_id" />
+                <field name="account_id" />
+                <field name="date" />
+                <field name="partner_id" />
+                <field name="amount" />
+                <group expand="0" string="Group By">
+                    <filter
+                        name="group_by_account_line_id"
+                        context="{'group_by':'account_line_id'}"
+                    />
+                    <filter name="group_by_date" context="{'group_by':'date:day'}" />
+                    <filter
+                        name="group_by_account_id"
+                        context="{'group_by':'account_id'}"
+                    />
+                    <filter
+                        name="group_by_partner_id"
+                        context="{'group_by':'partner_id'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="partner_amount_view_tree" model="ir.ui.view">
+        <field name="name">Partner and amount tree view</field>
+        <field name="model">account_partner_split.partner.amount</field>
+        <field name="arch" type="xml">
+            <tree editable="top">
+                <field name="total_account_id" invisible="True" />
+                <field name="account_line_id" invisible="True" />
+                <field name="total_account_line_id" invisible="True" />
+                <field name="partner_id" />
+                <field name="amount" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="partner_amount_view_graph" model="ir.ui.view">
+        <field name="name">Partner and amount graph view</field>
+        <field name="model">account_partner_split.partner.amount</field>
+        <field name="arch" type="xml">
+            <graph type="line" stacked="False" cumulated="True" disable_linking="False">
+                <field name="date" interval="day" />
+                <field name="partner_id" />
+                <field name="amount" type="measure" />
+            </graph>
+        </field>
+    </record>
+
+    <record id="partner_amount_action" model="ir.actions.act_window">
+        <field name="name">Partners and amounts</field>
+        <field name="res_model">account_partner_split.partner.amount</field>
+        <field name="view_mode">tree,form,graph,pivot,kanban</field>
+    </record>
+
+    <menuitem
+        id="partner_amount_menu"
+        parent="account_partner_split.split_account_menu"
+        action="partner_amount_action"
+    />
+</odoo>

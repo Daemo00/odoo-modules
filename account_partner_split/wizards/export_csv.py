@@ -30,10 +30,8 @@ class ExportCSV(models.TransientModel):
         account = self.env[account_model].browse(account_id)
 
         headers = [
-            "Accounting Date",
             "Invoice Date",
             "Description",
-            "Category",
             "Amount",
             "Partner",
         ]
@@ -41,12 +39,10 @@ class ExportCSV(models.TransientModel):
         csv_lines = []
         for line in account.line_ids:
             csv_line = {
-                "Accounting Date": format_date(self.env, line.accounting_date),
-                "Invoice Date": format_date(self.env, line.invoice_date),
+                "Invoice Date": format_date(self.env, line.date),
                 "Description": line.name or "",
-                "Category": ", ".join(line.tag_ids.mapped("name")),
             }
-            totals = line.total_partner_split_ids
+            totals = line.total_partner_line_ids
             for total in totals:
                 total_csv_line = csv_line.copy()
                 total_csv_line.update(
