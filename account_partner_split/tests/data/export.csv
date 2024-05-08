@@ -1,7 +1,7 @@
-Accounting Date,Invoice Date,Description,Category,Amount,Partner
-10/10/2020,01/01/2020,Shared,"Tag 1, Tag 2",-12.5,Test partner 1
-10/10/2020,01/01/2020,Shared,"Tag 1, Tag 2",-12.5,Test partner 2
-10/10/2020,01/01/2020,Shared,"Tag 1, Tag 2",-25.0,Test partner 3
-,,,,75.0,Test partner 1
-,,,,-25.0,Test partner 2
-,,,,-50.0,Test partner 3
+Invoice Date,Description,Amount,Partner
+01/01/2020,Shared,-12.5,Test partner 1
+01/01/2020,Shared,-12.5,Test partner 2
+01/01/2020,Shared,-25.0,Test partner 3
+,,75.0,Test partner 1
+,,-25.0,Test partner 2
+,,-50.0,Test partner 3

@@ -5,7 +5,7 @@ import base64
 import csv
 from datetime import datetime
 
-from odoo import Command, fields, models
+from odoo import fields, models
 
 
 class ImportConti(models.TransientModel):
@@ -24,6 +24,11 @@ class ImportConti(models.TransientModel):
         required=True,
         default=",",
     )
+    currency_id = fields.Many2one(
+        comodel_name="res.currency",
+        required=True,
+        default=lambda model: model.env.company.currency_id,
+    )
 
     def import_file(self):
         self.ensure_one()
@@ -33,6 +38,7 @@ class ImportConti(models.TransientModel):
 
         thousand_sep = self.thousand_sep
         cents_sep = self.cents_sep
+        currency_symbol = self.currency_id.symbol
 
         content = base64.decodebytes(self.file_data).decode()
         csv_lines = content.splitlines()
@@ -40,48 +46,29 @@ class ImportConti(models.TransientModel):
         partner_cache = {}
 
         for csv_dict in csv_dicts:
+            amount = csv_dict.get(" Importo EUR")
+            amount = (
+                amount.replace(thousand_sep, "")
+                .replace(cents_sep, ".")
+                .replace(currency_symbol, "")
+            )
+            if not amount:
+                break
+            amount = float(amount)
+
             split_dict = {
-                "split_account_id": account.id,
+                "account_id": account.id,
                 "name": csv_dict.get("Descrizione operazione"),
-                "accounting_date": datetime.strptime(
-                    csv_dict.get("Data operazione"), "%d/%m/%Y"
-                )
-                if csv_dict.get("Data operazione")
-                else False,
-                "invoice_date": datetime.strptime(
-                    csv_dict.get("Data valuta"), "%d/%m/%Y"
-                )
+                "date": datetime.strptime(csv_dict.get("Data valuta"), "%d/%m/%Y")
                 if csv_dict.get("Data valuta")
                 else False,
             }
 
-            tag_names = csv_dict.get("Tipologia")
-            if tag_names:
-                tag_names = tag_names.split(",")
-                tags = self.env["account_partner_split.account.line.tag"].browse()
-                for tag_name in tag_names:
-                    tag = self.env["account_partner_split.account.line.tag"].search(
-                        [("name", "=", tag_name)]
-                    )
-                    if not tag:
-                        tag = self.env["account_partner_split.account.line.tag"].create(
-                            {
-                                "name": tag_name,
-                            }
-                        )
-                    tags |= tag
-                split_dict["tag_ids"] = [Command.set(tags.ids)]
-
             line = self.env["account_partner_split.account.line"].create(split_dict)
-
-            amount = csv_dict.get(" Importo EUR")
-            amount = amount.replace(thousand_sep, "").replace(cents_sep, ".")
-            amount = float(amount)
 
             partner_name = csv_dict.get("Partner")
             if not partner_name:
-                line.to_pay_amount = -amount
-                line.onchange_split_account_id()
+                partner_to_paid_amount = line.split_by_weight(amount)
             else:
                 partner = partner_cache.get(partner_name)
                 if not partner:
@@ -92,14 +79,10 @@ class ImportConti(models.TransientModel):
                         limit=1,
                     )
                     partner_cache[partner_name] = partner
-                line.paying_partner_split_ids = [
-                    Command.create(
-                        {
-                            "partner_id": partner.id,
-                            "amount": amount,
-                        }
-                    )
-                ]
-                line.partner_split_weight_ids = [
-                    Command.clear(),
-                ]
+                partner_to_paid_amount = {
+                    partner: amount,
+                }
+
+            line.partner_line_ids = line.partner_line_ids._get_update_commands(
+                partner_to_paid_amount,
+            )

@@ -34,25 +34,13 @@ class TestImportCSV(TestCommon):
         # Arrange
         account = self.split_account
         partner = self.partner_1
-        tags = self.env["account_partner_split.account.line.tag"].create(
-            [
-                {
-                    "name": "Tag 1",
-                },
-                {
-                    "name": "Tag 2",
-                },
-            ]
-        )
 
         expense = self._add_expense(account, 50)
         expense.name = "Shared"
-        expense.invoice_date = fields.Datetime.to_datetime("2020-01-01 01:02:03")
-        expense.accounting_date = fields.Datetime.to_datetime("2020-10-10 04:05:06")
-        expense.tag_ids = tags
+        expense.date = fields.Datetime.to_datetime("2020-01-01 01:02:03")
 
         partner_expense = self._add_expense(account, 100)
-        partner_expense.invoice_date = False
+        partner_expense.date = False
         self._add_payment(partner_expense, partner, 100)
 
         # Act

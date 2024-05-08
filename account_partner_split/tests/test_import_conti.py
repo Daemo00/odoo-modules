@@ -38,7 +38,7 @@ class TestImportConti(TestCommon):
         partner_2.name = "Partner 2"
         partner_3 = self.partner_3
 
-        default_lines = conti.partner_split_weight_ids
+        default_lines = conti.partner_weight_ids
         default_partner_1 = default_lines.filtered_domain(
             [("partner_id", "=", partner_1.id)]
         )
@@ -56,9 +56,9 @@ class TestImportConti(TestCommon):
         wizard = self.get_wizard_for_file(conti, "conti.csv")
         wizard.import_file()
 
-        self.assertEqual(conti.total_amount, 7000)
+        self.assertEqual(conti.paid_amount, 7000)
 
-        totals = conti.total_partner_split_ids
+        totals = conti.total_partner_line_ids
         total_partner_1 = totals.filtered_domain(
             [("partner_id", "=", self.partner_1.id)]
         )
