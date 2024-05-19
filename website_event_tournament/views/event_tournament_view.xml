@@ -1,0 +1,18 @@
+<!--
+  ~ Copyright 2022 Simone Rubino
+  ~ License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+  -->
+<odoo>
+    <record id="event_tournament_view_form" model="ir.ui.view">
+        <field name="name">Add website fields in event.tournament form view</field>
+        <field name="model">event.tournament</field>
+        <field name="inherit_id" ref="event_tournament.event_tournament_view_form" />
+        <field name="arch" type="xml">
+            <page name="notes" position="inside">
+                <group>
+                    <field name="website_description" />
+                </group>
+            </page>
+        </field>
+    </record>
+</odoo>
