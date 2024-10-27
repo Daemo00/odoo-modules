@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  ~ Copyright 2022 Simone Rubino <daemo00@gmail.com>
+  ~ License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+  -->
+<odoo>
+    <menuitem id="split_account_menu" name="Split Accounts" />
+
+    <menuitem
+        id="account_menu_accounts"
+        parent="account_partner_split.split_account_menu"
+        action="account_action"
+    />
+
+    <menuitem
+        id="split_account_menu_accounts_lines"
+        parent="account_partner_split.split_account_menu"
+        action="split_account_line_action"
+    />
+
+    <menuitem
+        id="partner_amount_menu"
+        parent="account_partner_split.split_account_menu"
+        action="partner_amount_action"
+    />
+</odoo>

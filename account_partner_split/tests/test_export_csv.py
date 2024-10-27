@@ -1,10 +1,11 @@
 #  Copyright 2023 Simone Rubino <daemo00@gmail.com>
 #  License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 import base64
+import os
 from pathlib import Path
 
 from odoo import fields
-from odoo.modules import get_resource_path
+from odoo.tools.misc import file_path
 
 from odoo.addons.account_partner_split.tests.common import TestCommon
 
@@ -47,8 +48,8 @@ class TestImportCSV(TestCommon):
         file_data = self.get_exported_file(account)
 
         # Assert
-        expected_path = get_resource_path(
-            self.test_module, "tests", "data", "export.csv"
+        expected_path = file_path(
+            os.sep.join([self.test_module, "tests", "data", "export.csv"])
         )
         expected = Path(expected_path).read_bytes()
         # Compare lines because created CSV has /r/n line separators,

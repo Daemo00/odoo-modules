@@ -20,9 +20,9 @@ class Account(models.Model):
         string="Partner weights",
         help="Default values for lines",
     )
-    total_partner_line_ids = fields.One2many(
+    total_partner_line_ids = fields.Many2many(
         comodel_name="account_partner_split.partner.amount",
-        inverse_name="total_account_id",
+        relation="account_split_partner_amount_rel",
         string="Totals by partner",
         compute="_compute_total_partner_line_ids",
         store=True,
@@ -76,7 +76,12 @@ class Account(models.Model):
                 account.line_ids.total_partner_line_ids._group_amount_by_partner()
             )
             account.total_partner_line_ids = (
-                account.total_partner_line_ids._get_update_commands(partner_to_amount)
+                account.total_partner_line_ids._get_update_commands(
+                    partner_to_amount,
+                    default_values=dict(
+                        total_account_id=account.id,
+                    ),
+                )
             )
 
     def generate_payment_proposals(self):

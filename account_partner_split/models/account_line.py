@@ -15,7 +15,7 @@ class AccountLine(models.Model):
     )
     account_id = fields.Many2one(
         comodel_name="account_partner_split.account",
-        string="Split Account",
+        string="Account",
         required=True,
         ondelete="cascade",
     )
@@ -28,7 +28,6 @@ class AccountLine(models.Model):
         comodel_name="account_partner_split.partner.amount",
         inverse_name="account_line_id",
         string="Amounts contributed by partners",
-        required=True,
     )
     total_partner_line_ids = fields.One2many(
         comodel_name="account_partner_split.partner.amount",
@@ -62,6 +61,9 @@ class AccountLine(models.Model):
         store=True,
     )
 
+    @api.depends(
+        "account_id",
+    )
     def _compute_currency_id(self):
         company_currency = self.env.company.currency_id
         for line in self:
@@ -77,12 +79,6 @@ class AccountLine(models.Model):
             line.paid_amount = sum(
                 line.partner_line_ids.mapped("amount"),
             )
-
-    def split_paid_amount(self):
-        partner_to_paid_amount = self.split_by_weight(self.paid_amount)
-        self.partner_line_ids = self.partner_line_ids._get_update_commands(
-            partner_to_paid_amount,
-        )
 
     @api.depends(
         "amount",
@@ -127,6 +123,9 @@ class AccountLine(models.Model):
             line.total_partner_line_ids = (
                 line.total_partner_line_ids._get_update_commands(
                     partner_to_owed_amount,
+                    default_values=dict(
+                        total_account_line_id=line.id,
+                    ),
                 )
             )
 

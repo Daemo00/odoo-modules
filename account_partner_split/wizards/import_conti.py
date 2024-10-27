@@ -85,4 +85,7 @@ class ImportConti(models.TransientModel):
 
             line.partner_line_ids = line.partner_line_ids._get_update_commands(
                 partner_to_paid_amount,
+                default_values=dict(
+                    total_account_id=account.id,
+                ),
             )
