@@ -13,7 +13,7 @@ class PartnerAmount(models.Model):
 
     total_account_id = fields.Many2one(
         comodel_name="account_partner_split.account",
-        string="Account",
+        string="Total Account",
         ondelete="cascade",
     )
     account_line_id = fields.Many2one(
@@ -24,6 +24,7 @@ class PartnerAmount(models.Model):
     account_id = fields.Many2one(
         related="account_line_id.account_id",
         readonly=True,
+        store=True,
     )
     total_account_line_id = fields.Many2one(
         comodel_name="account_partner_split.account.line",
@@ -76,14 +77,14 @@ class PartnerAmount(models.Model):
 
     @api.depends(
         "account_line_id.date",
+        "total_account_line_id.date",
     )
     def _compute_date(self):
-        default_date = fields.Date.today()
         for partner_amount in self:
             partner_amount.date = (
                 partner_amount.date
                 or partner_amount.account_line_id.date
-                or default_date
+                or partner_amount.total_account_line_id.date
             )
 
     def _compute_currency_id(self):
@@ -132,7 +133,7 @@ class PartnerAmount(models.Model):
             partner_to_amount[partner] = sum(partner_lines.mapped("amount"))
         return partner_to_amount
 
-    def _get_update_commands(self, partner_to_amount):
+    def _get_update_commands(self, partner_to_amount, default_values=None):
         """Update `self` to reflect amounts shared as in `partner_to_amount`.
 
         Return list of Commands.
@@ -155,10 +156,13 @@ class PartnerAmount(models.Model):
                 if not existing_partner_total:
                     # Create total if there is an amount for the partner
                     partner_total = Command.create(
-                        {
-                            "partner_id": partner.id,
-                            "amount": amount,
-                        }
+                        dict(
+                            {
+                                "partner_id": partner.id,
+                                "amount": amount,
+                            },
+                            **(default_values or {}),
+                        )
                     )
                 else:
                     # Update total if there is an amount for the partner
@@ -175,20 +179,19 @@ class PartnerAmount(models.Model):
             ]
         return new_totals
 
-    def name_get(self):
-        return [
-            (
-                partner_line.id,
-                _(
-                    "%(partner)s: %(amount)+g",
-                    partner=partner_line.partner_id.name,
-                    amount=(
-                        float_round(
-                            partner_line.amount,
-                            precision_rounding=partner_line.currency_id.rounding,
-                        )
-                    ),
+    @api.depends(
+        "partner_id.name",
+        "amount",
+        "currency_id.rounding",
+    )
+    def _compute_display_name(self):
+        for partner_line in self:
+            currency_digits = partner_line.currency_id.decimal_places
+            partner_line.display_name = _(
+                "%(partner)s: %(amount)+g",
+                partner=partner_line.partner_id.name,
+                amount=float_round(
+                    partner_line.amount,
+                    precision_digits=currency_digits,
                 ),
             )
-            for partner_line in self
-        ]

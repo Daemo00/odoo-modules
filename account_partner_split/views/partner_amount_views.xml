@@ -93,9 +93,9 @@
         <field name="model">account_partner_split.partner.amount</field>
         <field name="arch" type="xml">
             <tree editable="top">
-                <field name="total_account_id" invisible="True" />
-                <field name="account_line_id" invisible="True" />
-                <field name="total_account_line_id" invisible="True" />
+                <field name="total_account_id" column_invisible="True" />
+                <field name="account_line_id" column_invisible="True" />
+                <field name="total_account_line_id" column_invisible="True" />
                 <field name="partner_id" />
                 <field name="amount" />
             </tree>
@@ -119,10 +119,4 @@
         <field name="res_model">account_partner_split.partner.amount</field>
         <field name="view_mode">tree,form,graph,pivot,kanban</field>
     </record>
-
-    <menuitem
-        id="partner_amount_menu"
-        parent="account_partner_split.split_account_menu"
-        action="partner_amount_action"
-    />
 </odoo>

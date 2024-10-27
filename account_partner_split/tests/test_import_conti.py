@@ -4,7 +4,7 @@
 import base64
 import os
 
-from odoo.modules import get_resource_path
+from odoo.tools.misc import file_path
 
 from odoo.addons.account_partner_split.tests.common import TestCommon
 
@@ -16,7 +16,9 @@ class TestImportConti(TestCommon):
         cls.wizard_model = cls.env["account_partner_split.import_conti"]
 
     def get_wizard_for_file(self, account, file_name):
-        resp_path = get_resource_path(self.test_module, "tests", "data", file_name)
+        resp_path = file_path(
+            os.sep.join([self.test_module, "tests", "data", file_name])
+        )
         with open(resp_path, "rb") as resp_file:
             wizard = self.wizard_model.with_context(
                 active_model=account._name,

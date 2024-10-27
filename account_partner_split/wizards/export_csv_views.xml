@@ -11,14 +11,14 @@
             <form>
                 <sheet>
                     <field name="state" invisible="True" />
-                    <group states="confirm">
+                    <group invisible="state != 'confirm'">
                         <p>Just do it</p>
                     </group>
-                    <group states="download">
+                    <group invisible="state != 'download'">
                         <field name="file_name" invisible="True" />
                         <field name="file_data" filename="file_name" />
                     </group>
-                    <footer states="confirm">
+                    <footer invisible="state != 'confirm'">
                         <button
                             name="export"
                             string="Export"

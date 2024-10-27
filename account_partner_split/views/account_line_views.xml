@@ -14,7 +14,7 @@
                         <group>
                             <field name="name" />
                         </group>
-                    <group />
+                        <group />
                         <notebook>
                             <page name="payment" string="Payment">
                                 <group>
@@ -107,6 +107,11 @@
                 <field name="amount" />
                 <field name="currency_id" groups="base.group_multi_currency" />
                 <field
+                    name="currency_id"
+                    invisible="True"
+                    groups="!base.group_multi_currency"
+                />
+                <field
                     name="partner_line_ids"
                     widget="many2many_tags"
                     optional="hide"
@@ -125,10 +130,4 @@
         <field name="res_model">account_partner_split.account.line</field>
         <field name="view_mode">tree,form,graph,pivot,kanban</field>
     </record>
-
-    <menuitem
-        id="split_account_menu_accounts_lines"
-        parent="account_partner_split.split_account_menu"
-        action="split_account_line_action"
-    />
 </odoo>

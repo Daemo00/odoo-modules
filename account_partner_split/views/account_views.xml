@@ -85,10 +85,4 @@
         <field name="res_model">account_partner_split.account</field>
         <field name="view_mode">tree,form</field>
     </record>
-
-    <menuitem
-        id="account_menu_accounts"
-        parent="account_partner_split.split_account_menu"
-        action="account_action"
-    />
 </odoo>
