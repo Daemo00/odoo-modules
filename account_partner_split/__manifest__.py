@@ -7,7 +7,7 @@
     "version": "16.0.1.0.0",
     "license": "AGPL-3",
     "author": "Simone Rubino",
-    "website": "https://github.com/Daemo00/odoo-modules/tree/16.0/event_tournament",
+    "website": "https://github.com/Daemo00/odoo-modules",
     "depends": [
         "base",
         "mail",
