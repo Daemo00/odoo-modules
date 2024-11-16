@@ -1,0 +1,47 @@
+<!--
+  ~ Copyright 2024 Simone Rubino <daemo00@gmail.com>
+  ~ License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+  -->
+<odoo>
+    <record id="view_appliance_tree" model="ir.ui.view">
+        <field name="name">Tree view for appliance</field>
+        <field name="model">appliance.usage.cost.appliance</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" />
+                <field name="brand" />
+                <field name="program_ids" widget="many2many_tags" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_appliance_form" model="ir.ui.view">
+        <field name="name">Form view for appliance</field>
+        <field name="model">appliance.usage.cost.appliance</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name" />
+                        <field name="image" widget="image" />
+                        <field name="brand" />
+                        <field name="model" />
+                        <field name="program_ids">
+                            <tree>
+                                <field name="name" />
+                                <field name="duration" widget="float_time" />
+                            </tree>
+                        </field>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_appliances" model="ir.actions.act_window">
+        <field name="name">Appliances</field>
+        <field name="res_model">appliance.usage.cost.appliance</field>
+    </record>
+
+    <menuitem id="menu_appliances" parent="menu_root" action="action_appliances" />
+</odoo>

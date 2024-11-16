@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  ~ Copyright 2024 Simone Rubino <daemo00@gmail.com>
+  ~ License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+  -->
+<odoo>
+    <record id="appliance_washing_machine" model="appliance.usage.cost.appliance">
+        <field name="name">Washing machine</field>
+        <field name="program_ids">
+            <record
+                id="appliance_program_washing_machine_eco"
+                model="appliance.usage.cost.appliance.program"
+            >
+                <field name="name">Eco</field>
+                <field name="duration">4</field>
+                <field name="utility_usage_ids">
+                    <record
+                        id="appliance_program_usage_washing_machine_eco_electricity"
+                        model="appliance.usage.cost.appliance.program.utility.usage"
+                    >
+                        <field
+                            name="utility_id"
+                            ref="appliance_usage_cost.utility_electricity"
+                        />
+                        <field name="quantity">5</field>
+                    </record>
+                    <record
+                        id="appliance_program_usage_washing_machine_eco_water"
+                        model="appliance.usage.cost.appliance.program.utility.usage"
+                    >
+                        <field
+                            name="utility_id"
+                            ref="appliance_usage_cost.utility_water"
+                        />
+                        <field name="quantity">20</field>
+                    </record>
+                </field>
+            </record>
+        </field>
+    </record>
+</odoo>

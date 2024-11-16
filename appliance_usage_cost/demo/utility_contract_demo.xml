@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+  ~ Copyright 2024 Simone Rubino <daemo00@gmail.com>
+  ~ License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+  -->
+<odoo>
+    <record
+        id="utility_contract_electricity"
+        model="appliance.usage.cost.utility.contract"
+    >
+        <field name="name">Electricity contract</field>
+        <field name="start_date" eval="datetime(2020, month=1, day=1)" />
+        <field name="end_date" eval="datetime(2020, month=12, day=31)" />
+        <field name="period_ids">
+            <record
+                id="utility_contract_period_electricity_weekday"
+                model="appliance.usage.cost.utility.contract.period"
+            >
+                <field name="name">Monday to Friday</field>
+                <field
+                    name="utility_id"
+                    ref="appliance_usage_cost.utility_electricity"
+                />
+                <field name="from_day">0</field>
+                <field name="to_day">4</field>
+                <field name="cost">10</field>
+            </record>
+            <record
+                id="utility_contract_period_electricity_weekend"
+                model="appliance.usage.cost.utility.contract.period"
+            >
+                <field name="name">Saturday and Sunday</field>
+                <field
+                    name="utility_id"
+                    ref="appliance_usage_cost.utility_electricity"
+                />
+                <field name="from_day">5</field>
+                <field name="to_day">6</field>
+                <field name="cost">5</field>
+            </record>
+        </field>
+    </record>
+
+    <record id="utility_contract_water" model="appliance.usage.cost.utility.contract">
+        <field name="name">Water contract</field>
+        <field name="start_date" eval="datetime(2020, month=1, day=1)" />
+        <field name="end_date" eval="datetime(2020, month=12, day=31)" />
+        <field name="period_ids">
+            <record
+                id="utility_contract_period_water_weekday"
+                model="appliance.usage.cost.utility.contract.period"
+            >
+                <field name="name">Monday to Friday</field>
+                <field name="utility_id" ref="appliance_usage_cost.utility_water" />
+                <field name="from_day">0</field>
+                <field name="to_day">4</field>
+                <field name="cost">2</field>
+            </record>
+            <record
+                id="utility_contract_period_water_weekend"
+                model="appliance.usage.cost.utility.contract.period"
+            >
+                <field name="name">Saturday and Sunday</field>
+                <field name="utility_id" ref="appliance_usage_cost.utility_water" />
+                <field name="from_day">5</field>
+                <field name="to_day">6</field>
+                <field name="cost">1</field>
+            </record>
+        </field>
+    </record>
+</odoo>

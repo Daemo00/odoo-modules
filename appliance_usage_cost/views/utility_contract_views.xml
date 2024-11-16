@@ -1,0 +1,58 @@
+<!--
+  ~ Copyright 2024 Simone Rubino <daemo00@gmail.com>
+  ~ License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+  -->
+<odoo>
+    <record id="view_utility_contract_tree" model="ir.ui.view">
+        <field name="name">Tree view for utility contract</field>
+        <field name="model">appliance.usage.cost.utility.contract</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" />
+                <field name="start_date" />
+                <field name="end_date" />
+                <field name="period_ids" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_utility_contract_form" model="ir.ui.view">
+        <field name="name">Form view for utility contract</field>
+        <field name="model">appliance.usage.cost.utility.contract</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name" />
+                        <field
+                            name="start_date"
+                            string="Start &#8594; End"
+                            widget="daterange"
+                            options="{'end_date_field': 'end_date'}"
+                        />
+                        <field name="end_date" invisible="True" />
+                        <field name="period_ids">
+                            <tree editable="bottom">
+                                <field name="name" />
+                                <field name="utility_id" />
+                                <field name="from_day" />
+                                <field name="to_day" />
+                                <field name="from_hour" widget="float_time" />
+                                <field name="to_hour" widget="float_time" />
+                                <field name="cost" />
+                                <field name="utility_uom_id" groups="uom.group_uom" />
+                            </tree>
+                        </field>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_contracts" model="ir.actions.act_window">
+        <field name="name">Utility Contracts</field>
+        <field name="res_model">appliance.usage.cost.utility.contract</field>
+    </record>
+
+    <menuitem id="menu_contracts" parent="menu_root" action="action_contracts" />
+</odoo>
