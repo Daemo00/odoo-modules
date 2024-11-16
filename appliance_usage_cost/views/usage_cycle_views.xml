@@ -1,0 +1,25 @@
+<!--
+  ~ Copyright 2024 Simone Rubino <daemo00@gmail.com>
+  ~ License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+  -->
+<odoo>
+    <record id="view_usage_cycle_tree" model="ir.ui.view">
+        <field name="name">Tree view for usage cycle</field>
+        <field name="model">appliance.usage.cost.usage.cycle</field>
+        <field name="arch" type="xml">
+            <tree editable="top">
+                <field name="program_id" />
+                <field name="start_date" />
+                <field name="end_date" />
+                <field name="cost" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_cycle" model="ir.actions.act_window">
+        <field name="name">Cycles</field>
+        <field name="res_model">appliance.usage.cost.usage.cycle</field>
+    </record>
+
+    <menuitem id="menu_cycles" parent="menu_programs" action="action_cycle" />
+</odoo>

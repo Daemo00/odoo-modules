@@ -1,0 +1,71 @@
+<!--
+  ~ Copyright 2024 Simone Rubino <daemo00@gmail.com>
+  ~ License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+  -->
+<odoo>
+    <record id="view_program_tree" model="ir.ui.view">
+        <field name="name">Tree view for appliance program</field>
+        <field name="model">appliance.usage.cost.appliance.program</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" />
+                <field name="duration" widget="float_time" />
+                <field name="appliance_id" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_program_form" model="ir.ui.view">
+        <field name="name">Form view for appliance program</field>
+        <field name="model">appliance.usage.cost.appliance.program</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name" />
+                        <field name="appliance_id" readonly="True" />
+                        <field name="duration" widget="float_time" />
+                    </group>
+                    <notebook>
+                        <page string="Utility Usage">
+                            <field name="utility_usage_ids">
+                                <tree>
+                                    <field name="utility_id" />
+                                    <field name="quantity" />
+                                    <field
+                                        name="utility_uom_id"
+                                        groups="uom.group_uom"
+                                    />
+                                </tree>
+                                <form>
+                                    <group>
+                                        <field name="utility_id" />
+                                        <label for="quantity" />
+                                        <div class="o_row">
+                                            <field name="quantity" />
+                                            <field
+                                                name="utility_uom_id"
+                                                groups="uom.group_uom"
+                                            /> per hour
+                                        </div>
+                                    </group>
+                                </form>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_programs" model="ir.actions.act_window">
+        <field name="name">Programs</field>
+        <field name="res_model">appliance.usage.cost.appliance.program</field>
+    </record>
+
+    <menuitem
+        id="menu_programs_programs"
+        parent="menu_programs"
+        action="action_programs"
+    />
+</odoo>
