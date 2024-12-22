@@ -21,6 +21,7 @@
         "views/program_views.xml",
         "views/usage_cycle_views.xml",
         "views/utility_contract_views.xml",
+        "views/utility_views.xml",
     ],
     "demo": [
         "demo/appliance_demo.xml",

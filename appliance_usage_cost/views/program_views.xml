@@ -63,9 +63,5 @@
         <field name="res_model">appliance.usage.cost.appliance.program</field>
     </record>
 
-    <menuitem
-        id="menu_programs_programs"
-        parent="menu_programs"
-        action="action_programs"
-    />
+    <menuitem id="menu_programs" parent="menu_root_programs" action="action_programs" />
 </odoo>

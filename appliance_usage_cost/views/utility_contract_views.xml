@@ -54,5 +54,10 @@
         <field name="res_model">appliance.usage.cost.utility.contract</field>
     </record>
 
-    <menuitem id="menu_contracts" parent="menu_root" action="action_contracts" />
+    <menuitem
+        id="menu_contracts"
+        parent="menu_root_utilities"
+        action="action_contracts"
+        name="Contracts"
+    />
 </odoo>
