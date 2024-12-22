@@ -4,6 +4,7 @@
   -->
 <odoo>
     <menuitem id="menu_root" name="Appliance Cost">
-        <menuitem id="menu_programs" name="Programs" />
+        <menuitem id="menu_root_programs" name="Programs" />
+        <menuitem id="menu_root_utilities" name="Utilities" />
     </menuitem>
 </odoo>

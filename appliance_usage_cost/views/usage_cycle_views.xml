@@ -21,5 +21,5 @@
         <field name="res_model">appliance.usage.cost.usage.cycle</field>
     </record>
 
-    <menuitem id="menu_cycles" parent="menu_programs" action="action_cycle" />
+    <menuitem id="menu_cycles" parent="menu_root_programs" action="action_cycle" />
 </odoo>
