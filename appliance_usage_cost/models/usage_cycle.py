@@ -11,8 +11,18 @@ class UsageCycle(models.Model):
     _description = "Execution of Program at specific date"
     _order = "start_date"
 
+    appliance_id = fields.Many2one(
+        comodel_name="appliance.usage.cost.appliance",
+        compute="_compute_appliance_id",
+        readonly=False,
+        required=True,
+        store=True,
+    )
     program_id = fields.Many2one(
         comodel_name="appliance.usage.cost.appliance.program",
+        domain='[ \
+            ("appliance_id", "=?", appliance_id), \
+        ]',
         required=True,
     )
     start_date = fields.Datetime(
@@ -41,6 +51,13 @@ class UsageCycle(models.Model):
             )
             for cycle in self
         ]
+
+    @api.depends(
+        "program_id",
+    )
+    def _compute_appliance_id(self):
+        for cycle in self:
+            cycle.appliance_id = cycle.program_id.appliance_id
 
     @api.depends(
         "start_date",
