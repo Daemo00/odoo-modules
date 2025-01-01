@@ -27,9 +27,9 @@
                         <field name="duration" widget="float_time" />
                     </group>
                     <notebook>
-                        <page string="Utility Usage">
+                        <page string="Utility Usages">
                             <field name="utility_usage_ids">
-                                <tree>
+                                <tree editable="bottom">
                                     <field name="utility_id" />
                                     <field name="quantity" />
                                     <field
@@ -37,19 +37,6 @@
                                         groups="uom.group_uom"
                                     />
                                 </tree>
-                                <form>
-                                    <group>
-                                        <field name="utility_id" />
-                                        <label for="quantity" />
-                                        <div class="o_row">
-                                            <field name="quantity" />
-                                            <field
-                                                name="utility_uom_id"
-                                                groups="uom.group_uom"
-                                            /> per hour
-                                        </div>
-                                    </group>
-                                </form>
                             </field>
                         </page>
                     </notebook>
