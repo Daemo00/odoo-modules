@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <template id="progressive_accounts_by_move">
+        <t t-call="web.html_container">
+            <script
+                src="https://code.jquery.com/jquery-3.7.1.js"
+                integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+                crossorigin="anonymous"
+            />
+
+            <link
+                rel="stylesheet"
+                href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.css"
+            />
+            <script src="https://cdn.datatables.net/2.1.8/js/dataTables.js" />
+
+            <link
+                rel="stylesheet"
+                href="https://cdn.datatables.net/fixedheader/4.0.1/css/fixedHeader.dataTables.min.css"
+            />
+            <script
+                src="https://cdn.datatables.net/fixedheader/4.0.1/js/dataTables.fixedHeader.min.js"
+            />
+
+            <link
+                rel="stylesheet"
+                href="https://cdn.datatables.net/buttons/3.2.0/css/buttons.dataTables.min.css"
+            />
+            <script
+                src="https://cdn.datatables.net/buttons/3.2.0/js/dataTables.buttons.min.js"
+            />
+            <script
+                src="https://cdn.datatables.net/buttons/3.2.0/js/buttons.dataTables.min.js"
+            />
+            <script
+                src="https://cdn.datatables.net/buttons/3.2.0/js/buttons.html5.min.js"
+            />
+
+            <script>
+                $(document).ready( function () {
+                    $('#split_cost_table').DataTable({
+                        paging: false,
+                        fixedHeader: true,
+                        layout: {
+                            topStart: {
+                                buttons: [
+                                    'copyHtml5',
+                                    'csvHtml5',
+                                ],
+                            },
+                        },
+                    });
+                } );
+            </script>
+
+            <table id="split_cost_table" class="table table-bordered">
+                <t
+                    t-set="accounts"
+                    t-value="docs.line_ids.account_id.sorted(lambda a: a.account_type == 'liability_payable')"
+                />
+                <t
+                    t-set="accounts_cumulative"
+                    t-value="{account: 0 for account in accounts}"
+                />
+                <thead>
+                    <tr>
+                        <th colspan="3" />
+                        <t t-foreach="accounts" t-as="account">
+                            <th colspan="2" class="oe_centeralign">
+                                <span t-out="account.name" />
+                            </th>
+                        </t>
+                    </tr>
+                    <tr>
+                        <th>
+                            Date
+                        </th>
+                        <th>
+                            Name
+                        </th>
+                        <th>
+                            Amount
+                        </th>
+                        <t t-foreach="accounts" t-as="account">
+                            <th>
+                                Amount
+                            </th>
+                            <th>
+                                Cumulative Amount
+                            </th>
+                        </t>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="docs.sorted(lambda d: d.date)" t-as="move">
+                        <td t-att-data-sort="move.date.strftime('%Y-%m-%d')">
+                            <span t-field="move.date" />
+                        </td>
+                        <td>
+                            <span t-field="move.ref" />
+                        </td>
+                        <td class="oe_rightalign">
+                            <span t-field="move.amount_total_signed" />
+                        </td>
+                        <t t-foreach="accounts" t-as="account">
+                            <t
+                                t-set="line"
+                                t-value="move.line_ids.filtered(lambda l: l.account_id == account)"
+                            />
+                            <t
+                                t-set="_temp"
+                                t-value="accounts_cumulative.update({account: accounts_cumulative[account] + line.balance})"
+                            />
+                            <td class="oe_rightalign">
+                                <span t-if="line.balance" t-field="line.balance" />
+                            </td>
+                            <td class="oe_rightalign">
+                                <span
+                                    t-if="line.balance"
+                                    t-out="accounts_cumulative[account]"
+                                    t-options="{
+                                        'widget': 'monetary',
+                                        'display_currency': move.company_currency_id,
+                                    }"
+                                />
+                            </td>
+                        </t>
+                    </tr>
+                </tbody>
+            </table>
+        </t>
+    </template>
+
+    <record id="action_print_progressive_accounts_by_move" model="ir.actions.report">
+        <field name="name">Progressive accounts</field>
+        <field name="model">account.move</field>
+        <field name="binding_model_id" ref="account.model_account_move" />
+        <field name="report_type">qweb-html</field>
+        <field
+            name="report_name"
+        >account_customizations.progressive_accounts_by_move</field>
+    </record>
+</odoo>
