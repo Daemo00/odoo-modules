@@ -8,6 +8,15 @@
                 integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
                 crossorigin="anonymous"
             />
+            <script
+                type="text/javascript"
+                src="https://code.jquery.com/ui/1.14.1/jquery-ui.js"
+            />
+            <link
+                rel="stylesheet"
+                type="text/css"
+                href="https://code.jquery.com/ui/1.14.1/themes/base/jquery-ui.css"
+            />
 
             <link
                 rel="stylesheet"
@@ -42,6 +51,7 @@
                     $('#split_cost_table').DataTable({
                         paging: false,
                         fixedHeader: true,
+                        autoWidth: false,
                         layout: {
                             topStart: {
                                 buttons: [
@@ -51,10 +61,20 @@
                             },
                         },
                     });
+                    $('table th').resizable({
+                        handles: 'e',
+                        stop: function(e, ui) {
+                            $(this).width(ui.size.width);
+                        }
+                    });
                 } );
             </script>
 
-            <table id="split_cost_table" class="table table-bordered">
+            <table
+                id="split_cost_table"
+                class="table table-bordered"
+                style="table-layout: unset;"
+            >
                 <t
                     t-set="accounts"
                     t-value="docs.line_ids.account_id.sorted(lambda a: a.account_type == 'liability_payable')"
