@@ -49,7 +49,6 @@
             <script>
                 $(document).ready( function () {
                     $('#split_cost_table').DataTable({
-                        paging: false,
                         fixedHeader: true,
                         autoWidth: false,
                         layout: {
@@ -58,6 +57,17 @@
                                     'copyHtml5',
                                     'csvHtml5',
                                 ],
+                                pageLength: {
+                                    menu: [
+                                        10,
+                                        50,
+                                        100,
+                                        {
+                                            label: 'All',
+                                            value: -1,
+                                        },
+                                    ],
+                                },
                             },
                         },
                     });
