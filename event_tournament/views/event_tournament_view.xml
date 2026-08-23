@@ -155,6 +155,7 @@
                                     />
                                     <field name="randomize_matches_generation" />
                                     <field name="reset_matches_before_generation" />
+                                    <field name="to_court_availability" />
                                     <button
                                         name="generate_view_matches"
                                         class="btn-warning"
