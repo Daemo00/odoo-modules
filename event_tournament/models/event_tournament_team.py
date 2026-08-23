@@ -32,6 +32,9 @@ class EventTournamentTeam(models.Model):
     )
     match_ids = fields.Many2many(
         comodel_name="event.tournament.match",
+        relation="event_tournament_match_team_rel",
+        column1="event_tournament_team_id",
+        column2="event_tournament_match_id",
         string="Matches",
         copy=False,
         domain="[" "('tournament_id', '=', tournament_id)," "]",
