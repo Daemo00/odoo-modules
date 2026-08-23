@@ -145,8 +145,7 @@ class ImportCSVBV4W(models.TransientModel):
     def import_csv_bv4w(self):
         self.ensure_one()
         content = base64.decodebytes(self.data).decode()
-        csv_lines = content.splitlines()
-        csv_lines = list(csv.reader(csv_lines))
+        csv_lines = list(csv.reader(content.splitlines()))
         team_lines = [parse_team_line(line) for line in csv_lines[1:]]
 
         team_model = self.env["event.tournament.team"]
