@@ -70,6 +70,11 @@ class EventTournament(models.Model):
         default="draft",
     )
     share_components = fields.Boolean()
+    minimize_same_team = fields.Boolean(
+        string="Minimimize same team",
+        help="A component will play with the same other components"
+        "as few times as possible",
+    )
     min_components = fields.Integer(
         string="Minimum components",
         help="Minimum number of components for a team",
@@ -228,6 +233,14 @@ class EventTournament(models.Model):
         if self.reset_matches_before_generation:
             matches_teams = self.reset_matches(matches_teams)
 
+        def common_teams(teams_list, other_match):
+            """`teams_list` does not have any team in common with `other_match`.
+
+            :param teams_list: list of teams
+            :param other_match: `event.tournament.match` record
+            """
+            return any(mt in teams_list for mt in match.teams_ids)
+
         team_model = self.env["event.tournament.team"]
         match_model = self.env["event.tournament.match"]
         matches = match_model.browse()
@@ -296,6 +309,14 @@ class EventTournament(models.Model):
             # rearrange matches_teams so that components
             # in the latest match are the first ones
             # (popped as late as possible)
+
+            if self.share_components and self.minimize_same_team:
+                matches_teams = list(
+                    filter(
+                        lambda mt, match=match: common_teams(mt, match),
+                        matches_teams,
+                    )
+                )
 
             def common_components(current_match, last_match=match):
                 components = self.env["event.registration"].browse()
