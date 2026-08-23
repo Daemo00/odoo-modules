@@ -2,7 +2,9 @@
 #  License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 from odoo.fields import Command, first
-from odoo.tests import TransactionCase, date
+from odoo.tests import date
+
+from odoo.addons.base.tests.common import BaseCommon
 
 EVENT_NBR = 2
 REGISTRATION_NBR = 2
@@ -12,7 +14,7 @@ COMPONENT_NBR = 5
 COURT_NBR = 2
 
 
-class TestCommon(TransactionCase):
+class TestCommon(BaseCommon):
     def setUp(self):
         super().setUp()
         self.event_model = self.env["event.event"]
