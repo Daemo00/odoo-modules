@@ -88,6 +88,7 @@
                                     options="{'related_start_date': 'start_datetime'}"
                                 />
                             </div>
+                            <field name="print_name" />
                         </group>
                     </group>
                     <notebook>

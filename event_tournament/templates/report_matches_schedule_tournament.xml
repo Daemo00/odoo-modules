@@ -11,7 +11,7 @@
     <template id="matches_schedule_tournament_document">
         <t t-call="web.internal_layout">
             <t t-set="matches" t-value="o.match_ids" />
-            <h1>
+            <h1 t-if="o.print_name">
                 <span t-esc="o.name" />: <span t-esc="len(matches)" /> matches
             </h1>
             <t t-call="event_tournament.matches_schedule_table" />

@@ -122,6 +122,10 @@ class EventTournament(models.Model):
         string="Sub tournaments",
     )
     notes = fields.Text()
+    print_name = fields.Boolean(
+        default=True,
+        help="Print the tournament name in the calendar",
+    )
 
     _sql_constraints = [
         (

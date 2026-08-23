@@ -32,7 +32,7 @@
                         />
                         <td>
                             <t t-if="match">
-                                <div>
+                                <div t-if="match.tournament_id.print_name">
                                     <strong>
                                         <span
                                             t-esc="match.tournament_id.display_name"
