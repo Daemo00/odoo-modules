@@ -51,6 +51,8 @@ class EventTournamentMatch(models.Model):
     team_ids = fields.Many2many(
         comodel_name="event.tournament.team",
         relation="event_tournament_match_team_rel",
+        column1="event_tournament_match_id",
+        column2="event_tournament_team_id",
         domain="[('tournament_id', '=', tournament_id)]",
         states={"done": [("readonly", True)]},
     )
