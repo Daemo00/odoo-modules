@@ -52,6 +52,10 @@ class EventTournament(models.Model):
         "allowed from the tournament rules.",
         compute="_compute_team_count_estimated",
     )
+    to_court_availability = fields.Boolean(
+        string="To courts availability",
+        help="Stop generating matches when courts are no more available.",
+    )
     component_ids = fields.Many2many(
         comodel_name="event.registration",
         compute="_compute_components",
@@ -273,6 +277,10 @@ class EventTournament(models.Model):
                     "Scheduling impossibru for a match between "
                 ) + ", ".join(team.display_name for team in match_teams)
                 if last_error:
+                    if self.to_court_availability and any(
+                        court.name in last_error for court in courts
+                    ):
+                        break
                     error_message += (
                         "\n"
                         + _("Last match could not be scheduled due to:\n")
