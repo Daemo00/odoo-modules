@@ -523,11 +523,18 @@ class EventTournament(models.Model):
                 fillvalue=components_fill_value,
             )
 
-            f_m_components_tuples = itertools.zip_longest(
-                female_components_tuples,
-                male_components_tuples,
-                fillvalue=(components_fill_value,),
-            )
+            if not self.share_components:
+                f_m_components_tuples = itertools.zip_longest(
+                    female_components_tuples,
+                    male_components_tuples,
+                    fillvalue=(components_fill_value,),
+                )
+            else:
+                f_m_components_tuples = itertools.product(
+                    female_components_tuples,
+                    male_components_tuples,
+                )
+
             # Flatten [((f), (m, m), ...)]
             components_tuples = [f + m for f, m in f_m_components_tuples]
         else:
