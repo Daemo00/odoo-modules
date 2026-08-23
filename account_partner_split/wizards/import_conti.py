@@ -41,8 +41,7 @@ class ImportConti(models.TransientModel):
         currency_symbol = self.currency_id.symbol
 
         content = base64.decodebytes(self.file_data).decode()
-        csv_lines = content.splitlines()
-        csv_dicts = list(csv.DictReader(csv_lines))
+        csv_dicts = list(csv.DictReader(content.splitlines()))
         partner_cache = {}
 
         for csv_dict in csv_dicts:
