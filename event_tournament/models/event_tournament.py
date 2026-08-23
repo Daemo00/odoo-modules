@@ -69,7 +69,9 @@ class EventTournament(models.Model):
         selection=[("draft", "Draft"), ("started", "Started"), ("done", "Done")],
         default="draft",
     )
-    share_components = fields.Boolean()
+    share_components = fields.Boolean(
+        help="The same component can be in multiple teams," "aka 'yellow' tournament",
+    )
     minimize_same_team = fields.Boolean(
         string="Minimimize same team",
         help="A component will play with the same other components"
