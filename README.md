@@ -17,7 +17,12 @@ Daemo00's odoo modules
 
 [//]: # (addons)
 
-This part will be replaced when running the oca-gen-addons-table script from OCA/maintainer-tools.
+Available addons
+----------------
+addon | version | maintainers | summary
+--- | --- | --- | ---
+[account_partner_split](account_partner_split/) | 16.0.1.0.0 |  | Generate moves splitting costs among partners
+[event_tournament](event_tournament/) | 16.0.1.0.0 |  | Implement tournaments in Odoo events
 
 [//]: # (end addons)
 
