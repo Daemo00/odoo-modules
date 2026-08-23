@@ -125,7 +125,7 @@ repos:
         args:
           - --rcfile=.pylintrc-mandatory
   - repo: https://github.com/dosisod/refurb
-    rev: v1.23.0
+    rev: v2.3.1
     hooks:
       - id: refurb
         name: Refurb
