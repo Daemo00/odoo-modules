@@ -1,8 +1,7 @@
-#  Copyright 2020 ~ 2023 Simone Rubino <daemo00@gmail.com>
-#  License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+# Copyright 2020 Simone Rubino <daemo00@gmail.com>
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
+from odoo import api, exceptions, fields, models
 from odoo.fields import first
 from odoo.tools.safe_eval import safe_eval
 
@@ -28,7 +27,9 @@ class EventTournamentTeam(models.Model):
         relation="event_tournament_team_component_rel",
         column1="component_id",
         column2="team_id",
-        domain="[" "('event_id', '=', event_id)," "]",
+        domain="""[
+            ('event_id', '=', event_id),
+        ]""",
     )
     match_ids = fields.Many2many(
         comodel_name="event.tournament.match",
@@ -37,7 +38,9 @@ class EventTournamentTeam(models.Model):
         column2="event_tournament_match_id",
         string="Matches",
         copy=False,
-        domain="[" "('tournament_id', '=', tournament_id)," "]",
+        domain="""[
+            ('tournament_id', '=', tournament_id),
+        ]""",
     )
     match_count = fields.Integer(
         compute="_compute_match_count",
@@ -103,7 +106,7 @@ class EventTournamentTeam(models.Model):
     def copy(self, default=None):
         self.ensure_one()
         default = dict(default or {})
-        default.setdefault("name", _("%s (copy)") % (self.name or ""))
+        default.setdefault("name", self.env._("%s (copy)") % (self.name or ""))
         return super().copy(default=default)
 
     @api.depends("match_ids")
@@ -126,20 +129,21 @@ class EventTournamentTeam(models.Model):
         return action
 
     @api.constrains("component_ids", "tournament_id")
-    def constrain_components_event(self):
+    def _check_components_event(self):
         for team in self:
             components = team.component_ids
             if not components:
                 continue
 
             # Check all the components are from the same event
-            components_events = components.mapped("event_id")
+            components_events = components.event_id
             if len(components_events) > 1:
-                raise ValidationError(
-                    _(
-                        "Team {team_name} not valid:\n"
-                        "Components from different events."
-                    ).format(team_name=team.display_name)
+                raise exceptions.ValidationError(
+                    team.env._(
+                        "Team %(team_name)s not valid:\n"
+                        "Components from different events.",
+                        team_name=team.display_name,
+                    )
                 )
 
             event = team.event_id
@@ -149,15 +153,17 @@ class EventTournamentTeam(models.Model):
             # Check all the components are from the team's event
             components_event = first(components_events)
             if components_event != event:
-                raise ValidationError(
-                    _(
-                        "Team {team_name} not valid:\n"
-                        "Components not in event {event_name}."
-                    ).format(team_name=team.display_name, event_name=event.display_name)
+                raise exceptions.ValidationError(
+                    team.env._(
+                        "Team %(team_name)s not valid:\n"
+                        "Components not in event %(event_name)s.",
+                        team_name=team.display_name,
+                        event_name=event.display_name,
+                    )
                 )
 
     @api.constrains("component_ids", "tournament_id")
-    def constrain_components_tournament(self):
+    def _check_components_tournament(self):
         for team in self:
             components = team.component_ids
             tournament = team.tournament_id
@@ -165,13 +171,12 @@ class EventTournamentTeam(models.Model):
                 for other_team in tournament.team_ids - team:
                     for component in components:
                         if component in other_team.component_ids:
-                            raise ValidationError(
-                                _(
-                                    "Tournament {tourn_name}, "
-                                    "team {team_name} not valid:\n"
-                                    "component {comp_name} is already in "
-                                    "team {other_team_name}."
-                                ).format(
+                            raise exceptions.ValidationError(
+                                team.env._(
+                                    "Tournament %(tourn_name)s, "
+                                    "team %(team_name)s not valid:\n"
+                                    "component %(comp_name)s is already in "
+                                    "team %(other_team_name)s.",
                                     tourn_name=tournament.display_name,
                                     team_name=team.display_name,
                                     comp_name=component.display_name,
@@ -182,13 +187,12 @@ class EventTournamentTeam(models.Model):
                 tournament.min_components
                 and len(components) < tournament.min_components
             ):
-                raise ValidationError(
-                    _(
-                        "Tournament {tourn_name}, "
-                        "team {team_name} not valid:\n"
-                        "tournament {tourn_name} requires "
-                        "at least {min_comp} components per team."
-                    ).format(
+                raise exceptions.ValidationError(
+                    team.env._(
+                        "Tournament %(tourn_name)s, "
+                        "team %(team_name)s not valid:\n"
+                        "tournament %(tourn_name)s requires "
+                        "at least %(min_comp)s components per team.",
                         team_name=team.display_name,
                         tourn_name=tournament.display_name,
                         min_comp=tournament.min_components,
@@ -198,13 +202,12 @@ class EventTournamentTeam(models.Model):
                 tournament.max_components
                 and len(components) > tournament.max_components
             ):
-                raise ValidationError(
-                    _(
-                        "Tournament {tourn_name}, "
-                        "team {team_name} not valid:\n"
-                        "tournament {tourn_name} requires "
-                        "at most {max_comp} components per team."
-                    ).format(
+                raise exceptions.ValidationError(
+                    team.env._(
+                        "Tournament %(tourn_name)s, "
+                        "team %(team_name)s not valid:\n"
+                        "tournament %(tourn_name)s requires "
+                        "at most %(max_comp)s components per team.",
                         team_name=team.display_name,
                         tourn_name=tournament.display_name,
                         max_comp=tournament.max_components,
@@ -212,14 +215,13 @@ class EventTournamentTeam(models.Model):
                 )
             if tournament.min_components_female or tournament.min_components_male:
                 if not all(c.gender for c in components):
-                    raise ValidationError(
-                        _(
-                            "Tournament {tourn_name}, "
-                            "team {team_name} not valid:\n"
-                            "tournament {tourn_name} requires "
+                    raise exceptions.ValidationError(
+                        team.env._(
+                            "Tournament %(tourn_name)s, "
+                            "team %(team_name)s not valid:\n"
+                            "tournament %(tourn_name)s requires "
                             "a minimum of female (or male) components but "
-                            "not all components have gender."
-                        ).format(
+                            "not all components have gender.",
                             team_name=team.display_name,
                             tourn_name=tournament.display_name,
                         )
@@ -229,13 +231,12 @@ class EventTournamentTeam(models.Model):
                         lambda c: c.gender == "female"
                     )
                     if len(female_components) < tournament.min_components_female:
-                        raise ValidationError(
-                            _(
-                                "Tournament {tourn_name}, "
-                                "team {team_name} not valid:\n"
-                                "tournament {tourn_name} requires at least "
-                                "{min_female_comp} female components per team."
-                            ).format(
+                        raise exceptions.ValidationError(
+                            team.env._(
+                                "Tournament %(tourn_name)s, "
+                                "team %(team_name)s not valid:\n"
+                                "tournament %(tourn_name)s requires at least "
+                                "%(min_female_comp)s female components per team.",
                                 team_name=team.display_name,
                                 tourn_name=tournament.display_name,
                                 min_female_comp=tournament.min_components_female,
@@ -244,13 +245,12 @@ class EventTournamentTeam(models.Model):
                 if tournament.min_components_male:
                     male_components = components.filtered(lambda c: c.gender == "male")
                     if len(male_components) < tournament.min_components_male:
-                        raise ValidationError(
-                            _(
-                                "Tournament {tourn_name}, "
-                                "team {team_name} not valid:\n"
-                                "tournament {tourn_name} requires at least "
-                                "{min_male_comp} male components per team."
-                            ).format(
+                        raise exceptions.ValidationError(
+                            team.env._(
+                                "Tournament %(tourn_name)s, "
+                                "team %(team_name)s not valid:\n"
+                                "tournament %(tourn_name)s requires at least "
+                                "%(min_male_comp)s male components per team.",
                                 team_name=team.display_name,
                                 tourn_name=tournament.display_name,
                                 min_male_comp=tournament.min_components_male,
@@ -269,23 +269,10 @@ class EventTournamentTeam(models.Model):
     def _compute_stats(self):
         for team in self:
             stats = team.stats_ids
-            if stats:
-                done_points = sum(stats.mapped("done_points"))
-                taken_points = sum(stats.mapped("taken_points"))
-                won_sets_count = sum(stats.mapped("won_sets_count"))
-                lost_sets_count = sum(stats.mapped("lost_sets_count"))
-                tournament_points = sum(stats.mapped("tournament_points"))
-            else:
-                done_points = 0
-                taken_points = 0
-                won_sets_count = 0
-                lost_sets_count = 0
-                tournament_points = 0
-
-            team.done_points = done_points
-            team.taken_points = taken_points
+            team.done_points = sum(stats.mapped("done_points"))
+            team.taken_points = sum(stats.mapped("taken_points"))
             team.won_set_ids = stats.won_set_ids
-            team.won_sets_count = won_sets_count
+            team.won_sets_count = sum(stats.mapped("won_sets_count"))
             team.lost_set_ids = stats.lost_set_ids
-            team.lost_sets_count = lost_sets_count
-            team.tournament_points = tournament_points
+            team.lost_sets_count = sum(stats.mapped("lost_sets_count"))
+            team.tournament_points = sum(stats.mapped("tournament_points"))

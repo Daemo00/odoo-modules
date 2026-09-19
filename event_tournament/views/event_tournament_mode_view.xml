@@ -1,4 +1,4 @@
-<!-- Copyright 2020 ~ 2023 Simone Rubino <daemo00@gmail.com> -->
+<!-- Copyright 2020 Simone Rubino <daemo00@gmail.com> -->
 <!-- License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
 <odoo>
     <record id="event_tournament_match_mode_view_form" model="ir.ui.view">
@@ -10,12 +10,12 @@
                     <group>
                         <field name="name" />
                         <field name="result_ids">
-                            <tree editable="bottom">
+                            <list editable="bottom">
                                 <field name="won_sets" />
                                 <field name="lost_sets" />
                                 <field name="win_points" />
                                 <field name="lose_points" />
-                            </tree>
+                            </list>
                         </field>
                         <field name="win_set_break_points" />
                         <field name="win_set_points" />

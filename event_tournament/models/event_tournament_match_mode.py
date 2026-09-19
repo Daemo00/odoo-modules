@@ -1,10 +1,9 @@
-#  Copyright 2019 ~ 2023 Simone Rubino <daemo00@gmail.com>
-#  License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+# Copyright 2019 Simone Rubino <daemo00@gmail.com>
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 from collections import Counter
 
-from odoo import _, api, fields, models
-from odoo.exceptions import UserError, ValidationError
+from odoo import api, exceptions, fields, models
 
 
 class EventTournamentMatchModeLine(models.Model):
@@ -59,13 +58,15 @@ class EventTournamentMatchMode(models.Model):
             )
             mode.tie_break_number = max_played_sets
 
+    @api.model
     def get_points(self, match):
         """
         Get a dictionary storing the points of each team involved in `match`.
 
         :return: A dictionary mapping teams to how many points they obtained
         """
-        self.ensure_one()
+        match.ensure_one()
+        match_mode = match.match_mode_id
         if match.state == "done":
             tournament_points = Counter(match.team_ids)
             stats = match.stats_ids
@@ -76,7 +77,7 @@ class EventTournamentMatchMode(models.Model):
                     stat.lost_sets_count,
                 )
 
-                for res in self.result_ids:
+                for res in match_mode.result_ids:
                     if won_lost_sets == (res.won_sets, res.lost_sets):
                         tournament_points[team] = res.win_points
                         break
@@ -84,29 +85,29 @@ class EventTournamentMatchMode(models.Model):
                         tournament_points[team] = res.lose_points
                         break
                 else:
-                    raise UserError(
-                        _(
+                    raise exceptions.ValidationError(
+                        stat.env._(
                             "Match %(match_name)s not valid:\n"
                             "Result %(won_sets)d - %(lost_sets)d not expected "
                             "for match mode %(match_mode)s.",
                             match_name=match.display_name,
                             won_sets=won_sets,
                             lost_sets=lost_sets,
-                            match_mode=self.display_name,
+                            match_mode=match_mode.display_name,
                         )
                     )
         else:
             tournament_points = {}
         return tournament_points
 
-    def constrain_done_set_points(self, set_):
-        points = sorted(set_.mapped("result_ids.score"), reverse=True)
+    def _check_done_set_points(self, set_):
+        points = sorted(set_.result_ids.mapped("score"), reverse=True)
         max_points, second_max_points, *other_points = points
         if max_points > 0:
             if max_points == second_max_points:
-                raise ValidationError(
-                    _(
-                        "Set %(set)s not valid:\n" "Ties are not allowed",
+                raise exceptions.ValidationError(
+                    set_.env._(
+                        "Set %(set)s not valid:\nTies are not allowed",
                         set=set_.display_name,
                     )
                 )
@@ -118,8 +119,8 @@ class EventTournamentMatchMode(models.Model):
 
             win_break_points = self.win_set_break_points
             if max_points < to_win_points:
-                raise ValidationError(
-                    _(
+                raise exceptions.ValidationError(
+                    set_.env._(
                         "Set %(set)s not valid:\n"
                         "At least one team must reach %(to_win_points)d"
                         " but the most point done is %(max_points)d",
@@ -139,8 +140,8 @@ class EventTournamentMatchMode(models.Model):
                     # 33 - 31 is valid for volleyball
                     max_points > to_win_points and break_points != win_break_points
                 ):
-                    raise ValidationError(
-                        _(
+                    raise exceptions.ValidationError(
+                        set_.env._(
                             "Set %(set)s not valid:\n"
                             "There must be exactly %(win_break_points)d points"
                             " between the teams,"

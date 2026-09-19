@@ -1,10 +1,10 @@
-#  Copyright 2020 ~ 2023 Simone Rubino <daemo00@gmail.com>
-#  License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+# Copyright 2020 Simone Rubino <daemo00@gmail.com>
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 import itertools
 from datetime import timedelta
 
-from odoo import fields
-from odoo.exceptions import UserError, ValidationError
+from odoo import exceptions, fields, tools
+from odoo.exceptions import ValidationError
 from odoo.fields import Command, first
 
 from .test_common import COMPONENT_NBR, TEAM_NBR, TestCommon
@@ -91,7 +91,7 @@ class TestEventTournament(TestCommon):
         check that start time is required for matches generation.
         """
         tournament = first(self.tournaments)
-        with self.assertRaises(UserError) as ue:
+        with self.assertRaises(exceptions.UserError) as ue:
             self.assertTrue(tournament.generate_matches())
         self.assertIn(tournament.name, ue.exception.args[0])
 
@@ -102,7 +102,7 @@ class TestEventTournament(TestCommon):
         """
         tournament = first(self.tournaments)
         tournament.match_teams_nbr = 0
-        with self.assertRaises(UserError) as ue:
+        with self.assertRaises(exceptions.UserError) as ue:
             tournament.generate_matches()
         self.assertIn(tournament.name, ue.exception.args[0])
 
@@ -115,7 +115,7 @@ class TestEventTournament(TestCommon):
         tournament = first(self.tournaments)
         tournament.match_duration = 0
         tournament.match_warm_up_duration = 0
-        with self.assertRaises(UserError) as ue:
+        with self.assertRaises(exceptions.UserError) as ue:
             tournament.generate_matches()
         self.assertIn(tournament.name, ue.exception.args[0])
 
@@ -128,7 +128,7 @@ class TestEventTournament(TestCommon):
         tournament.start_datetime = fields.Datetime.now()
         tournament.end_datetime = fields.Datetime.now() + timedelta(days=1)
         tournament.court_ids = self.court_model.browse()
-        with self.assertRaises(UserError) as ue:
+        with self.assertRaises(exceptions.UserError) as ue:
             tournament.generate_matches()
         self.assertIn(tournament.name, ue.exception.args[0])
 
@@ -142,7 +142,8 @@ class TestEventTournament(TestCommon):
         tournament.start_datetime = fields.Datetime.now()
         tournament.end_datetime = fields.Datetime.now() + timedelta(days=1)
         tournament.court_ids = self.courts
-        matches = tournament.generate_matches()
+        with tools.mute_logger("odoo.addons.event_tournament.models.event_tournament"):
+            matches = tournament.generate_matches()
         self.assertEqual(len(matches), tournament.match_count_estimated)
 
     def test_regenerate_matches(self):
@@ -155,12 +156,15 @@ class TestEventTournament(TestCommon):
         tournament.start_datetime = fields.Datetime.now()
         tournament.end_datetime = fields.Datetime.now() + timedelta(days=1)
         tournament.court_ids = self.courts
-        matches = tournament.generate_matches()
+
+        with tools.mute_logger("odoo.addons.event_tournament.models.event_tournament"):
+            matches = tournament.generate_matches()
         match = first(matches)
         match.update(self.get_match_lines_1_2(match.team_ids[:2]))
         match.action_done()
 
-        new_matches = tournament.generate_matches()
+        with tools.mute_logger("odoo.addons.event_tournament.models.event_tournament"):
+            new_matches = tournament.generate_matches()
         self.assertNotIn(match, new_matches)
         self.assertIn(match, tournament.match_ids)
 
@@ -176,10 +180,12 @@ class TestEventTournament(TestCommon):
         tournament.court_ids = self.courts
 
         # Limit the components otherwise number of teams/matches explodes
-        tournament.team_ids.unlink()
-        tournament.event_id.registration_ids[4:].unlink()
+        with tools.mute_logger("odoo.models.unlink"):
+            tournament.team_ids.unlink()
+            tournament.event_id.registration_ids[4:].unlink()
         tournament.generate_teams()
-        tournament.generate_matches()
+        with tools.mute_logger("odoo.addons.event_tournament.models.event_tournament"):
+            tournament.generate_matches()
         components = tournament.component_ids
         for component in components:
             teams = component.tournament_team_ids
@@ -248,7 +254,8 @@ class TestEventTournament(TestCommon):
         tournament.end_datetime = fields.Datetime.now() + timedelta(days=1)
         tournament.court_ids = self.courts
 
-        action = tournament.generate_view_matches()
+        with tools.mute_logger("odoo.addons.event_tournament.models.event_tournament"):
+            action = tournament.generate_view_matches()
         matches = tournament.match_ids
         action_model = action.get("res_model")
         action_domain = action.get("domain")
@@ -277,20 +284,7 @@ class TestEventTournament(TestCommon):
         """
         tournament = first(self.tournaments)
         teams = tournament.team_ids
-        self.assertEqual(teams.mapped("component_ids"), tournament.component_ids)
-
-    def test_open_form_current(self):
-        """
-        Create a tournament,
-        check that method `open_form_current`
-        returns an action that shows the current tournament.
-        """
-        tournament = first(self.tournaments)
-        action = tournament.open_form_current()
-        action_model = action.get("res_model")
-        action_id = action.get("res_id")
-        action_tournament = self.env[action_model].browse(action_id)
-        self.assertEqual(action_tournament, tournament)
+        self.assertEqual(teams.component_ids, tournament.component_ids)
 
     def test_generate_teams(self):
         """
@@ -362,7 +356,7 @@ class TestEventTournament(TestCommon):
         self.assertNotEqual(team, other_team)
 
         # Assert
-        with self.assertRaises(ValidationError) as ve, self.env.cr.savepoint():
+        with self.assertRaises(ValidationError) as ve:
             other_team.component_ids = [Command.link(component.id)]
         exc_message = ve.exception.args[0]
         self.assertIn("is already in team", exc_message)

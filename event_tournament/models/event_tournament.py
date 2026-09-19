@@ -1,6 +1,7 @@
-#  Copyright 2020 ~ 2023 Simone Rubino <daemo00@gmail.com>
-#  License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+# Copyright 2020 Simone Rubino <daemo00@gmail.com>
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 import itertools
+import logging
 import random
 from datetime import timedelta
 from functools import reduce
@@ -8,9 +9,7 @@ from math import comb
 
 from more_itertools import grouper
 
-from odoo import _, api, fields, models
-from odoo.exceptions import UserError, ValidationError
-from odoo.tools import logging
+from odoo import api, exceptions, fields, models
 from odoo.tools.safe_eval import safe_eval
 
 _logger = logging.getLogger(__name__)
@@ -56,6 +55,13 @@ class EventTournament(models.Model):
         string="To courts availability",
         help="Stop generating matches when courts are no more available.",
     )
+    event_registration_ids = fields.Many2many(
+        comodel_name="event.registration",
+        compute="_compute_event_registrations",
+    )
+    event_registration_count = fields.Integer(
+        compute="_compute_event_registrations",
+    )
     component_ids = fields.Many2many(
         comodel_name="event.registration",
         compute="_compute_components",
@@ -70,7 +76,7 @@ class EventTournament(models.Model):
         default="draft",
     )
     share_components = fields.Boolean(
-        help="The same component can be in multiple teams," "aka 'yellow' tournament",
+        help="The same component can be in multiple teams, aka 'yellow' tournament",
     )
     minimize_same_team = fields.Boolean(
         string="Minimimize same team",
@@ -172,13 +178,13 @@ class EventTournament(models.Model):
             tournament.match_count_estimated = len(list(tournament.get_match_tuples()))
 
     @api.depends(
-        "event_id.registration_ids",
+        "event_registration_ids",
         "min_components",
         "share_components",
     )
     def _compute_team_count_estimated(self):
         for tournament in self:
-            available_components_nbr = len(tournament.event_id.registration_ids)
+            available_components_nbr = len(tournament.event_registration_ids)
             team_components_nbr = tournament.min_components
             if team_components_nbr:
                 if not tournament.share_components:
@@ -198,9 +204,16 @@ class EventTournament(models.Model):
     @api.depends("team_ids.component_ids")
     def _compute_components(self):
         for tournament in self:
-            components = tournament.team_ids.mapped("component_ids")
+            components = tournament.team_ids.component_ids
             tournament.component_ids = components
             tournament.component_count = len(components)
+
+    @api.depends("event_id.registration_ids")
+    def _compute_event_registrations(self):
+        for tournament in self:
+            registrations = tournament.event_id.registration_ids
+            tournament.event_registration_ids = registrations
+            tournament.event_registration_count = len(registrations)
 
     def action_draft(self):
         for tournament in self:
@@ -216,7 +229,7 @@ class EventTournament(models.Model):
 
     def action_check_rules(self):
         self.ensure_one()
-        self.team_ids.constrain_components_tournament()
+        self.team_ids._check_components_tournament()
 
     def generate_matches(self):
         """
@@ -249,7 +262,7 @@ class EventTournament(models.Model):
         while matches_teams:
             match_teams = matches_teams.pop()
             teams_ids = [t.id for t in match_teams]
-            tournament = team_model.browse(teams_ids).mapped("tournament_id")
+            tournament = team_model.browse(teams_ids).tournament_id
             match_duration = tournament.get_match_duration()
             max_start, min_start = tournament.get_max_min_start(match_duration)
             courts = tournament.get_courts()
@@ -273,7 +286,7 @@ class EventTournament(models.Model):
                                     "time_scheduled_end": curr_start + match_duration,
                                 }
                             )
-                    except ValidationError as ve:
+                    except exceptions.ValidationError as ve:
                         # The match is not valid, try the following court
                         _logger.info(ve)
                         last_error = ve.args[0]
@@ -292,7 +305,7 @@ class EventTournament(models.Model):
                 else:
                     curr_start = curr_start + match_duration
             if not match:
-                error_message = _(
+                error_message = self.env._(
                     "Scheduling impossibru for a match between "
                 ) + ", ".join(team.display_name for team in match_teams)
                 if last_error:
@@ -302,10 +315,10 @@ class EventTournament(models.Model):
                         break
                     error_message += (
                         "\n"
-                        + _("Last match could not be scheduled due to:\n")
+                        + self.env._("Last match could not be scheduled due to:\n")
                         + last_error
                     )
-                raise UserError(error_message)
+                raise exceptions.UserError(error_message)
             max_start = max(max_start, match.time_scheduled_end)
             # Try to not make components play two matches in a row:
             # rearrange matches_teams so that components
@@ -333,17 +346,18 @@ class EventTournament(models.Model):
     def get_courts(self):
         courts = self.court_ids
         if not courts:
-            raise UserError(
-                _(
-                    "Tournament {tourn_name}:\n"
+            raise exceptions.UserError(
+                self.env._(
+                    "Tournament %(tourn_name)s:\n"
                     "At least one court is required "
-                    "for matches generation."
-                ).format(tourn_name=self.display_name)
+                    "for matches generation.",
+                    tourn_name=self.display_name,
+                )
             )
         return courts
 
     def get_children(self, depth=0):
-        children = self.mapped("child_ids")
+        children = self.child_ids
         if not children:
             return self
         if depth == 1:
@@ -372,12 +386,13 @@ class EventTournament(models.Model):
         all_tournaments_matches = dict.fromkeys(all_tournaments)
         for tournament in all_tournaments:
             if tournament.match_teams_nbr < 1:
-                raise UserError(
-                    _(
-                        "Tournament {tourn_name}:\n"
+                raise exceptions.UserError(
+                    tournament.env._(
+                        "Tournament %(tourn_name)s:\n"
                         "At least 1 team per match is required "
-                        "for matches generation."
-                    ).format(tourn_name=tournament.display_name)
+                        "for matches generation.",
+                        tourn_name=tournament.display_name,
+                    )
                 )
             all_tournaments_matches[tournament] = tournament.get_match_tuples_single()
 
@@ -389,29 +404,32 @@ class EventTournament(models.Model):
 
     def get_max_min_start(self, match_duration):
         if not self.start_datetime:
-            raise UserError(
-                _(
-                    "Tournament {tourn_name}:\n"
-                    "Start time is required for matches generation."
-                ).format(tourn_name=self.display_name)
+            raise exceptions.UserError(
+                self.env._(
+                    "Tournament %(tourn_name)s:\n"
+                    "Start time is required for matches generation.",
+                    tourn_name=self.display_name,
+                )
             )
         min_start = self.start_datetime
 
         if not self.end_datetime:
-            raise UserError(
-                _(
-                    "Tournament {tourn_name}:\n"
-                    "End time is required for matches generation."
-                ).format(tourn_name=self.display_name)
+            raise exceptions.UserError(
+                self.env._(
+                    "Tournament %(tourn_name)s:\n"
+                    "End time is required for matches generation.",
+                    tourn_name=self.display_name,
+                )
             )
         max_start = self.end_datetime - match_duration
         return max_start, min_start
 
     def get_match_duration(self):
         if self.match_duration <= 0:
-            raise UserError(
-                _("Tournament {tourn_name}:\nA match should have a duration.").format(
-                    tourn_name=self.display_name
+            raise exceptions.UserError(
+                self.env._(
+                    "Tournament %(tourn_name)s:\nA match should have a duration.",
+                    tourn_name=self.display_name,
                 )
             )
         match_duration = timedelta(hours=self.match_warm_up_duration) + timedelta(
@@ -421,7 +439,7 @@ class EventTournament(models.Model):
 
     def reset_matches(self, matches_teams):
         clean_matches_teams = []
-        matches = self.get_children().mapped("match_ids")
+        matches = self.get_children().match_ids
         done_matches = matches.filtered(lambda m: m.state == "done")
         for match_teams in matches_teams:
             for done_match in done_matches:
@@ -436,7 +454,7 @@ class EventTournament(models.Model):
         return matches_teams
 
     def recompute_matches_points(self):
-        self.get_children().mapped("team_ids").compute_matches_points()
+        self.get_children().team_ids._compute_stats()
 
     def generate_view_matches(self):
         self.generate_matches()
@@ -477,29 +495,19 @@ class EventTournament(models.Model):
         self.set_tournament_context(action)
         return action
 
-    def open_form_current(self):
-        self.ensure_one()
-        return {
-            "type": "ir.actions.act_window",
-            "view_type": "form",
-            "view_mode": "form",
-            "res_model": self._name,
-            "res_id": self.id,
-            "target": "current",
-        }
-
     def generate_teams(self):
         """
         Generate random teams from the event's participants.
         """
         self.ensure_one()
         if not self.min_components:
-            raise UserError(
-                _(
-                    "Tournament {tourn_name}:\n"
+            raise exceptions.UserError(
+                self.env._(
+                    "Tournament %(tourn_name)s:\n"
                     "The minimum number of components must be positive "
-                    "for teams generation."
-                ).format(tourn_name=self.display_name)
+                    "for teams generation.",
+                    tourn_name=self.display_name,
+                )
             )
         components = self.event_id.registration_ids
         components_ids = components.ids
@@ -583,14 +591,7 @@ class EventTournament(models.Model):
         return self.action_view_teams()
 
     def action_view_components(self):
-        components = self.component_ids
-        return {
-            "type": "ir.actions.act_window",
-            "name": _("Components"),
-            "res_model": components._name,
-            "view_mode": "tree,form",
-            "domain": [
-                ("id", "in", components.ids),
-            ],
-            "context": self.env.context,
-        }
+        return self.component_ids._get_records_action()
+
+    def action_view_event_registrations(self):
+        return self.event_registration_ids._get_records_action()

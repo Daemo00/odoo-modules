@@ -1,4 +1,5 @@
-<!-- Copyright 2020 ~ 2023 Simone Rubino <daemo00@gmail.com> -->
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2020 Simone Rubino <daemo00@gmail.com> -->
 <!-- License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
 <odoo>
     <record id="event_tournament_match_view_form" model="ir.ui.view">
@@ -11,62 +12,65 @@
                         name="action_draft"
                         string="Reset to draft"
                         type="object"
-                        states="done"
+                        invisible="state == 'draft'"
                     />
                     <button
                         name="action_done"
                         string="Done"
                         data-hotkey="d"
                         type="object"
-                        states="draft"
+                        invisible="state == 'done'"
                     />
                     <field name="state" widget="statusbar" />
                 </header>
                 <sheet>
                     <group>
-                        <field name="event_id" />
-                        <field name="tournament_id" />
-                        <field name="match_mode_id" invisible="True" />
-                        <field name="court_id" />
-                        <field name="time_scheduled_start" />
-                        <field name="time_scheduled_end" />
+                        <field name="event_id" readonly="state == 'done'" />
+                        <field name="tournament_id" readonly="state == 'done'" />
+                        <field
+                            name="match_mode_id"
+                            invisible="True"
+                            readonly="state == 'done'"
+                        />
+                        <field name="court_id" readonly="state == 'done'" />
+                        <field name="time_scheduled_start" readonly="state == 'done'" />
+                        <field name="time_scheduled_end" readonly="state == 'done'" />
                         <field
                             name="team_ids"
                             widget="many2many_tags"
-                            options="{'open': True,}"
+                            readonly="state == 'done'"
+                            options="{
+                                'open': True,
+                            }"
                         />
                         <field
+                            readonly="state == 'done'"
                             name="set_ids"
                             widget="many2many_tags"
                             context="{'default_match_id': id}"
                         >
-                            <tree>
+                            <list>
                                 <field name="name" />
-                            </tree>
+                            </list>
                         </field>
                         <field
                             name="result_ids"
+                            readonly="state == 'done'"
                             widget="x2many_2d_matrix"
                             field_x_axis="team_id"
                             field_y_axis="set_id"
                             field_value="score"
                         >
-                            <tree>
+                            <list>
                                 <field name="set_id" />
                                 <field name="team_id" />
                                 <field name="score" />
-                            </tree>
+                            </list>
                         </field>
                     </group>
-                    <group
-                        attrs="{
-                            'invisible': [
-                                ('state', '!=', 'done'),
-                            ],
-                        }"
-                    >
+                    <group invisible="state != 'done'">
                         <field name="winner_team_id" />
-                        <field name="time_done" />
+                        <field name="time_done" readonly="state == 'done'" />
                         <field name="stats_ids" />
                     </group>
                 </sheet>
@@ -83,41 +87,44 @@
                     colors="{&quot;done&quot;: &quot;success&quot;, &quot;draft&quot;: &quot;danger&quot;}"
                 />
                 <templates>
-                    <t t-name="kanban-box">
-                        <div t-attf-class="oe_kanban_card oe_kanban_global_click">
-                            <div class="o_kanban_record_top">
-                                <div class="o_kanban_record_headings">
-                                    <strong>
-                                        <field
-                                            name="state"
-                                            widget="state_selection"
-                                            class="ms-auto float-end"
-                                        />
-                                        <field name="display_name" />
-                                    </strong>
-                                    <div class="text-success">
-                                        <field
-                                            name="winner_team_id"
-                                            class="fa fa-trophy"
-                                        />
-                                    </div>
-                                    <div class="text-muted">
-                                        <field name="tournament_id" />
-                                    </div>
-                                    <div class="text-muted">
-                                        <field name="court_id" />
-                                    </div>
-                                </div>
+                    <t t-name="card">
+                        <div class="row">
+                            <div class="d-flex ms-auto">
+                                <strong>
+                                    <field name="display_name" />
+                                </strong>
+                                <field
+                                    name="state"
+                                    widget="state_selection"
+                                    class="flex ms-auto"
+                                />
                             </div>
-                            <div class="o_kanban_record_bottom">
-                                <div class="oe_kanban_bottom_left">
-                                    <span
-                                        class="fa fa-clock-o"
-                                        title="Time start"
-                                        aria-label="Time start"
-                                    />
-                                    <field name="time_scheduled_start" />
-                                </div>
+                        </div>
+                        <div class="row">
+                            <div
+                                class="text-success"
+                                title="Winner"
+                                aria-label="Winner"
+                            >
+                                <i class="fa fa-trophy mr4" role="img" />
+                                <field name="winner_team_id" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="text-muted">
+                                <field name="tournament_id" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="text-muted" title="Court" aria-label="Court">
+                                <i class="fa fa-map-marker mr4" role="img" />
+                                <field name="court_id" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div title="Time start" aria-label="Time start">
+                                <i class="fa fa-clock-o mr4" role="img" />
+                                <field name="time_scheduled_start" />
                             </div>
                         </div>
                     </t>
@@ -126,10 +133,10 @@
         </field>
     </record>
     <record id="event_tournament_match_view_tree" model="ir.ui.view">
-        <field name="name">event.tournament.match tree view</field>
+        <field name="name">event.tournament.match list view</field>
         <field name="model">event.tournament.match</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="tournament_id" />
                 <field name="court_id" />
                 <field name="time_scheduled_start" />
@@ -137,11 +144,11 @@
                 <field
                     name="set_ids"
                     widget="many2many_tags"
-                    attrs="{'column_invisible': [('state', '!=', 'done')]}"
+                    column_invisible="state != 'done'"
                 />
                 <field name="winner_team_id" />
                 <field name="state" />
-            </tree>
+            </list>
         </field>
     </record>
     <record id="event_tournament_match_view_calendar" model="ir.ui.view">
@@ -208,7 +215,7 @@
     <record id="event_tournament_match_action" model="ir.actions.act_window">
         <field name="name">Tournament matches</field>
         <field name="res_model">event.tournament.match</field>
-        <field name="view_mode">kanban,timeline,calendar,tree,form</field>
+        <field name="view_mode">kanban,timeline,calendar,list,form</field>
     </record>
     <menuitem
         id="event_tournament_match_menu"

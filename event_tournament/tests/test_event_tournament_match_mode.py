@@ -1,7 +1,6 @@
-#  Copyright 2019 ~ 2023 Simone Rubino <daemo00@gmail.com>
-#  License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
-from odoo import Command
-from odoo.exceptions import UserError
+# Copyright 2019 Simone Rubino <daemo00@gmail.com>
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+from odoo import Command, exceptions
 
 from .test_common import TestCommon
 
@@ -31,7 +30,7 @@ class TestEventTournamentMatchMode(TestCommon):
         bv_mode = self.env.ref(
             "event_tournament.event_tournament_match_mode_beach_volley"
         )
-        with self.assertRaises(UserError) as ue:
+        with self.assertRaises(exceptions.UserError) as ue:
             match.action_done()
         for team in teams:
             self.assertIn(team.name, ue.exception.args[0])

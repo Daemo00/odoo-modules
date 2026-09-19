@@ -1,7 +1,7 @@
-#  Copyright 2020 ~ 2023 Simone Rubino <daemo00@gmail.com>
-#  License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+# Copyright 2020 Simone Rubino <daemo00@gmail.com>
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class EventTournamentMatchSetResult(models.Model):
@@ -48,12 +48,7 @@ class EventTournamentMatchSetResult(models.Model):
         ),
     ]
 
-    def name_get(self):
-        names = [
-            (
-                result.id,
-                f"{result.team_id.name}: {result.score}",
-            )
-            for result in self
-        ]
-        return names
+    @api.depends("team_id.name", "score")
+    def _compute_display_name(self):
+        for result in self:
+            result.display_name = (f"{result.team_id.name}: {result.score}",)

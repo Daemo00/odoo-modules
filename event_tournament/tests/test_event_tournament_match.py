@@ -1,6 +1,7 @@
-#  Copyright 2019 ~ 2023 Simone Rubino <daemo00@gmail.com>
-#  License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
-from odoo.exceptions import UserError
+# Copyright 2019 Simone Rubino <daemo00@gmail.com>
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+
+from odoo import exceptions
 
 from .test_common import TestCommon
 
@@ -55,7 +56,7 @@ class TestEventTournamentMatch(TestCommon):
         match = self.get_match_1_2(teams)
         match.action_done()
         self.assertTrue(match.winner_team_id == teams[1])
-        with self.assertRaises(UserError) as ue, self.env.cr.savepoint():
+        with self.assertRaises(exceptions.UserError) as ue:
             match.action_done()
         self.assertIn(match.display_name, ue.exception.args[0])
         self.assertIn("already done", ue.exception.args[0])
@@ -67,9 +68,8 @@ class TestEventTournamentMatch(TestCommon):
         """
         teams = self.teams[:2]
         match = self.get_match_1_1(teams)
-        with self.assertRaises(UserError) as ue:
-            with self.env.cr.savepoint():
-                match.action_done()
+        with self.assertRaises(exceptions.ValidationError) as ue:
+            match.action_done()
         exc_message = ue.exception.args[0]
         self.assertIn(match.match_mode_id.display_name, exc_message)
         self.assertIn("1 - 1 not expected", exc_message)
@@ -99,7 +99,7 @@ class TestEventTournamentMatch(TestCommon):
         # the match cannot be finished
         match.action_draft()
         tie_break_win_result.score = win_tie_break_points - 1
-        with self.assertRaises(UserError) as ue:
+        with self.assertRaises(exceptions.UserError) as ue:
             match.action_done()
         exc_message = ue.exception.args[0]
 
