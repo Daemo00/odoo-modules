@@ -10,12 +10,12 @@
                     <group>
                         <field name="name" />
                         <field name="result_ids">
-                            <tree editable="bottom">
+                            <list editable="bottom">
                                 <field name="won_sets" />
                                 <field name="lost_sets" />
                                 <field name="win_points" />
                                 <field name="lose_points" />
-                            </tree>
+                            </list>
                         </field>
                         <field name="win_set_break_points" />
                         <field name="win_set_points" />

@@ -588,7 +588,7 @@ class EventTournament(models.Model):
             "type": "ir.actions.act_window",
             "name": _("Components"),
             "res_model": components._name,
-            "view_mode": "tree,form",
+            "view_mode": "list,form",
             "domain": [
                 ("id", "in", components.ids),
             ],

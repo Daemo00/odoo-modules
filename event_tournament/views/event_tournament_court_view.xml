@@ -38,22 +38,22 @@
         </field>
     </record>
     <record id="event_tournament_court_view_tree" model="ir.ui.view">
-        <field name="name">event.tournament.court tree view</field>
+        <field name="name">event.tournament.court list view</field>
         <field name="model">event.tournament.court</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="sequence" widget="handle" />
                 <field name="event_id" />
                 <field name="name" />
                 <field name="time_availability_start" />
                 <field name="time_availability_end" />
-            </tree>
+            </list>
         </field>
     </record>
     <record id="event_tournament_court_action" model="ir.actions.act_window">
         <field name="name">Tournament courts</field>
         <field name="res_model">event.tournament.court</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
     <menuitem
         id="event_tournament_court_menu"

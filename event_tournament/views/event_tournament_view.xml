@@ -188,15 +188,15 @@
         </field>
     </record>
     <record id="event_tournament_view_tree" model="ir.ui.view">
-        <field name="name">event.tournament tree view</field>
+        <field name="name">event.tournament list view</field>
         <field name="model">event.tournament</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="event_id" />
                 <field name="name" />
                 <field name="court_ids" widget="many2many_tags" />
                 <field name="state" />
-            </tree>
+            </list>
         </field>
     </record>
     <record id="event_tournament_view_search" model="ir.ui.view">

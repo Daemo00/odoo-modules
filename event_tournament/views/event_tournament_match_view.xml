@@ -40,9 +40,9 @@
                             widget="many2many_tags"
                             context="{'default_match_id': id}"
                         >
-                            <tree>
+                            <list>
                                 <field name="name" />
-                            </tree>
+                            </list>
                         </field>
                         <field
                             name="result_ids"
@@ -51,11 +51,11 @@
                             field_y_axis="set_id"
                             field_value="score"
                         >
-                            <tree>
+                            <list>
                                 <field name="set_id" />
                                 <field name="team_id" />
                                 <field name="score" />
-                            </tree>
+                            </list>
                         </field>
                     </group>
                     <group
@@ -83,7 +83,7 @@
                     colors="{&quot;done&quot;: &quot;success&quot;, &quot;draft&quot;: &quot;danger&quot;}"
                 />
                 <templates>
-                    <t t-name="kanban-box">
+                    <t t-name="card">
                         <div t-attf-class="oe_kanban_card oe_kanban_global_click">
                             <div class="o_kanban_record_top">
                                 <div class="o_kanban_record_headings">
@@ -126,10 +126,10 @@
         </field>
     </record>
     <record id="event_tournament_match_view_tree" model="ir.ui.view">
-        <field name="name">event.tournament.match tree view</field>
+        <field name="name">event.tournament.match list view</field>
         <field name="model">event.tournament.match</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="tournament_id" />
                 <field name="court_id" />
                 <field name="time_scheduled_start" />
@@ -141,7 +141,7 @@
                 />
                 <field name="winner_team_id" />
                 <field name="state" />
-            </tree>
+            </list>
         </field>
     </record>
     <record id="event_tournament_match_view_calendar" model="ir.ui.view">
@@ -208,7 +208,7 @@
     <record id="event_tournament_match_action" model="ir.actions.act_window">
         <field name="name">Tournament matches</field>
         <field name="res_model">event.tournament.match</field>
-        <field name="view_mode">kanban,timeline,calendar,tree,form</field>
+        <field name="view_mode">kanban,timeline,calendar,list,form</field>
     </record>
     <menuitem
         id="event_tournament_match_menu"

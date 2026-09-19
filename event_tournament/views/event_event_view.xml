@@ -14,7 +14,7 @@
                                 name="tournament_ids"
                                 context="{'default_event_id': active_id}"
                             >
-                                <tree>
+                                <list>
                                     <button
                                         name="open_form_current"
                                         type="object"
@@ -22,7 +22,7 @@
                                         icon="fa-external-link"
                                     />
                                     <field name="name" />
-                                </tree>
+                                </list>
                             </field>
                             <field
                                 name="court_ids"

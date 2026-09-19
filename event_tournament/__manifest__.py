@@ -4,10 +4,10 @@
 {
     "name": "Event tournament",
     "summary": "Implement tournaments in Odoo events",
-    "version": "16.0.1.0.0",
+    "version": "18.0.1.0.0",
     "license": "AGPL-3",
     "author": "Simone Rubino",
-    "website": "https://github.com/Daemo00/odoo-modules",
+    "website": "https://github.com/Daemo00/odoo-modules" "/tree/18.0/event_tournament",
     "depends": [
         "event",
         "partner_contact_birthdate",
